@@ -10,7 +10,7 @@ WorkingDirectory=/var/www/waren
 Environment=NODE_ENV=production
 Environment=PORT=3000
 Environment=HOSTNAME=0.0.0.0
-EnvironmentFile=/var/www/waren/.env.production
+EnvironmentFile=/var/www/waren/.env
 ExecStart=/usr/bin/npm run start:prod
 Restart=always
 RestartSec=10

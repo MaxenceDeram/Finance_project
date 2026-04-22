@@ -39,7 +39,6 @@ La logique metier est separee des pages:
 .
 ├── docs/BRAND.md
 ├── deploy/aws-ec2
-├── deploy/azure-vm
 ├── prisma
 │   ├── schema.prisma
 │   └── seed.ts
@@ -76,9 +75,11 @@ cp .env.example .env
 Renseigner au minimum:
 
 ```env
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/waren?schema=public"
-APP_URL="http://localhost:3000"
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DB_NAME?schema=public"
+APP_URL="http://51.20.71.245"
 APP_NAME="Waren"
+NODE_ENV="production"
+SESSION_COOKIE_SECURE="false"
 SESSION_SECRET="un-secret-long-et-aleatoire-de-32-caracteres-minimum"
 EMAIL_TOKEN_PEPPER="un-autre-secret-long-et-aleatoire"
 CRON_SECRET="secret-long-pour-le-cron"
@@ -127,21 +128,6 @@ Script utile pour exposer Next.js sur une VM:
 
 ```bash
 npm run start:prod
-```
-
-## Deploiement Azure VM
-
-La configuration Azure reste disponible dans `deploy/azure-vm`, mais AWS EC2 est maintenant le
-chemin conseille.
-
-- `waren.service`: service systemd pour lancer Next.js en production;
-- `nginx-waren.conf`: reverse proxy Nginx vers le port local `3000`;
-- `README.md`: procedure complete avec l'IP publique `20.74.82.173`.
-
-Script historique pour exposer Next.js sur la VM:
-
-```bash
-npm run start:vm
 ```
 
 ## Emails

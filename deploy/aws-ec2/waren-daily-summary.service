@@ -8,7 +8,7 @@ User=waren
 Group=waren
 WorkingDirectory=/var/www/waren
 Environment=NODE_ENV=production
-EnvironmentFile=/var/www/waren/.env.production
+EnvironmentFile=/var/www/waren/.env
 ExecStart=/usr/bin/npm run job:daily-summary
 NoNewPrivileges=true
 PrivateTmp=true

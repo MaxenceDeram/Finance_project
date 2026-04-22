@@ -26,12 +26,12 @@ cp "$SCRIPT_DIR/nginx-waren.conf" /etc/nginx/sites-available/waren
 ln -sf /etc/nginx/sites-available/waren /etc/nginx/sites-enabled/waren
 rm -f /etc/nginx/sites-enabled/default
 
-if [ ! -f "$APP_DIR/.env.production" ]; then
-  cp "$SCRIPT_DIR/env.production" "$APP_DIR/.env.production"
+if [ ! -f "$APP_DIR/.env" ]; then
+  cp "$SCRIPT_DIR/env.production" "$APP_DIR/.env"
 fi
 
 chown -R "$APP_USER:$APP_USER" "$APP_DIR"
-chmod 600 "$APP_DIR/.env.production"
+chmod 600 "$APP_DIR/.env"
 
 systemctl daemon-reload
 systemctl enable waren
@@ -40,4 +40,4 @@ nginx -t
 systemctl reload nginx
 
 echo "Config applied."
-echo "Edit $APP_DIR/.env.production before starting the app."
+echo "Edit $APP_DIR/.env before starting the app."

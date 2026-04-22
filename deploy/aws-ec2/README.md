@@ -32,7 +32,7 @@ Depuis ton Mac:
 
 ```bash
 chmod 400 ~/Downloads/ta-cle.pem
-ssh -i ~/Downloads/ta-cle.pem ubuntu@EC2_PUBLIC_IP
+ssh -i ~/Downloads/ta-cle.pem ubuntu@51.20.71.245
 ```
 
 Tu peux aussi utiliser EC2 Instance Connect depuis la console AWS.
@@ -76,9 +76,8 @@ Depuis ton Mac, a la racine du projet:
 rsync -az --delete \
   --exclude node_modules \
   --exclude .next \
-  --exclude .env \
   -e "ssh -i ~/Downloads/ta-cle.pem" \
-  ./ ubuntu@EC2_PUBLIC_IP:/tmp/waren/
+  ./ ubuntu@51.20.71.245:/tmp/waren/
 ```
 
 Puis sur l'EC2:
@@ -90,19 +89,19 @@ sudo chown -R waren:waren /var/www/waren
 
 ## 5. Variables D'environnement
 
-Creer `/var/www/waren/.env.production`:
+Creer `/var/www/waren/.env`:
 
 ```bash
-sudo nano /var/www/waren/.env.production
-sudo chown waren:waren /var/www/waren/.env.production
-sudo chmod 600 /var/www/waren/.env.production
+sudo nano /var/www/waren/.env
+sudo chown waren:waren /var/www/waren/.env
+sudo chmod 600 /var/www/waren/.env
 ```
 
 Exemple:
 
 ```env
 DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DB_NAME?schema=public"
-APP_URL="http://EC2_PUBLIC_IP"
+APP_URL="http://51.20.71.245"
 APP_NAME="Waren"
 NODE_ENV="production"
 SESSION_COOKIE_NAME="sim_session"
@@ -162,7 +161,7 @@ sudo systemctl reload nginx
 Ouvre ensuite:
 
 ```txt
-http://EC2_PUBLIC_IP
+http://51.20.71.245
 ```
 
 ## 9. HTTPS Plus Tard

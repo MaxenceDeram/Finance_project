@@ -10,7 +10,9 @@ const envSchema = z.object({
   SESSION_COOKIE_SECURE: z
     .string()
     .optional()
-    .transform((value) => (value ? value === "true" : process.env.NODE_ENV === "production")),
+    .transform((value) =>
+      value ? value === "true" : process.env.NODE_ENV === "production"
+    ),
   SESSION_SECRET: z.string().min(32),
   EMAIL_TOKEN_PEPPER: z.string().min(32),
   CRON_SECRET: z.string().min(32),

@@ -9,8 +9,8 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-if [ ! -f "$APP_DIR/.env.production" ]; then
-  echo "Missing $APP_DIR/.env.production"
+if [ ! -f "$APP_DIR/.env" ]; then
+  echo "Missing $APP_DIR/.env"
   exit 1
 fi
 
