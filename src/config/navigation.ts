@@ -4,6 +4,7 @@ import {
   ClipboardList,
   LayoutDashboard,
   Settings,
+  ShieldCheck,
   UserRound
 } from "lucide-react";
 
@@ -15,3 +16,9 @@ export const appNavigation = [
   { href: "/settings", label: "Parametres", icon: Settings },
   { href: "/profile", label: "Profil", icon: UserRound }
 ] as const;
+
+export const adminNavigationItem = {
+  href: "/admin",
+  label: "Admin",
+  icon: ShieldCheck
+} as const;

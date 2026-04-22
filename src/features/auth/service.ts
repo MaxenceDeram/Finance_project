@@ -1,4 +1,4 @@
-import { AuditAction } from "@prisma/client";
+import { AuditAction, UserStatus } from "@prisma/client";
 import { getEnv } from "@/config/env";
 import { AppError } from "@/lib/errors";
 import { normalizeEmail } from "@/lib/utils";
@@ -168,6 +168,10 @@ export async function loginUser(input: {
 
   if (!user.emailVerified) {
     throw new AppError("FORBIDDEN", "Confirmez votre email avant de vous connecter.", 403);
+  }
+
+  if (user.status !== UserStatus.ACTIVE) {
+    throw new AppError("FORBIDDEN", "Compte indisponible.", 403);
   }
 
   await createSession({

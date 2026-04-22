@@ -6,7 +6,8 @@ const protectedPrefixes = [
   "/orders",
   "/assets",
   "/settings",
-  "/profile"
+  "/profile",
+  "/admin"
 ];
 
 export function middleware(request: NextRequest) {
@@ -36,6 +37,7 @@ export const config = {
     "/orders/:path*",
     "/assets/:path*",
     "/settings/:path*",
-    "/profile/:path*"
+    "/profile/:path*",
+    "/admin/:path*"
   ]
 };

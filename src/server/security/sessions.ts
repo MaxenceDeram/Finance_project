@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { Prisma } from "@prisma/client";
+import { Prisma, UserRole, UserStatus } from "@prisma/client";
 import { getEnv, isProduction } from "@/config/env";
 import { prisma } from "@/server/db/prisma";
 import { createRandomToken, hashSessionToken } from "./crypto";
@@ -94,8 +94,33 @@ export async function requireUser(options: { requireVerified?: boolean } = {}) {
     redirect("/login");
   }
 
+  if (user.status !== UserStatus.ACTIVE) {
+    await destroyCurrentSession();
+    redirect("/login");
+  }
+
   if (requireVerified && !user.emailVerified) {
     redirect(`/auth/resend-confirmation?email=${encodeURIComponent(user.email)}`);
+  }
+
+  return user;
+}
+
+export async function requireAdmin() {
+  const user = await requireUser();
+
+  if (user.role !== UserRole.ADMIN && user.role !== UserRole.OWNER) {
+    redirect("/dashboard");
+  }
+
+  return user;
+}
+
+export async function requireOwner() {
+  const user = await requireUser();
+
+  if (user.role !== UserRole.OWNER) {
+    redirect("/admin");
   }
 
   return user;

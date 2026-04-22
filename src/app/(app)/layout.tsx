@@ -6,5 +6,9 @@ export const dynamic = "force-dynamic";
 export default async function PrivateLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
 
-  return <AppShell userEmail={user.email}>{children}</AppShell>;
+  return (
+    <AppShell userEmail={user.email} userRole={user.role}>
+      {children}
+    </AppShell>
+  );
 }

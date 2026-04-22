@@ -30,6 +30,16 @@ export default async function ProfilePage() {
               {user.emailVerified ? "Confirme" : "Non confirme"}
             </Badge>
           </div>
+          <div className="flex items-center justify-between gap-4 border-b pb-4">
+            <span className="text-sm text-muted-foreground">Role</span>
+            <Badge variant={user.role === "OWNER" ? "success" : "outline"}>{user.role}</Badge>
+          </div>
+          <div className="flex items-center justify-between gap-4 border-b pb-4">
+            <span className="text-sm text-muted-foreground">Etat du compte</span>
+            <Badge variant={user.status === "ACTIVE" ? "success" : "destructive"}>
+              {user.status}
+            </Badge>
+          </div>
           <div className="flex items-center justify-between gap-4">
             <span className="text-sm text-muted-foreground">Creation</span>
             <span className="font-medium">{formatDateTime(user.createdAt)}</span>

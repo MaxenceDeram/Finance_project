@@ -51,6 +51,18 @@ enum DailyEmailStatus {
   FAILED
 }
 
+enum UserRole {
+  USER
+  ADMIN
+  OWNER
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  DELETED
+}
+
 enum AuditAction {
   REGISTER
   LOGIN_SUCCESS
@@ -64,6 +76,10 @@ enum AuditAction {
   ORDER_PLACED
   PROFILE_EMAIL_CHANGE_REQUESTED
   PROFILE_PASSWORD_CHANGED
+  ADMIN_CONFIRMATION_RESENT
+  ADMIN_USER_ROLE_UPDATED
+  ADMIN_USER_STATUS_UPDATED
+  ADMIN_DAILY_JOB_TRIGGERED
   DAILY_EMAIL_SENT
   DAILY_EMAIL_FAILED
 }
@@ -72,6 +88,8 @@ model User {
   id                 String                   @id @default(cuid())
   email              String                   @unique
   passwordHash       String
+  role               UserRole                 @default(USER)
+  status             UserStatus               @default(ACTIVE)
   emailVerified      Boolean                  @default(false)
   emailVerifiedAt    DateTime?
   createdAt          DateTime                 @default(now())
@@ -84,6 +102,8 @@ model User {
   auditLogs          AuditLog[]
 
   @@index([emailVerified])
+  @@index([role])
+  @@index([status])
 }
 
 model EmailVerificationToken {
