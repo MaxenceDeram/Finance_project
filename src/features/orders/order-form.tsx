@@ -1,96 +1,158 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { AssetType } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis
-} from "recharts";
+import { useActionState, useEffect, useMemo, useState } from "react";
 import { ChevronRight, MoreHorizontal, Search, Star } from "lucide-react";
+import { AssetLiveChart } from "@/features/assets/asset-live-chart";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { placeMarketOrderAction } from "@/features/orders/actions";
 import { initialActionState } from "@/lib/errors";
 import { formatMoney, formatPercent, formatQuantity } from "@/lib/format";
-import {
-  assetCatalog,
-  catalogCategories,
-  type CatalogAsset
-} from "@/features/assets/asset-catalog";
-import {
-  chartRanges,
-  deterministicMarketPrice,
-  generateMarketSeries,
-  getAssetMove,
-  type ChartRange
-} from "@/features/assets/market-simulation";
+import type {
+  AssetLookupResult,
+  HistoricalPrice,
+  MarketQuote,
+  PriceRange
+} from "@/server/market-data/types";
 
 type OrderPosition = {
   symbol: string;
   quantity: number;
   value: number;
+  unrealizedPnl?: number;
 };
+
+type ClientQuote = Omit<MarketQuote, "timestamp"> & { timestamp: string | Date };
+type ClientHistory = Array<
+  Omit<HistoricalPrice, "timestamp"> & { timestamp: string | Date }
+>;
+
+const chartRanges: Array<{ value: PriceRange; label: string }> = [
+  { value: "1D", label: "1J" },
+  { value: "1W", label: "1S" },
+  { value: "1M", label: "1M" },
+  { value: "6M", label: "6M" },
+  { value: "1Y", label: "1A" },
+  { value: "5Y", label: "5A" },
+  { value: "MAX", label: "Max" }
+];
 
 export function OrderForm({
   portfolioId,
   defaultCurrency,
   cashValue,
-  positions
+  positions,
+  initialAssets
 }: {
   portfolioId: string;
   defaultCurrency: string;
   cashValue: number;
   positions: OrderPosition[];
+  initialAssets: AssetLookupResult[];
 }) {
   const [state, action] = useActionState(placeMarketOrderAction, initialActionState);
   const [query, setQuery] = useState("");
-  const [selectedSymbol, setSelectedSymbol] = useState("NVDA");
-  const [range, setRange] = useState<ChartRange>("1D");
+  const [assets, setAssets] = useState(initialAssets);
+  const [selectedKey, setSelectedKey] = useState(() => assetKey(initialAssets[0]));
+  const [range, setRange] = useState<PriceRange>("1D");
   const [side, setSide] = useState<"BUY" | "SELL">("BUY");
   const [inputMode, setInputMode] = useState<"amount" | "quantity">("amount");
   const [amount, setAmount] = useState("");
   const [quantityInput, setQuantityInput] = useState("");
+  const [quote, setQuote] = useState<ClientQuote | null>(null);
+  const [history, setHistory] = useState<ClientHistory>([]);
+  const [isLoadingMarket, setIsLoadingMarket] = useState(false);
 
   const selectedAsset =
-    assetCatalog.find((asset) => asset.symbol === selectedSymbol) ?? assetCatalog[0];
-  const price = deterministicMarketPrice(selectedAsset.symbol);
-  const move = getAssetMove(selectedAsset.symbol, range);
-  const chartData = generateMarketSeries(selectedAsset.symbol, range);
+    assets.find((asset) => assetKey(asset) === selectedKey) ??
+    assets[0] ??
+    fallbackAsset();
 
-  const normalizedQuery = query.trim().toLowerCase();
-  const filteredAssets = assetCatalog.filter((asset) => {
-    if (!normalizedQuery) {
-      return true;
+  useEffect(() => {
+    const controller = new AbortController();
+    const timeout = setTimeout(async () => {
+      const response = await fetch(`/api/market/search?q=${encodeURIComponent(query)}`, {
+        signal: controller.signal
+      });
+      if (!response.ok) {
+        return;
+      }
+      const payload = (await response.json()) as { assets: AssetLookupResult[] };
+      if (payload.assets.length > 0) {
+        setAssets(payload.assets);
+        setSelectedKey((current) =>
+          payload.assets.some((asset) => assetKey(asset) === current)
+            ? current
+            : assetKey(payload.assets[0])
+        );
+      }
+    }, 250);
+
+    return () => {
+      clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [query]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadMarket() {
+      setIsLoadingMarket(true);
+      try {
+        const params = toMarketParams(selectedAsset);
+        const [quoteResponse, historyResponse] = await Promise.all([
+          fetch(`/api/market/quote?${params.toString()}`, { signal: controller.signal }),
+          fetch(`/api/market/history?${params.toString()}&range=${range}`, {
+            signal: controller.signal
+          })
+        ]);
+
+        if (quoteResponse.ok) {
+          const payload = (await quoteResponse.json()) as { quote: ClientQuote };
+          setQuote(payload.quote);
+        }
+
+        if (historyResponse.ok) {
+          const payload = (await historyResponse.json()) as { history: ClientHistory };
+          setHistory(payload.history);
+        }
+      } finally {
+        setIsLoadingMarket(false);
+      }
     }
 
-    return [
-      asset.symbol,
-      asset.name,
-      asset.sector,
-      asset.country,
-      asset.exchange,
-      ...asset.tags
-    ].some((value) => value.toLowerCase().includes(normalizedQuery));
-  });
+    loadMarket();
+    const interval = setInterval(loadMarket, 45_000);
+    return () => {
+      controller.abort();
+      clearInterval(interval);
+    };
+  }, [range, selectedAsset]);
 
+  const groupedAssets = useMemo(() => groupAssets(assets), [assets]);
   const heldPosition = positions.find(
     (position) => position.symbol === selectedAsset.symbol
   );
   const heldQuantity = heldPosition?.quantity ?? 0;
+  const price = quote?.price ?? history.at(-1)?.close ?? 0;
+  const changeAmount = quote?.change ?? calculateHistoryMove(history).amount;
+  const changePercent = quote?.changePercent ?? calculateHistoryMove(history).percent;
   const amountValue = Number(amount);
   const quantityValue =
-    inputMode === "amount" ? amountValue / price : Number(quantityInput);
+    inputMode === "amount"
+      ? price > 0
+        ? amountValue / price
+        : 0
+      : Number(quantityInput);
   const orderGrossValue = quantityValue * price;
   const canBuy = side === "BUY" && quantityValue > 0 && cashValue >= orderGrossValue;
   const canSell = side === "SELL" && quantityValue > 0 && heldQuantity >= quantityValue;
-  const canSubmit = canBuy || canSell;
+  const canSubmit = (canBuy || canSell) && price > 0;
   const quantityForSubmit =
     Number.isFinite(quantityValue) && quantityValue > 0 ? quantityValue : 0;
 
@@ -111,7 +173,7 @@ export function OrderForm({
               <input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Rechercher une action, crypto, ETF..."
+                placeholder="Rechercher ticker, nom, ETF, crypto..."
                 className="h-14 w-full rounded-full border border-white/10 bg-white/10 pl-14 pr-5 text-sm font-semibold text-white outline-none placeholder:text-white/40 focus:border-white/25"
               />
             </div>
@@ -121,54 +183,45 @@ export function OrderForm({
             <Link href={`/portfolios/${portfolioId}`} className="hover:text-white">
               Portefeuille
             </Link>
+            <Link href="/assets" className="hover:text-white">
+              Marchés
+            </Link>
             <Link href="/orders" className="hover:text-white">
               Ordres
             </Link>
             <Link href="/profile" className="hover:text-white">
               Profil
             </Link>
-            <span className="flex size-11 items-center justify-center rounded-full bg-[#1f5eff] text-base font-semibold text-white">
-              W
-            </span>
           </nav>
         </header>
 
-        <div className="grid gap-8 xl:grid-cols-[320px_1fr_360px]">
-          <aside className="space-y-5">
+        <div className="grid gap-8 xl:grid-cols-[340px_1fr_360px]">
+          <aside>
             <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.08] p-5 shadow-[0_24px_80px_rgb(0_0_0_/_0.25)]">
-              {catalogCategories.map((category) => {
-                const assets = filteredAssets.filter(
-                  (asset) => asset.category === category
-                );
-                if (assets.length === 0) {
-                  return null;
-                }
-
-                return (
-                  <section
-                    key={category}
-                    className="border-b border-white/10 py-5 first:pt-0 last:border-b-0 last:pb-0"
+              {Object.entries(groupedAssets).map(([category, items]) => (
+                <section
+                  key={category}
+                  className="border-b border-white/10 py-5 first:pt-0 last:border-b-0 last:pb-0"
+                >
+                  <button
+                    type="button"
+                    className="mb-4 flex w-full items-center justify-between text-left text-xl font-semibold"
                   >
-                    <button
-                      type="button"
-                      className="mb-4 flex w-full items-center justify-between text-left text-xl font-semibold"
-                    >
-                      {category}
-                      <ChevronRight className="size-5 text-white/40" aria-hidden="true" />
-                    </button>
-                    <div className="space-y-2">
-                      {assets.map((asset) => (
-                        <AssetSearchRow
-                          key={`${asset.symbol}-${asset.exchange}`}
-                          asset={asset}
-                          active={asset.symbol === selectedAsset.symbol}
-                          onSelect={() => setSelectedSymbol(asset.symbol)}
-                        />
-                      ))}
-                    </div>
-                  </section>
-                );
-              })}
+                    {category}
+                    <ChevronRight className="size-5 text-white/40" aria-hidden="true" />
+                  </button>
+                  <div className="space-y-2">
+                    {items.map((asset) => (
+                      <AssetSearchRow
+                        key={assetKey(asset)}
+                        asset={asset}
+                        active={assetKey(asset) === assetKey(selectedAsset)}
+                        onSelect={() => setSelectedKey(assetKey(asset))}
+                      />
+                    ))}
+                  </div>
+                </section>
+              ))}
             </div>
           </aside>
 
@@ -177,21 +230,24 @@ export function OrderForm({
               <div>
                 <AssetLogo asset={selectedAsset} size="lg" />
                 <h1 className="mt-8 text-4xl font-semibold tracking-normal sm:text-5xl">
-                  {selectedAsset.name.replace(" Corporation", "")}
+                  {cleanAssetName(selectedAsset.name)}
                 </h1>
                 <p className="mt-3 text-5xl font-semibold tabular-nums">
-                  {formatMoney(price, selectedAsset.currency)}
+                  {price > 0
+                    ? formatMoney(price, selectedAsset.currency)
+                    : "Prix indisponible"}
                 </p>
                 <div className="mt-3 flex flex-wrap items-center gap-3 text-sm font-semibold">
                   <span
-                    className={move.amount >= 0 ? "text-[#32d46b]" : "text-[#ff5a61]"}
+                    className={changeAmount >= 0 ? "text-[#32d46b]" : "text-[#ff5a61]"}
                   >
-                    {move.amount >= 0 ? "+" : ""}
-                    {formatMoney(move.amount, selectedAsset.currency)} ·{" "}
-                    {formatPercent(move.percent)}
+                    {changeAmount >= 0 ? "+" : ""}
+                    {formatMoney(changeAmount, selectedAsset.currency)} ·{" "}
+                    {formatPercent(changePercent)}
                   </span>
                   <span className="text-white/40">
-                    Depuis {chartRanges.find((item) => item.value === range)?.label}
+                    {quote?.isRealtime ? "Live/quasi live" : "Fallback"}
+                    {quote?.provider ? ` · ${quote.provider}` : null}
                   </span>
                 </div>
               </div>
@@ -221,76 +277,20 @@ export function OrderForm({
               ))}
             </div>
 
-            <div className="h-[440px] rounded-[1.5rem] border border-white/10 bg-[#0d0f0d] p-4">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart
-                  data={chartData}
-                  margin={{ top: 18, right: 18, left: 4, bottom: 10 }}
-                >
-                  <defs>
-                    <linearGradient id="assetLineFill" x1="0" x2="0" y1="0" y2="1">
-                      <stop offset="0%" stopColor="#32d46b" stopOpacity={0.18} />
-                      <stop offset="85%" stopColor="#32d46b" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid stroke="rgba(255,255,255,0.07)" vertical={false} />
-                  <XAxis
-                    dataKey="label"
-                    axisLine={false}
-                    tickLine={false}
-                    interval="preserveStartEnd"
-                    tick={{
-                      fill: "rgba(255,255,255,0.35)",
-                      fontSize: 12,
-                      fontWeight: 700
-                    }}
-                  />
-                  <YAxis
-                    orientation="right"
-                    axisLine={false}
-                    tickLine={false}
-                    width={70}
-                    tickFormatter={(value) => Number(value).toFixed(2)}
-                    tick={{
-                      fill: "rgba(255,255,255,0.35)",
-                      fontSize: 12,
-                      fontWeight: 700
-                    }}
-                    domain={["dataMin - 2", "dataMax + 2"]}
-                  />
-                  <Tooltip
-                    formatter={(value) => [
-                      formatMoney(Number(value), selectedAsset.currency),
-                      selectedAsset.symbol
-                    ]}
-                    labelFormatter={(label) => `${label}`}
-                    contentStyle={{
-                      border: "1px solid rgba(255,255,255,.12)",
-                      background: "#1b1d1b",
-                      borderRadius: 14,
-                      color: "#fff",
-                      boxShadow: "0 16px 50px rgba(0,0,0,.35)"
-                    }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="price"
-                    stroke="#32d46b"
-                    strokeWidth={2.5}
-                    fill="url(#assetLineFill)"
-                    dot={false}
-                    activeDot={{
-                      r: 5,
-                      fill: "#32d46b",
-                      stroke: "#132516",
-                      strokeWidth: 4
-                    }}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+            <div className="rounded-[1.5rem] border border-white/10 bg-[#0d0f0d] p-4">
+              <AssetLiveChart
+                data={history}
+                currency={selectedAsset.currency}
+                height={440}
+              />
+              {isLoadingMarket ? (
+                <p className="px-2 pb-2 text-xs font-semibold text-white/40">
+                  Mise à jour des données de marché...
+                </p>
+              ) : null}
             </div>
 
-            <AssetInformation asset={selectedAsset} />
+            <AssetInformation asset={selectedAsset} quote={quote} />
           </main>
 
           <aside className="space-y-6 xl:sticky xl:top-8 xl:self-start">
@@ -304,21 +304,12 @@ export function OrderForm({
                 </Alert>
               ) : null}
 
-              <input type="hidden" name="portfolioId" value={portfolioId} />
-              <input type="hidden" name="side" value={side} />
-              <input type="hidden" name="orderType" value="MARKET" />
-              <input type="hidden" name="quantity" value={quantityForSubmit.toFixed(8)} />
-              <input type="hidden" name="symbol" value={selectedAsset.symbol} />
-              <input type="hidden" name="name" value={selectedAsset.name} />
-              <input type="hidden" name="assetType" value={selectedAsset.assetType} />
-              <input type="hidden" name="exchange" value={selectedAsset.exchange} />
-              <input
-                type="hidden"
-                name="currency"
-                value={selectedAsset.currency || defaultCurrency}
+              <OrderHiddenFields
+                portfolioId={portfolioId}
+                side={side}
+                quantity={quantityForSubmit}
+                asset={selectedAsset}
               />
-              <input type="hidden" name="sector" value={selectedAsset.sector} />
-              <input type="hidden" name="country" value={selectedAsset.country} />
 
               <div className="flex items-start justify-between gap-4">
                 <div>
@@ -401,30 +392,26 @@ export function OrderForm({
                   />
                 )}
 
-                <div className="flex items-center justify-between text-sm font-semibold text-white/50">
-                  <span>Au marché</span>
-                  <span>
-                    {formatQuantity(quantityForSubmit)} {selectedAsset.symbol}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between text-sm font-semibold text-white/50">
-                  <span>Estimation</span>
-                  <span>{formatMoney(orderGrossValue, selectedAsset.currency)}</span>
-                </div>
+                <OrderLine
+                  label="Au marché"
+                  value={`${formatQuantity(quantityForSubmit)} ${selectedAsset.symbol}`}
+                />
+                <OrderLine
+                  label="Estimation"
+                  value={formatMoney(orderGrossValue, selectedAsset.currency)}
+                />
                 {side === "SELL" ? (
-                  <div className="flex items-center justify-between text-sm font-semibold text-white/50">
-                    <span>Détenu</span>
-                    <span>
-                      {formatQuantity(heldQuantity)} {selectedAsset.symbol}
-                    </span>
-                  </div>
+                  <OrderLine
+                    label="Détenu"
+                    value={`${formatQuantity(heldQuantity)} ${selectedAsset.symbol}`}
+                  />
                 ) : null}
               </div>
 
               {!canSubmit ? (
                 <p className="mt-6 text-sm leading-6 text-white/50">
                   {side === "BUY"
-                    ? "Saisissez un montant inférieur au cash disponible pour valider l'achat."
+                    ? "Saisissez un montant inférieur au cash disponible et attendez un prix valide."
                     : "Vous devez détenir une quantité suffisante pour vendre cet actif."}
                 </p>
               ) : null}
@@ -438,17 +425,18 @@ export function OrderForm({
             </form>
 
             <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.05] p-6">
-              <h2 className="text-xl font-semibold">Investissez régulièrement</h2>
+              <h2 className="text-xl font-semibold">Position Waren</h2>
               <p className="mt-4 text-sm font-semibold leading-6 text-white/50">
-                Les plans programmés arriveront plus tard. Pour l'instant, chaque ordre
-                Waren reste ponctuel, fictif et contrôlé côté serveur.
+                {heldQuantity > 0
+                  ? `Vous détenez ${formatQuantity(heldQuantity)} ${selectedAsset.symbol} dans ce portefeuille fictif.`
+                  : "Vous ne détenez pas encore cet actif dans ce portefeuille fictif."}
               </p>
-              <button
-                type="button"
-                className="mt-6 h-12 w-full rounded-full bg-white/10 text-sm font-semibold text-white/50"
+              <Link
+                href={`/assets/${selectedAsset.symbol}`}
+                className="mt-6 inline-flex h-12 w-full items-center justify-center rounded-full bg-white/10 text-sm font-semibold text-white/70 hover:bg-white/15"
               >
-                Créer
-              </button>
+                Ouvrir la fiche complète
+              </Link>
             </div>
           </aside>
         </div>
@@ -457,12 +445,49 @@ export function OrderForm({
   );
 }
 
+function OrderHiddenFields({
+  portfolioId,
+  side,
+  quantity,
+  asset
+}: {
+  portfolioId: string;
+  side: "BUY" | "SELL";
+  quantity: number;
+  asset: AssetLookupResult;
+}) {
+  return (
+    <>
+      <input type="hidden" name="portfolioId" value={portfolioId} />
+      <input type="hidden" name="side" value={side} />
+      <input type="hidden" name="orderType" value="MARKET" />
+      <input type="hidden" name="quantity" value={quantity.toFixed(8)} />
+      <input type="hidden" name="symbol" value={asset.symbol} />
+      <input type="hidden" name="name" value={asset.name} />
+      <input type="hidden" name="assetType" value={asset.assetType} />
+      <input type="hidden" name="exchange" value={asset.exchange ?? ""} />
+      <input type="hidden" name="currency" value={asset.currency} />
+      <input type="hidden" name="sector" value={asset.sector ?? ""} />
+      <input type="hidden" name="country" value={asset.country ?? ""} />
+      <input type="hidden" name="provider" value={asset.provider ?? ""} />
+      <input type="hidden" name="providerId" value={asset.providerId ?? ""} />
+      <input type="hidden" name="exchangeName" value={asset.exchangeName ?? ""} />
+      <input type="hidden" name="industry" value={asset.industry ?? ""} />
+      <input type="hidden" name="isin" value={asset.isin ?? ""} />
+      <input type="hidden" name="description" value={asset.description ?? ""} />
+      <input type="hidden" name="logoUrl" value={asset.logoUrl ?? ""} />
+      <input type="hidden" name="website" value={asset.website ?? ""} />
+      <input type="hidden" name="marketCap" value={asset.marketCap ?? ""} />
+    </>
+  );
+}
+
 function AssetSearchRow({
   asset,
   active,
   onSelect
 }: {
-  asset: CatalogAsset;
+  asset: AssetLookupResult;
   active: boolean;
   onSelect: () => void;
 }) {
@@ -479,22 +504,27 @@ function AssetSearchRow({
       <AssetLogo asset={asset} />
       <span className="min-w-0 flex-1">
         <span className="block truncate text-base font-semibold">
-          {asset.name.replace(" Corporation", "")}
+          {cleanAssetName(asset.name)}
         </span>
         <span className="mt-1 block truncate text-xs font-semibold text-white/50">
-          {asset.country}, {asset.exchange}, {asset.sector}
+          {asset.symbol}, {asset.exchange ?? asset.assetType}, {asset.sector ?? "Marché"}
         </span>
       </span>
     </button>
   );
 }
 
-function AssetLogo({ asset, size = "md" }: { asset: CatalogAsset; size?: "md" | "lg" }) {
+function AssetLogo({
+  asset,
+  size = "md"
+}: {
+  asset: AssetLookupResult;
+  size?: "md" | "lg";
+}) {
   return (
     <span
       className={[
-        "flex shrink-0 items-center justify-center rounded-md font-black",
-        asset.logoClassName,
+        "flex shrink-0 items-center justify-center overflow-hidden rounded-md border border-white/10 bg-white/10 font-black text-white",
         size === "lg" ? "size-12 text-lg" : "size-9 text-sm"
       ].join(" ")}
     >
@@ -508,7 +538,7 @@ function AssetLogo({ asset, size = "md" }: { asset: CatalogAsset; size?: "md" | 
           className={size === "lg" ? "size-8 object-contain" : "size-6 object-contain"}
         />
       ) : (
-        asset.logoText
+        asset.symbol.slice(0, 2)
       )}
     </span>
   );
@@ -544,143 +574,78 @@ function TradeInput({
   );
 }
 
-function AssetInformation({ asset }: { asset: CatalogAsset }) {
+function OrderLine({ label, value }: { label: string; value: string }) {
   return (
-    <div className="space-y-14 pb-10">
+    <div className="flex items-center justify-between text-sm font-semibold text-white/50">
+      <span>{label}</span>
+      <span>{value}</span>
+    </div>
+  );
+}
+
+function AssetInformation({
+  asset,
+  quote
+}: {
+  asset: AssetLookupResult;
+  quote: ClientQuote | null;
+}) {
+  return (
+    <div className="space-y-12 pb-10">
       <section>
         <h2 className="text-3xl font-semibold">Informations</h2>
         <div className="mt-7 flex flex-wrap gap-3">
-          {asset.tags.map((tag) => (
-            <Badge
-              key={tag}
-              variant="secondary"
-              className="border-white/10 bg-white/10 px-4 py-2 text-white/70"
-            >
-              {tag}
-            </Badge>
-          ))}
+          {[
+            asset.country,
+            asset.sector,
+            asset.exchangeName ?? asset.exchange,
+            asset.assetType
+          ]
+            .filter(Boolean)
+            .map((tag) => (
+              <Badge
+                key={String(tag)}
+                variant="secondary"
+                className="border-white/10 bg-white/10 px-4 py-2 text-white/70"
+              >
+                {tag}
+              </Badge>
+            ))}
         </div>
         <p className="mt-7 max-w-4xl text-base font-semibold leading-8 text-white/80">
-          {asset.description}
+          {asset.description ??
+            "Fiche connectée à la couche market data Waren. Les métadonnées avancées se rempliront selon le provider configuré."}
         </p>
         <div className="mt-10 grid gap-6 sm:grid-cols-3">
-          <InfoStat label="ISIN" value={asset.isin} />
-          <InfoStat label="WKN" value={asset.wkn} />
-          <InfoStat label="Nom" value={asset.name.replace(" Corporation", "")} />
+          <InfoStat label="Symbole" value={asset.symbol} />
+          <InfoStat label="Exchange" value={asset.exchange ?? "-"} />
+          <InfoStat label="Devise" value={asset.currency} />
         </div>
       </section>
 
       <section>
-        <h2 className="text-3xl font-semibold">Métriques</h2>
+        <h2 className="text-3xl font-semibold">Marché</h2>
         <div className="mt-8 grid gap-x-16 gap-y-8 lg:grid-cols-2">
-          <RangeMetric
-            label="Per. 1J"
-            low={asset.dayLow}
-            high={asset.dayHigh}
-            currency={asset.currency}
-          />
-          <Metric label="Cap. Bours." value={asset.marketCap} />
-          <RangeMetric
-            label="Per. 52S"
-            low={asset.yearLow}
-            high={asset.yearHigh}
-            currency={asset.currency}
-          />
-          <Metric label="P/E" value={asset.peRatio} />
-          <Metric label="Ouverture" value={formatMoney(asset.open, asset.currency)} />
-          <Metric label="Beta 52S" value={asset.beta} />
           <Metric
-            label="Cloture"
-            value={formatMoney(asset.previousClose, asset.currency)}
+            label="Ouverture"
+            value={formatOptionalMoney(quote?.open, asset.currency)}
           />
-          <Metric label="Rend. div." value={asset.dividendYield} />
-          <Metric label="Bid" value={formatMoney(asset.bid, asset.currency)} />
-          <Metric label="Ask" value={formatMoney(asset.ask, asset.currency)} />
+          <Metric
+            label="Plus haut"
+            value={formatOptionalMoney(quote?.high, asset.currency)}
+          />
+          <Metric
+            label="Plus bas"
+            value={formatOptionalMoney(quote?.low, asset.currency)}
+          />
+          <Metric
+            label="Clôture précédente"
+            value={formatOptionalMoney(quote?.previousClose, asset.currency)}
+          />
+          <Metric label="Volume" value={formatOptionalNumber(quote?.volume)} />
+          <Metric label="Provider" value={quote?.provider ?? asset.provider ?? "-"} />
         </div>
       </section>
-
-      <section>
-        <h2 className="text-3xl font-semibold">Actualités</h2>
-        <div className="mt-8 grid gap-5 md:grid-cols-3">
-          {asset.news.map((item) => (
-            <article key={item.title} className="rounded-[1.25rem] bg-white/[0.06] p-6">
-              <h3 className="line-clamp-2 text-lg font-semibold leading-7">
-                {item.title}
-              </h3>
-              <p className="mt-4 text-sm font-semibold text-white/40">{item.time}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section>
-        <h2 className="text-3xl font-semibold">Analystes</h2>
-        <p className="mt-5 text-5xl font-semibold">
-          {formatMoney(asset.analystTarget, asset.currency)}
-        </p>
-        <p className="mt-3 max-w-3xl text-sm font-semibold leading-6 text-white/50">
-          Moyenne des estimations actuelles. Données indicatives pour la simulation.
-        </p>
-        <div className="mt-8 flex h-3 overflow-hidden rounded-full bg-white/20">
-          <span className="bg-[#32d46b]" style={{ width: `${asset.analystBuy}%` }} />
-          <span className="bg-white/30" style={{ width: `${asset.analystHold}%` }} />
-          <span className="bg-[#e4484f]" style={{ width: `${asset.analystSell}%` }} />
-        </div>
-        <div className="mt-6 grid max-w-xl grid-cols-3 gap-6">
-          <Metric label="Acheter" value={`${asset.analystBuy} %`} tone="positive" />
-          <Metric label="Conserver" value={`${asset.analystHold} %`} />
-          <Metric label="Vendre" value={`${asset.analystSell} %`} tone="negative" />
-        </div>
-      </section>
-
-      {asset.events.length > 0 ? (
-        <section>
-          <h2 className="text-3xl font-semibold">Prochains événements</h2>
-          <div className="mt-8 grid gap-5 md:grid-cols-3">
-            {asset.events.map((event) => (
-              <article
-                key={`${event.day}-${event.title}`}
-                className="rounded-[1.25rem] bg-white/[0.06] p-6"
-              >
-                <div className="flex items-start gap-5">
-                  <div>
-                    <p className="text-3xl font-semibold">{event.day}</p>
-                    <p className="text-sm font-semibold text-white/50">{event.month}</p>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold leading-6">{event.title}</h3>
-                    <p className="mt-4 text-sm font-semibold leading-6 text-white/70">
-                      {event.description}
-                    </p>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-      ) : null}
-
-      {asset.dividends.length > 0 ? (
-        <section>
-          <h2 className="text-3xl font-semibold">Dividendes</h2>
-          <div className="mt-8 space-y-5">
-            {asset.dividends.map((dividend) => (
-              <div
-                key={dividend.date}
-                className="grid grid-cols-[90px_1fr_90px] items-center gap-5"
-              >
-                <span className="text-sm font-semibold text-white/50">
-                  {dividend.date}
-                </span>
-                <span className="h-3 rounded-full bg-[#32d46b]" />
-                <span className="text-right font-semibold">
-                  {formatMoney(dividend.amount, asset.currency)}
-                </span>
-              </div>
-            ))}
-          </div>
-        </section>
-      ) : null}
     </div>
   );
 }
@@ -694,56 +659,95 @@ function InfoStat({ label, value }: { label: string; value: string }) {
   );
 }
 
-function Metric({
-  label,
-  value,
-  tone = "neutral"
-}: {
-  label: string;
-  value: string;
-  tone?: "neutral" | "positive" | "negative";
-}) {
+function Metric({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p
-        className={
-          tone === "positive"
-            ? "text-sm font-semibold text-[#32d46b]"
-            : tone === "negative"
-              ? "text-sm font-semibold text-[#e4484f]"
-              : "text-sm font-semibold text-white/50"
-        }
-      >
-        {label}
-      </p>
+      <p className="text-sm font-semibold text-white/50">{label}</p>
       <p className="mt-3 text-xl font-semibold">{value}</p>
     </div>
   );
 }
 
-function RangeMetric({
-  label,
-  low,
-  high,
-  currency
-}: {
-  label: string;
-  low: number;
-  high: number;
-  currency: string;
-}) {
-  return (
-    <div>
-      <div className="flex items-center justify-between gap-4">
-        <p className="text-sm font-semibold text-white/50">{label}</p>
-        <div className="flex min-w-[240px] items-center gap-5">
-          <span className="text-lg font-semibold">{formatMoney(low, currency)}</span>
-          <span className="h-1 flex-1 overflow-hidden rounded-full bg-white/10">
-            <span className="block h-full w-2/3 rounded-full bg-[#32d46b]" />
-          </span>
-          <span className="text-lg font-semibold">{formatMoney(high, currency)}</span>
-        </div>
-      </div>
-    </div>
-  );
+function groupAssets(assets: AssetLookupResult[]) {
+  return assets.reduce<Record<string, AssetLookupResult[]>>((groups, asset) => {
+    const key =
+      asset.assetType === AssetType.CRYPTO
+        ? "Cryptomonnaies"
+        : asset.assetType === AssetType.ETF
+          ? "ETF"
+          : asset.assetType === AssetType.INDEX
+            ? "Indices"
+            : "Actions";
+    groups[key] = [...(groups[key] ?? []), asset];
+    return groups;
+  }, {});
+}
+
+function toMarketParams(asset: AssetLookupResult) {
+  const params = new URLSearchParams({
+    symbol: asset.symbol,
+    name: asset.name,
+    assetType: asset.assetType,
+    currency: asset.currency
+  });
+
+  for (const key of [
+    "exchange",
+    "sector",
+    "country",
+    "provider",
+    "providerId"
+  ] as const) {
+    const value = asset[key];
+    if (value) {
+      params.set(key, String(value));
+    }
+  }
+
+  return params;
+}
+
+function assetKey(asset?: AssetLookupResult) {
+  if (!asset) {
+    return "empty";
+  }
+  return `${asset.symbol}:${asset.exchange ?? ""}:${asset.currency}:${asset.assetType}:${asset.providerId ?? ""}`;
+}
+
+function fallbackAsset(): AssetLookupResult {
+  return {
+    symbol: "AAPL",
+    name: "Apple Inc.",
+    assetType: AssetType.STOCK,
+    exchange: "NASDAQ",
+    currency: "USD",
+    sector: "Technology",
+    country: "United States",
+    provider: "mock"
+  };
+}
+
+function calculateHistoryMove(history: ClientHistory) {
+  const first = history[0]?.close ?? 0;
+  const last = history.at(-1)?.close ?? first;
+  const amount = last - first;
+  return {
+    amount,
+    percent: first > 0 ? (amount / first) * 100 : 0
+  };
+}
+
+function cleanAssetName(name: string) {
+  return name.replace(" Corporation", "").replace(" Inc.", "");
+}
+
+function formatOptionalMoney(value: number | null | undefined, currency: string) {
+  return value == null || value === 0 ? "-" : formatMoney(value, currency);
+}
+
+function formatOptionalNumber(value: number | null | undefined) {
+  if (value == null || value === 0) {
+    return "-";
+  }
+  return new Intl.NumberFormat("fr-FR", { notation: "compact" }).format(value);
 }

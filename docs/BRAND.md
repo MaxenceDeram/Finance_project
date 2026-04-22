@@ -5,17 +5,17 @@ est inspiree des codes des apps d'investissement modernes sans copier une interf
 
 ## Palette
 
-- Texte principal: `#11110f`
-- Fond global: `#f7f7f3`
-- Surface carte: `#ffffff`
-- Surface secondaire: `#efefea`
-- Bordure: `#deded6`
-- Texte secondaire: `#6f6f67`
-- Accent positif: `#0f7a55`
-- Accent positif doux: `#e4f2eb`
-- Negatif: `#b42318`
-- Negatif doux: `#f8e7e4`
-- Warning: `#9a6700`
+- Texte principal: `#f5f5f0`
+- Fond global: `#090a09`
+- Surface carte: `#101210`
+- Surface secondaire: `#171917`
+- Bordure: `#252822`
+- Texte secondaire: `#9b9d96`
+- Accent positif: `#32d46b`
+- Accent positif doux: `#122418`
+- Negatif: `#ff5a61`
+- Negatif doux: `#2a1417`
+- Warning: `#d6a732`
 
 Regle: ne pas ajouter de palette decorative large. Les graphiques utilisent prioritairement noir,
 gris et vert Waren.
@@ -46,14 +46,14 @@ gris et vert Waren.
 
 ## Boutons
 
-- Bouton principal: noir Waren, texte blanc, hauteur 44px.
-- Bouton secondaire: gris clair neutre.
-- Outline: fond blanc, bordure fine, hover subtil.
+- Bouton principal: blanc cassé ou vert Waren selon contexte, texte noir, hauteur 44px.
+- Bouton secondaire: surface sombre neutre.
+- Outline: fond transparent, bordure fine, hover blanc tres subtil.
 - Destructive: rouge discret uniquement pour actions sensibles.
 
 ## Inputs
 
-- Fond blanc, bordure grise, hauteur 44px.
+- Fond sombre, bordure grise, hauteur 44px.
 - Focus vert Waren avec anneau doux.
 - Placeholders calmes, jamais trop contrastes.
 

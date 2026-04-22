@@ -1,5 +1,6 @@
 import { OrderForm } from "@/features/orders/order-form";
 import { getPortfolioOverview } from "@/features/analytics/service";
+import { searchAssets } from "@/features/assets/service";
 import { requireUser } from "@/server/security/sessions";
 
 export default async function NewOrderPage({
@@ -9,7 +10,10 @@ export default async function NewOrderPage({
 }) {
   const user = await requireUser();
   const { portfolioId } = await params;
-  const overview = await getPortfolioOverview(user.id, portfolioId);
+  const [overview, initialAssets] = await Promise.all([
+    getPortfolioOverview(user.id, portfolioId),
+    searchAssets("")
+  ]);
 
   return (
     <OrderForm
@@ -19,8 +23,10 @@ export default async function NewOrderPage({
       positions={overview.positions.map((position) => ({
         symbol: position.symbol,
         quantity: position.quantity,
-        value: position.value
+        value: position.value,
+        unrealizedPnl: position.unrealizedPnl
       }))}
+      initialAssets={initialAssets}
     />
   );
 }

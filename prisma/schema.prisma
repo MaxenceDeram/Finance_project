@@ -120,29 +120,29 @@ model EmailVerificationToken {
 }
 
 model Session {
-  id          String   @id @default(cuid())
-  userId      String
-  tokenHash   String   @unique
-  expiresAt   DateTime
-  createdAt   DateTime @default(now())
-  lastSeenAt  DateTime @default(now())
-  userAgent   String?
-  ipHash      String?
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id         String   @id @default(cuid())
+  userId     String
+  tokenHash  String   @unique
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  lastSeenAt DateTime @default(now())
+  userAgent  String?
+  ipHash     String?
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([expiresAt])
 }
 
 model UserPreferences {
-  userId             String   @id
-  dailyEmailEnabled  Boolean  @default(true)
-  timezone           String   @default("Europe/Paris")
-  preferredCurrency  String   @default("EUR")
-  dailyEmailHour     Int      @default(22)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String   @id
+  dailyEmailEnabled Boolean  @default(true)
+  timezone          String   @default("Europe/Paris")
+  preferredCurrency String   @default("EUR")
+  dailyEmailHour    Int      @default(22)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Portfolio {
@@ -182,23 +182,36 @@ model PortfolioCashLedger {
 }
 
 model Asset {
-  id          String       @id @default(cuid())
-  symbol      String
-  name        String
-  assetType   AssetType
-  exchange    String?
-  currency    String
-  sector      String?
-  country     String?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  prices      AssetPrice[]
-  orders      Order[]
-  positions   Position[]
+  id           String       @id @default(cuid())
+  symbol       String
+  name         String
+  assetType    AssetType
+  exchange     String?
+  currency     String
+  sector       String?
+  country      String?
+  isin         String?
+  provider     String?
+  providerId   String?
+  exchangeName String?
+  industry     String?
+  description  String?
+  logoUrl      String?
+  website      String?
+  marketCap    Decimal?     @db.Decimal(24, 4)
+  lastSyncedAt DateTime?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  prices       AssetPrice[]
+  news         MarketNews[]
+  orders       Order[]
+  positions    Position[]
 
   @@unique([symbol, exchange, currency])
   @@index([assetType])
   @@index([symbol])
+  @@index([provider, providerId])
+  @@index([isin])
 }
 
 model AssetPrice {
@@ -218,20 +231,20 @@ model AssetPrice {
 }
 
 model Order {
-  id             String       @id @default(cuid())
-  portfolioId    String
-  assetId        String
-  side           OrderSide
-  orderType      OrderType
-  quantity       Decimal      @db.Decimal(24, 8)
-  requestedPrice Decimal?     @db.Decimal(18, 6)
-  status         OrderStatus  @default(PENDING)
+  id              String      @id @default(cuid())
+  portfolioId     String
+  assetId         String
+  side            OrderSide
+  orderType       OrderType
+  quantity        Decimal     @db.Decimal(24, 8)
+  requestedPrice  Decimal?    @db.Decimal(18, 6)
+  status          OrderStatus @default(PENDING)
   rejectionReason String?
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  portfolio      Portfolio    @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
-  asset          Asset        @relation(fields: [assetId], references: [id], onDelete: Restrict)
-  executions     Execution[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  portfolio       Portfolio   @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  asset           Asset       @relation(fields: [assetId], references: [id], onDelete: Restrict)
+  executions      Execution[]
 
   @@index([portfolioId, createdAt])
   @@index([assetId])
@@ -253,15 +266,15 @@ model Execution {
 }
 
 model Position {
-  id           String    @id @default(cuid())
-  portfolioId  String
-  assetId      String
-  quantity     Decimal   @db.Decimal(24, 8)
-  averageCost  Decimal   @db.Decimal(18, 6)
-  openedAt     DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  portfolio    Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
-  asset        Asset     @relation(fields: [assetId], references: [id], onDelete: Restrict)
+  id          String    @id @default(cuid())
+  portfolioId String
+  assetId     String
+  quantity    Decimal   @db.Decimal(24, 8)
+  averageCost Decimal   @db.Decimal(18, 6)
+  openedAt    DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  asset       Asset     @relation(fields: [assetId], references: [id], onDelete: Restrict)
 
   @@unique([portfolioId, assetId])
   @@index([portfolioId])
@@ -300,6 +313,41 @@ model DailyEmailLog {
   @@unique([userId, portfolioId, periodDate])
   @@index([userId, sentAt])
   @@index([status])
+}
+
+model MarketNews {
+  id          String   @id @default(cuid())
+  assetId     String?
+  symbol      String?
+  provider    String
+  externalId  String?
+  title       String
+  summary     String?
+  source      String?
+  url         String?
+  imageUrl    String?
+  sentiment   String?
+  publishedAt DateTime
+  fetchedAt   DateTime @default(now())
+  asset       Asset?   @relation(fields: [assetId], references: [id], onDelete: SetNull)
+
+  @@unique([provider, externalId])
+  @@index([assetId, publishedAt])
+  @@index([symbol, publishedAt])
+  @@index([publishedAt])
+}
+
+model MarketDataCache {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  provider  String
+  payload   Json
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([expiresAt])
+  @@index([provider])
 }
 
 model AuditLog {

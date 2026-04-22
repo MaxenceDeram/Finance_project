@@ -39,7 +39,16 @@ export async function placeMarketOrderAction(
         exchange: formData.get("exchange"),
         currency: formData.get("currency"),
         sector: formData.get("sector"),
-        country: formData.get("country")
+        country: formData.get("country"),
+        isin: formData.get("isin"),
+        provider: formData.get("provider"),
+        providerId: formData.get("providerId"),
+        exchangeName: formData.get("exchangeName"),
+        industry: formData.get("industry"),
+        description: formData.get("description"),
+        logoUrl: formData.get("logoUrl"),
+        website: formData.get("website"),
+        marketCap: formData.get("marketCap")
       }
     };
 

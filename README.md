@@ -1,9 +1,9 @@
 # Waren
 
 Waren est une plateforme personnelle premium de simulation d'investissement avec argent fictif.
-Elle permet de creer un compte, confirmer son email, gerer plusieurs portefeuilles fictifs,
-executer des achats/ventes simules, suivre les positions, generer des snapshots et recevoir une
-synthese quotidienne par email.
+Elle permet de créer un compte, confirmer son email, gérer plusieurs portefeuilles fictifs,
+exécuter des achats/ventes simulés, suivre les positions, explorer des actifs via providers
+financiers, générer des snapshots et recevoir une synthèse quotidienne par email.
 
 Waren n'execute aucun ordre reel, ne conserve aucun fonds et ne fournit aucun conseil financier.
 
@@ -18,6 +18,7 @@ Waren n'execute aucun ordre reel, ne conserve aucun fonds et ne fournit aucun co
 - Nodemailer pour les emails transactionnels
 - Recharts pour les tableaux de bord financiers
 - Zod pour les validations serveur
+- Alpha Vantage et CoinGecko via couche `MarketDataProvider` composite
 
 ## Architecture
 
@@ -30,7 +31,7 @@ La logique metier est separee des pages:
 - `features/jobs`: orchestration du job quotidien.
 - `features/admin`: roles, console admin, audit logs, email logs et jobs manuels.
 - `server/security`: sessions, tokens, mots de passe, rate limiting, audit.
-- `server/market-data`: interface provider, mock provider et price service.
+- `server/market-data`: providers réels, cache DB, quotes, historiques, profils et news.
 - `server/email`: transport SMTP/dev log et templates HTML Waren.
 
 ## Structure
@@ -76,13 +77,16 @@ Renseigner au minimum:
 
 ```env
 DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DB_NAME?schema=public"
-APP_URL="http://51.20.71.245"
+APP_URL="http://localhost:3000"
 APP_NAME="Waren"
-NODE_ENV="production"
+NODE_ENV="development"
 SESSION_COOKIE_SECURE="false"
 SESSION_SECRET="un-secret-long-et-aleatoire-de-32-caracteres-minimum"
 EMAIL_TOKEN_PEPPER="un-autre-secret-long-et-aleatoire"
 CRON_SECRET="secret-long-pour-le-cron"
+MARKET_DATA_PROVIDER="composite"
+ALPHA_VANTAGE_API_KEY="votre-cle-alpha-vantage"
+COINGECKO_API_KEY=""
 ```
 
 PostgreSQL local optionnel avec Docker:
@@ -115,6 +119,41 @@ npm run dev
 ```
 
 Puis ouvrir `http://localhost:3000`.
+
+## Donnees De Marche
+
+Waren utilise une couche `MarketDataProvider` modulaire:
+
+- `composite`: provider recommande. Actions, ETF, indices et news via Alpha Vantage; crypto via CoinGecko; fallback mock isole si une API est absente ou limitee.
+- `alpha-vantage`: force Alpha Vantage uniquement.
+- `coingecko`: force CoinGecko uniquement pour les cryptos.
+- `mock`: mode developpement hors ligne.
+
+Variables utiles:
+
+```env
+MARKET_DATA_PROVIDER="composite"
+MARKET_DATA_CACHE_TTL_SECONDS="60"
+MARKET_DATA_HISTORY_CACHE_TTL_SECONDS="900"
+MARKET_NEWS_CACHE_TTL_SECONDS="900"
+MARKET_DATA_HTTP_TIMEOUT_MS="9000"
+ALPHA_VANTAGE_API_KEY=""
+COINGECKO_API_KEY=""
+COINGECKO_API_BASE_URL="https://api.coingecko.com/api/v3"
+```
+
+Pour une experience vraiment exploitable sur actions/ETF/news, ajoutez une cle
+`ALPHA_VANTAGE_API_KEY`. Sans cette cle, Waren conserve CoinGecko pour les cryptos et bascule le
+reste en fallback mock clairement isole.
+
+La migration `20260423090000_market_data_live_layer` ajoute:
+
+- metadonnees provider sur `Asset`;
+- `MarketDataCache` pour limiter les appels externes;
+- `MarketNews` pour persister les actualites.
+
+Les ordres simules utilisent le dernier prix fourni par la couche market data cote serveur, jamais
+un prix envoye aveuglement par le client.
 
 ## Deploiement AWS EC2
 
@@ -177,7 +216,7 @@ La direction artistique Waren est documentee dans `docs/BRAND.md`.
 
 Resume:
 
-- palette noir, blanc, gris clair, vert premium `#0f7a55` et rouge discret `#b42318`;
+- palette noir premium, blanc cassé, gris subtil, vert `#32d46b` et rouge maîtrisé `#ff5a61`;
 - radius court de `6px`, bordures fines, ombres tres legeres;
 - typographie Inter, hierarchie forte, aucun effet decoratif lourd;
 - cartes KPI sobres, tables financieres lisibles, graphiques minimalistes;

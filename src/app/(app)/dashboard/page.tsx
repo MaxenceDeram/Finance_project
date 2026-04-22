@@ -1,4 +1,11 @@
-import { Briefcase, Landmark, LineChart, Plus, WalletCards } from "lucide-react";
+import {
+  Briefcase,
+  Landmark,
+  LineChart,
+  Newspaper,
+  Plus,
+  WalletCards
+} from "lucide-react";
 import Link from "next/link";
 import { AllocationChart } from "@/components/charts/allocation-chart";
 import { PerformanceChart } from "@/components/charts/performance-chart";
@@ -15,10 +22,14 @@ import {
 import { getGlobalDashboard } from "@/features/analytics/service";
 import { formatMoney, formatPercent } from "@/lib/format";
 import { requireUser } from "@/server/security/sessions";
+import { getMarketNews } from "@/server/market-data/price-service";
 
 export default async function DashboardPage() {
   const user = await requireUser();
-  const dashboard = await getGlobalDashboard(user.id);
+  const [dashboard, marketNews] = await Promise.all([
+    getGlobalDashboard(user.id),
+    getMarketNews({ limit: 6 })
+  ]);
   const firstPortfolio = dashboard.portfolios[0];
 
   if (dashboard.portfolios.length === 0) {
@@ -100,9 +111,9 @@ export default async function DashboardPage() {
       <div className="grid gap-6 xl:grid-cols-[1.5fr_0.9fr]">
         <Card>
           <CardHeader>
-            <CardTitle>Evolution principale</CardTitle>
+            <CardTitle>Évolution principale</CardTitle>
             <CardDescription>
-              Snapshots de valeur et benchmark si configure.
+              Snapshots de valeur et benchmark si configuré.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -157,6 +168,42 @@ export default async function DashboardPage() {
                 Performance: {formatPercent(overview.performancePercent)}
               </p>
             </Link>
+          ))}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-3">
+            <Newspaper className="size-5 text-[color:var(--positive)]" />
+            <div>
+              <CardTitle>Veille de marché</CardTitle>
+              <CardDescription>
+                Actualités récupérées via le provider market data configuré.
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {marketNews.map((item) => (
+            <a
+              key={item.id}
+              href={item.url ?? "#"}
+              target={item.url ? "_blank" : undefined}
+              rel="noreferrer"
+              className="rounded-md border border-border/80 bg-[color:var(--surface)] p-5 transition hover:border-ring hover:bg-card"
+            >
+              <p className="text-xs font-semibold uppercase text-muted-foreground">
+                {item.source ?? item.provider}
+              </p>
+              <h2 className="mt-3 line-clamp-2 font-semibold leading-6">{item.title}</h2>
+              <p className="mt-4 text-xs text-muted-foreground">
+                {new Intl.DateTimeFormat("fr-FR", {
+                  dateStyle: "medium",
+                  timeStyle: "short"
+                }).format(new Date(item.publishedAt))}
+              </p>
+            </a>
           ))}
         </CardContent>
       </Card>

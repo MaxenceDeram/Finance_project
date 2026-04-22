@@ -31,34 +31,34 @@
 
 :root {
   --radius: 0.375rem;
-  --background: #f7f7f3;
-  --foreground: #11110f;
-  --card: #ffffff;
-  --card-foreground: #11110f;
-  --popover: #ffffff;
-  --popover-foreground: #11110f;
-  --primary: #11110f;
-  --primary-foreground: #ffffff;
-  --secondary: #edede7;
-  --secondary-foreground: #11110f;
-  --muted: #efefea;
-  --muted-foreground: #6f6f67;
-  --accent: #e4f2eb;
-  --accent-foreground: #0f5d45;
-  --destructive: #b42318;
+  --background: #090a09;
+  --foreground: #f5f5f0;
+  --card: #101210;
+  --card-foreground: #f5f5f0;
+  --popover: #111311;
+  --popover-foreground: #f5f5f0;
+  --primary: #f5f5f0;
+  --primary-foreground: #090a09;
+  --secondary: #1b1d1b;
+  --secondary-foreground: #f5f5f0;
+  --muted: #171917;
+  --muted-foreground: #9b9d96;
+  --accent: #122418;
+  --accent-foreground: #32d46b;
+  --destructive: #e4484f;
   --destructive-foreground: #ffffff;
-  --border: #deded6;
-  --input: #d7d7cf;
-  --ring: #0f6b4f;
-  --positive: #0f7a55;
-  --positive-soft: #e4f2eb;
-  --negative: #b42318;
-  --negative-soft: #f8e7e4;
-  --warning: #9a6700;
-  --warning-soft: #f7efd8;
-  --surface: #fbfbf8;
-  --surface-elevated: #ffffff;
-  --shadow-soft: 0 1px 2px rgb(17 17 15 / 0.04), 0 8px 24px rgb(17 17 15 / 0.04);
+  --border: #252822;
+  --input: #2d302b;
+  --ring: #32d46b;
+  --positive: #32d46b;
+  --positive-soft: #122418;
+  --negative: #ff5a61;
+  --negative-soft: #2a1417;
+  --warning: #d6a732;
+  --warning-soft: #221b0a;
+  --surface: #0d0f0d;
+  --surface-elevated: #141714;
+  --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.2), 0 20px 60px rgb(0 0 0 / 0.28);
 }
 
 * {
@@ -95,8 +95,8 @@ a {
 }
 
 ::selection {
-  background: #d8eadf;
-  color: #11110f;
+  background: #32d46b;
+  color: #090a09;
 }
 
 input,
@@ -104,4 +104,45 @@ button,
 textarea,
 select {
   font: inherit;
+}
+
+@keyframes waren-market-line {
+  0% {
+    transform: translateX(-18%) translateY(0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateX(18%) translateY(-8%);
+    opacity: 0;
+  }
+}
+
+@keyframes waren-market-pulse {
+  0%,
+  100% {
+    transform: scale(0.9);
+    opacity: 0.28;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 0.68;
+  }
+}
+
+.waren-auth-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+.waren-flow-line {
+  animation: waren-market-line 10s linear infinite;
+}
+
+.waren-pulse-dot {
+  animation: waren-market-pulse 3.8s ease-in-out infinite;
 }

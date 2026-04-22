@@ -1,7 +1,14 @@
 import { AssetType } from "@prisma/client";
 import { addDaysUtc, startOfUtcDay } from "@/lib/dates";
 import { deterministicMarketPrice } from "@/features/assets/market-simulation";
-import type { AssetLookupResult, HistoricalPrice, MarketDataProvider } from "./types";
+import type {
+  AssetLookupResult,
+  AssetProfile,
+  HistoricalPrice,
+  MarketDataProvider,
+  MarketNewsItem,
+  PriceRange
+} from "./types";
 
 const catalog: AssetLookupResult[] = [
   {
@@ -97,15 +104,21 @@ const catalog: AssetLookupResult[] = [
 ];
 
 export class MockMarketDataProvider implements MarketDataProvider {
+  readonly name = "mock";
+
   async searchAssets(query: string) {
     const normalized = query.trim().toUpperCase();
+    if (!normalized) {
+      return catalog.slice(0, 8).map((item) => ({ ...item, provider: this.name }));
+    }
+
     const matches = catalog.filter(
       (item) =>
         item.symbol.includes(normalized) || item.name.toUpperCase().includes(normalized)
     );
 
     if (matches.length > 0) {
-      return matches;
+      return matches.map((item) => ({ ...item, provider: this.name }));
     }
 
     return [
@@ -116,7 +129,8 @@ export class MockMarketDataProvider implements MarketDataProvider {
         exchange: "MOCK",
         currency: "EUR",
         sector: "Simulation",
-        country: "Development"
+        country: "Development",
+        provider: this.name
       }
     ];
   }
@@ -126,14 +140,20 @@ export class MockMarketDataProvider implements MarketDataProvider {
       symbol: asset.symbol,
       price: deterministicPrice(asset.symbol, new Date()),
       currency: asset.currency,
-      timestamp: new Date()
+      timestamp: new Date(),
+      provider: this.name,
+      change: 0,
+      changePercent: 0,
+      isRealtime: false
     };
   }
 
   async getHistoricalPrices(
     asset: AssetLookupResult,
-    days: number
+    days: number,
+    _range?: PriceRange
   ): Promise<HistoricalPrice[]> {
+    void _range;
     const end = startOfUtcDay(new Date());
     const start = addDaysUtc(end, -days + 1);
 
@@ -149,6 +169,47 @@ export class MockMarketDataProvider implements MarketDataProvider {
         volume: 100000 + index * 1300
       };
     });
+  }
+
+  async getAssetProfile(asset: AssetLookupResult): Promise<AssetProfile> {
+    const price = deterministicPrice(asset.symbol, new Date());
+
+    return {
+      ...asset,
+      provider: this.name,
+      providerId: asset.providerId ?? asset.symbol,
+      description:
+        asset.description ??
+        `${asset.name} est affiche via le provider mock de secours. Configurez une API de marche pour obtenir des donnees reelles.`,
+      marketCap: price * 1_000_000_000,
+      dayLow: price * 0.985,
+      dayHigh: price * 1.015,
+      yearLow: price * 0.65,
+      yearHigh: price * 1.35,
+      open: price * 0.995,
+      previousClose: price * 0.99,
+      bid: price * 0.999,
+      ask: price * 1.001
+    };
+  }
+
+  async getNews(asset?: AssetLookupResult, limit = 6): Promise<MarketNewsItem[]> {
+    return Array.from({ length: Math.min(limit, 3) }, (_, index) => ({
+      id: `mock-news-${asset?.symbol ?? "market"}-${index}`,
+      provider: this.name,
+      symbol: asset?.symbol ?? null,
+      title:
+        index === 0
+          ? "Configurez Alpha Vantage pour activer les actualites de marche"
+          : "Waren conserve les actualites mockees uniquement en secours",
+      summary:
+        "Cette carte est un fallback local. Les actualites reelles sont chargees via le provider market data configure.",
+      source: "Waren mock",
+      url: null,
+      imageUrl: null,
+      sentiment: "Neutral",
+      publishedAt: new Date(Date.now() - index * 60 * 60 * 1000)
+    }));
   }
 }
 

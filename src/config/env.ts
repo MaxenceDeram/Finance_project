@@ -18,7 +18,16 @@ const envSchema = z.object({
   CRON_SECRET: z.string().min(32),
   PASSWORD_MIN_LENGTH: z.coerce.number().int().min(10).default(12),
   SIMULATED_FEE_BPS: z.coerce.number().min(0).max(500).default(5),
-  MARKET_DATA_PROVIDER: z.enum(["mock"]).default("mock"),
+  MARKET_DATA_PROVIDER: z
+    .enum(["composite", "alpha-vantage", "coingecko", "mock"])
+    .default("composite"),
+  MARKET_DATA_CACHE_TTL_SECONDS: z.coerce.number().int().min(5).default(60),
+  MARKET_DATA_HISTORY_CACHE_TTL_SECONDS: z.coerce.number().int().min(60).default(900),
+  MARKET_NEWS_CACHE_TTL_SECONDS: z.coerce.number().int().min(60).default(900),
+  MARKET_DATA_HTTP_TIMEOUT_MS: z.coerce.number().int().min(1000).default(9000),
+  ALPHA_VANTAGE_API_KEY: z.string().optional().default(""),
+  COINGECKO_API_KEY: z.string().optional().default(""),
+  COINGECKO_API_BASE_URL: z.string().url().default("https://api.coingecko.com/api/v3"),
   SMTP_HOST: z.string().optional().default(""),
   SMTP_PORT: z.coerce.number().int().positive().default(587),
   SMTP_SECURE: z

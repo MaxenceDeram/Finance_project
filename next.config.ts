@@ -36,6 +36,10 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "cdn.simpleicons.org"
+      },
+      {
+        protocol: "https",
+        hostname: "assets.coingecko.com"
       }
     ],
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;"
