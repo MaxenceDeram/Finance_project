@@ -1,0 +1,23 @@
+[Unit]
+Description=Waren Next.js application
+After=network.target
+
+[Service]
+Type=simple
+User=waren
+Group=waren
+WorkingDirectory=/var/www/waren
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Environment=HOSTNAME=0.0.0.0
+EnvironmentFile=/var/www/waren/.env.production
+ExecStart=/usr/bin/npm run start:vm
+Restart=always
+RestartSec=10
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ReadWritePaths=/var/www/waren
+
+[Install]
+WantedBy=multi-user.target

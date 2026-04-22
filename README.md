@@ -38,6 +38,7 @@ La logique metier est separee des pages:
 ```txt
 .
 ├── docs/BRAND.md
+├── deploy/azure-vm
 ├── prisma
 │   ├── schema.prisma
 │   └── seed.ts
@@ -112,6 +113,20 @@ npm run dev
 ```
 
 Puis ouvrir `http://localhost:3000`.
+
+## Deploiement Azure VM
+
+La configuration pour ta VM Linux Azure est dans `deploy/azure-vm`:
+
+- `waren.service`: service systemd pour lancer Next.js en production;
+- `nginx-waren.conf`: reverse proxy Nginx vers le port local `3000`;
+- `README.md`: procedure complete avec l'IP publique `20.74.82.173`.
+
+Script utile pour exposer Next.js sur la VM:
+
+```bash
+npm run start:vm
+```
 
 ## Emails
 
