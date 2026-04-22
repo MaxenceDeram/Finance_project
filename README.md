@@ -38,6 +38,7 @@ La logique metier est separee des pages:
 ```txt
 .
 ├── docs/BRAND.md
+├── deploy/aws-ec2
 ├── deploy/azure-vm
 ├── prisma
 │   ├── schema.prisma
@@ -114,15 +115,30 @@ npm run dev
 
 Puis ouvrir `http://localhost:3000`.
 
+## Deploiement AWS EC2
+
+La configuration recommandee pour AWS est dans `deploy/aws-ec2`:
+
+- `waren.service`: service systemd pour lancer Next.js en production;
+- `nginx-waren.conf`: reverse proxy Nginx vers le port local `3000`;
+- `README.md`: procedure complete EC2, security group, SSH, Node.js, Nginx et HTTPS.
+
+Script utile pour exposer Next.js sur une VM:
+
+```bash
+npm run start:prod
+```
+
 ## Deploiement Azure VM
 
-La configuration pour ta VM Linux Azure est dans `deploy/azure-vm`:
+La configuration Azure reste disponible dans `deploy/azure-vm`, mais AWS EC2 est maintenant le
+chemin conseille.
 
 - `waren.service`: service systemd pour lancer Next.js en production;
 - `nginx-waren.conf`: reverse proxy Nginx vers le port local `3000`;
 - `README.md`: procedure complete avec l'IP publique `20.74.82.173`.
 
-Script utile pour exposer Next.js sur la VM:
+Script historique pour exposer Next.js sur la VM:
 
 ```bash
 npm run start:vm
@@ -198,6 +214,7 @@ npm run build
 npm run lint
 npm run typecheck
 npm run format
+npm run prisma:deploy
 npm run prisma:studio
 ```
 

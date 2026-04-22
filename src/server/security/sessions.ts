@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { Prisma, UserRole, UserStatus } from "@prisma/client";
-import { getEnv, isProduction } from "@/config/env";
+import { getEnv } from "@/config/env";
 import { prisma } from "@/server/db/prisma";
 import { createRandomToken, hashSessionToken } from "./crypto";
 
@@ -31,7 +31,7 @@ export async function createSession(input: {
   cookieStore.set(env.SESSION_COOKIE_NAME, token, {
     httpOnly: true,
     sameSite: "lax",
-    secure: isProduction(),
+    secure: env.SESSION_COOKIE_SECURE,
     path: "/",
     maxAge: SESSION_MAX_AGE_SECONDS
   });

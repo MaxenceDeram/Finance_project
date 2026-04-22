@@ -7,6 +7,10 @@ const envSchema = z.object({
   APP_NAME: z.string().min(1).default("Waren"),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   SESSION_COOKIE_NAME: z.string().min(1).default("sim_session"),
+  SESSION_COOKIE_SECURE: z
+    .string()
+    .optional()
+    .transform((value) => (value ? value === "true" : process.env.NODE_ENV === "production")),
   SESSION_SECRET: z.string().min(32),
   EMAIL_TOKEN_PEPPER: z.string().min(32),
   CRON_SECRET: z.string().min(32),
