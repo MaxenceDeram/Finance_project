@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChangePasswordForm, UpdateProfileEmailForm } from "@/features/users/profile-forms";
 import { formatDateTime } from "@/lib/dates";
 import { requireUser } from "@/server/security/sessions";
 
@@ -35,6 +36,10 @@ export default async function ProfilePage() {
           </div>
         </CardContent>
       </Card>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <UpdateProfileEmailForm currentEmail={user.email} />
+        <ChangePasswordForm />
+      </div>
     </div>
   );
 }

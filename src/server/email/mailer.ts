@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { appendFile } from "node:fs/promises";
 import { getEnv } from "@/config/env";
 
 export type SendEmailInput = {
@@ -12,6 +13,18 @@ export async function sendEmail(input: SendEmailInput) {
   const env = getEnv();
 
   if (!env.SMTP_HOST) {
+    await appendFile(
+      ".dev-emails.log",
+      [
+        "----- DEV EMAIL -----",
+        `To: ${input.to}`,
+        `Subject: ${input.subject}`,
+        input.text,
+        ""
+      ].join("\n"),
+      "utf8"
+    );
+
     console.info("email_dev_delivery", {
       to: input.to,
       subject: input.subject,

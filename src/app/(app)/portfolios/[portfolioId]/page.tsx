@@ -1,4 +1,12 @@
-import { ArrowUpRight, ClipboardList, Landmark, LineChart, ShoppingCart, WalletCards } from "lucide-react";
+import {
+  ArrowUpRight,
+  ClipboardList,
+  Landmark,
+  LineChart,
+  Pencil,
+  ShoppingCart,
+  WalletCards
+} from "lucide-react";
 import Link from "next/link";
 import { AllocationChart } from "@/components/charts/allocation-chart";
 import { PerformanceChart } from "@/components/charts/performance-chart";
@@ -11,6 +19,7 @@ import { listOrdersForUser } from "@/features/orders/service";
 import { formatMoney, formatPercent } from "@/lib/format";
 import { requireUser } from "@/server/security/sessions";
 import { OrdersTable } from "@/components/dashboard/orders-table";
+import { DeletePortfolioForm } from "@/features/portfolios/delete-portfolio-form";
 
 export default async function PortfolioDetailPage({
   params
@@ -40,6 +49,12 @@ export default async function PortfolioDetailPage({
           ) : null}
         </div>
         <div className="flex gap-2">
+          <Button asChild variant="outline">
+            <Link href={`/portfolios/${portfolioId}/edit`}>
+              <Pencil aria-hidden="true" />
+              Modifier
+            </Link>
+          </Button>
           <Button asChild variant="outline">
             <Link href="/orders">
               <ClipboardList aria-hidden="true" />
@@ -108,6 +123,11 @@ export default async function PortfolioDetailPage({
           )}
         </CardContent>
       </Card>
+
+      <DeletePortfolioForm
+        portfolioId={overview.portfolio.id}
+        portfolioName={overview.portfolio.name}
+      />
     </div>
   );
 }
