@@ -9,25 +9,30 @@ export function Table({ className, ...props }: React.HTMLAttributes<HTMLTableEle
   );
 }
 
-export function TableHeader({ className, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) {
-  return <thead className={cn("[&_tr]:border-b", className)} {...props} />;
-}
-
-export function TableBody({ className, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) {
-  return <tbody className={cn("[&_tr:last-child]:border-0", className)} {...props} />;
-}
-
-export function TableRow({ className, ...props }: React.HTMLAttributes<HTMLTableRowElement>) {
+export function TableHeader({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLTableSectionElement>) {
   return (
-    <tr className={cn("border-b transition-colors hover:bg-muted/50", className)} {...props} />
+    <thead className={cn("[&_tr]:border-b [&_tr]:bg-muted/40", className)} {...props} />
   );
 }
 
-export function TableHead({ className, ...props }: React.ThHTMLAttributes<HTMLTableCellElement>) {
+export function TableBody({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLTableSectionElement>) {
+  return <tbody className={cn("[&_tr:last-child]:border-0", className)} {...props} />;
+}
+
+export function TableRow({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLTableRowElement>) {
   return (
-    <th
+    <tr
       className={cn(
-        "h-11 px-4 text-left align-middle text-xs font-semibold uppercase text-muted-foreground",
+        "border-b border-border/70 transition-colors hover:bg-muted/40",
         className
       )}
       {...props}
@@ -35,6 +40,24 @@ export function TableHead({ className, ...props }: React.ThHTMLAttributes<HTMLTa
   );
 }
 
-export function TableCell({ className, ...props }: React.TdHTMLAttributes<HTMLTableCellElement>) {
-  return <td className={cn("p-4 align-middle", className)} {...props} />;
+export function TableHead({
+  className,
+  ...props
+}: React.ThHTMLAttributes<HTMLTableCellElement>) {
+  return (
+    <th
+      className={cn(
+        "h-12 px-4 text-left align-middle text-xs font-semibold uppercase tracking-normal text-muted-foreground",
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
+export function TableCell({
+  className,
+  ...props
+}: React.TdHTMLAttributes<HTMLTableCellElement>) {
+  return <td className={cn("px-4 py-4 align-middle", className)} {...props} />;
 }

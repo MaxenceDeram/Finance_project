@@ -50,9 +50,13 @@ export function EditPortfolioForm({ portfolio }: { portfolio: EditablePortfolio 
           </div>
           <div className="grid gap-2">
             <Label htmlFor="strategy">Strategie</Label>
-            <Textarea id="strategy" name="strategy" defaultValue={portfolio.strategy ?? ""} />
+            <Textarea
+              id="strategy"
+              name="strategy"
+              defaultValue={portfolio.strategy ?? ""}
+            />
           </div>
-          <SubmitButton>Enregistrer</SubmitButton>
+          <SubmitButton>Enregistrer dans Waren</SubmitButton>
         </form>
       </CardContent>
     </Card>

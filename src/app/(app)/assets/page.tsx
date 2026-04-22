@@ -2,7 +2,14 @@ import { BarChart3 } from "lucide-react";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table";
 import { listAssets } from "@/features/assets/service";
 import { formatMoney } from "@/lib/format";
 
@@ -14,7 +21,7 @@ export default async function AssetsPage() {
       <EmptyState
         icon={BarChart3}
         title="Aucun actif local"
-        description="Les actifs sont ajoutes automatiquement lors du premier ordre simule."
+        description="Les actifs sont ajoutes automatiquement lors du premier ordre simule sur Waren."
       />
     );
   }
@@ -22,10 +29,10 @@ export default async function AssetsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+        <p className="text-sm font-semibold uppercase tracking-normal text-muted-foreground">
           Referentiel
         </p>
-        <h1 className="mt-1 text-3xl font-semibold tracking-normal">Actifs</h1>
+        <h1 className="mt-2 text-4xl font-semibold tracking-normal">Actifs</h1>
       </div>
       <Card>
         <CardHeader>

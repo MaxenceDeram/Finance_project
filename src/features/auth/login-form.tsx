@@ -25,13 +25,22 @@ export function LoginForm({ next }: { next?: string }) {
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Mot de passe</Label>
-            <Input id="password" name="password" type="password" autoComplete="current-password" required />
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              required
+            />
           </div>
-          <SubmitButton className="w-full">Se connecter</SubmitButton>
+          <SubmitButton className="w-full">Se connecter a Waren</SubmitButton>
         </form>
         <p className="mt-5 text-center text-sm text-muted-foreground">
-          Nouveau compte ?{" "}
-          <Link href="/register" className="font-medium text-foreground underline-offset-4 hover:underline">
+          Nouveau sur Waren ?{" "}
+          <Link
+            href="/register"
+            className="font-medium text-foreground underline-offset-4 hover:underline"
+          >
             S'inscrire
           </Link>
         </p>

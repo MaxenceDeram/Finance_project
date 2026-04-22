@@ -1,6 +1,13 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table";
 import { listAuditLogs } from "@/features/admin/service";
 import { formatDateTime } from "@/lib/dates";
 import { requireAdmin } from "@/server/security/sessions";
@@ -12,10 +19,10 @@ export default async function AdminAuditLogsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+        <p className="text-sm font-semibold uppercase tracking-normal text-muted-foreground">
           Administration
         </p>
-        <h1 className="mt-1 text-3xl font-semibold tracking-normal">Audit logs</h1>
+        <h1 className="mt-2 text-4xl font-semibold tracking-normal">Audit logs</h1>
       </div>
       <Card>
         <CardHeader>

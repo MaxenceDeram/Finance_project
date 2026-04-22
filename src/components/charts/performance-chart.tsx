@@ -24,36 +24,44 @@ export function PerformanceChart({
         <AreaChart data={data} margin={{ top: 10, right: 8, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id="portfolioValue" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="5%" stopColor="#2563eb" stopOpacity={0.25} />
-              <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
+              <stop offset="5%" stopColor="#0f7a55" stopOpacity={0.18} />
+              <stop offset="95%" stopColor="#0f7a55" stopOpacity={0} />
             </linearGradient>
             <linearGradient id="benchmarkValue" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="5%" stopColor="#0f766e" stopOpacity={0.18} />
-              <stop offset="95%" stopColor="#0f766e" stopOpacity={0} />
+              <stop offset="5%" stopColor="#11110f" stopOpacity={0.1} />
+              <stop offset="95%" stopColor="#11110f" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid stroke="#e5e7eb" vertical={false} />
-          <XAxis dataKey="date" tickLine={false} axisLine={false} fontSize={12} />
+          <CartesianGrid stroke="#e3e3db" vertical={false} />
+          <XAxis
+            dataKey="date"
+            tickLine={false}
+            axisLine={false}
+            fontSize={12}
+            stroke="#6f6f67"
+          />
           <YAxis
             tickLine={false}
             axisLine={false}
             fontSize={12}
+            stroke="#6f6f67"
             tickFormatter={(value) => formatMoney(Number(value), currency)}
             width={86}
           />
           <Tooltip
             formatter={(value) => formatMoney(Number(value), currency)}
             contentStyle={{
-              borderRadius: 8,
-              borderColor: "#d7dee8",
-              boxShadow: "0 10px 30px rgb(15 23 42 / 0.12)"
+              borderRadius: 6,
+              borderColor: "#deded6",
+              color: "#11110f",
+              boxShadow: "0 12px 32px rgb(17 17 15 / 0.1)"
             }}
           />
           <Area
             type="monotone"
             dataKey="totalValue"
             name="Portefeuille"
-            stroke="#2563eb"
+            stroke="#0f7a55"
             strokeWidth={2}
             fill="url(#portfolioValue)"
           />
@@ -61,8 +69,8 @@ export function PerformanceChart({
             type="monotone"
             dataKey="benchmark"
             name="Benchmark"
-            stroke="#0f766e"
-            strokeWidth={2}
+            stroke="#11110f"
+            strokeWidth={1.6}
             fill="url(#benchmarkValue)"
             connectNulls
           />

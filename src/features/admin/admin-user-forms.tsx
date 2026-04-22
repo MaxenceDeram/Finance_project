@@ -48,7 +48,7 @@ export function AdminUserManagementForms({
 
   return (
     <div className="grid gap-4">
-      <div className="rounded-lg border bg-background p-4">
+      <div className="rounded-md border border-border bg-[color:var(--surface)] p-4">
         <h3 className="font-semibold tracking-normal">Role</h3>
         {roleState.message ? <Alert className="mt-3">{roleState.message}</Alert> : null}
         <form action={roleAction} className="mt-3 flex flex-col gap-3 sm:flex-row">
@@ -63,14 +63,17 @@ export function AdminUserManagementForms({
         </form>
         {!canChangeRole ? (
           <p className="mt-2 text-xs text-muted-foreground">
-            Seul le OWNER peut modifier les roles, hors compte OWNER et hors son propre compte.
+            Seul le OWNER peut modifier les roles, hors compte OWNER et hors son propre
+            compte.
           </p>
         ) : null}
       </div>
 
-      <div className="rounded-lg border bg-background p-4">
+      <div className="rounded-md border border-border bg-[color:var(--surface)] p-4">
         <h3 className="font-semibold tracking-normal">Statut</h3>
-        {statusState.message ? <Alert className="mt-3">{statusState.message}</Alert> : null}
+        {statusState.message ? (
+          <Alert className="mt-3">{statusState.message}</Alert>
+        ) : null}
         <form action={statusAction} className="mt-3 flex flex-col gap-3 sm:flex-row">
           <input type="hidden" name="userId" value={userId} />
           <Select name="status" defaultValue={userStatus} disabled={!canChangeStatus}>
@@ -83,9 +86,11 @@ export function AdminUserManagementForms({
         </form>
       </div>
 
-      <div className="rounded-lg border bg-background p-4">
+      <div className="rounded-md border border-border bg-[color:var(--surface)] p-4">
         <h3 className="font-semibold tracking-normal">Confirmation email</h3>
-        {resendState.message ? <Alert className="mt-3">{resendState.message}</Alert> : null}
+        {resendState.message ? (
+          <Alert className="mt-3">{resendState.message}</Alert>
+        ) : null}
         <form action={resendAction} className="mt-3 flex flex-col gap-3 sm:flex-row">
           <input type="hidden" name="userId" value={userId} />
           <SubmitButton disabled={emailVerified} variant="outline">

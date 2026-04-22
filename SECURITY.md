@@ -1,6 +1,6 @@
-# Securite
+# Securite Waren
 
-Cette application est une plateforme de simulation d'investissement avec argent fictif. Elle ne
+Waren est une plateforme de simulation d'investissement avec argent fictif. Elle ne
 doit jamais etre presentee comme un courtier, un conseiller financier ou un outil d'execution
 d'ordres reels.
 

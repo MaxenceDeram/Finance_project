@@ -12,25 +12,34 @@ export default async function EditPortfolioPage({
   const user = await requireUser();
   const { portfolioId } = await params;
   const portfolio = await getPortfolioForUser(portfolioId, user.id);
+  const editablePortfolio = {
+    id: portfolio.id,
+    name: portfolio.name,
+    benchmarkSymbol: portfolio.benchmarkSymbol,
+    description: portfolio.description,
+    strategy: portfolio.strategy
+  };
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          <p className="text-sm font-semibold uppercase tracking-normal text-muted-foreground">
             Edition
           </p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-normal">{portfolio.name}</h1>
+          <h1 className="mt-2 text-4xl font-semibold tracking-normal">
+            {portfolio.name}
+          </h1>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Le capital initial et la devise restent verrouilles pour préserver l'historique
-            comptable du portefeuille.
+            Le capital initial et la devise restent verrouilles pour préserver
+            l'historique comptable du portefeuille.
           </p>
         </div>
         <Button asChild variant="outline">
           <Link href={`/portfolios/${portfolio.id}`}>Retour</Link>
         </Button>
       </div>
-      <EditPortfolioForm portfolio={portfolio} />
+      <EditPortfolioForm portfolio={editablePortfolio} />
     </div>
   );
 }

@@ -14,7 +14,10 @@ export default async function LoginPage({
   const params = await searchParams;
 
   return (
-    <AuthShell title="Connexion securisee" subtitle="Connectez-vous pour acceder a vos simulations.">
+    <AuthShell
+      title="Connexion Waren"
+      subtitle="Accedez a vos portefeuilles fictifs securises."
+    >
       <LoginForm next={params.next} />
     </AuthShell>
   );

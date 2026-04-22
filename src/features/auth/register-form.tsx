@@ -45,11 +45,14 @@ export function RegisterForm() {
               required
             />
           </div>
-          <SubmitButton className="w-full">Creer le compte</SubmitButton>
+          <SubmitButton className="w-full">Creer mon compte Waren</SubmitButton>
         </form>
         <p className="mt-5 text-center text-sm text-muted-foreground">
           Deja inscrit ?{" "}
-          <Link href="/login" className="font-medium text-foreground underline-offset-4 hover:underline">
+          <Link
+            href="/login"
+            className="font-medium text-foreground underline-offset-4 hover:underline"
+          >
             Se connecter
           </Link>
         </p>

@@ -1,12 +1,11 @@
-<<<<<<< HEAD
-# Paper Invest Premium
+# Waren
 
-Plateforme personnelle de paper trading et simulation d'investissement avec argent fictif.
-L'application permet de creer un compte, confirmer son email, gerer plusieurs portefeuilles,
-executer des achats/ventes simules, suivre les positions, generer des snapshots et envoyer une
+Waren est une plateforme personnelle premium de simulation d'investissement avec argent fictif.
+Elle permet de creer un compte, confirmer son email, gerer plusieurs portefeuilles fictifs,
+executer des achats/ventes simules, suivre les positions, generer des snapshots et recevoir une
 synthese quotidienne par email.
 
-Ce projet n'execute aucun ordre reel et ne fournit aucun conseil financier.
+Waren n'execute aucun ordre reel, ne conserve aucun fonds et ne fournit aucun conseil financier.
 
 ## Stack
 
@@ -17,13 +16,28 @@ Ce projet n'execute aucun ordre reel et ne fournit aucun conseil financier.
 - Argon2id pour les mots de passe
 - Sessions serveur avec cookies `httpOnly`
 - Nodemailer pour les emails transactionnels
-- Recharts pour les dashboards
+- Recharts pour les tableaux de bord financiers
 - Zod pour les validations serveur
 
-## Arborescence
+## Architecture
+
+La logique metier est separee des pages:
+
+- `features/auth`: inscription, connexion, confirmation email, server actions.
+- `features/portfolios`: creation, edition, suppression et controle proprietaire.
+- `features/orders`: moteur d'ordre marche simule, positions, ledger cash.
+- `features/analytics`: valorisation, P&L, drawdown, snapshots.
+- `features/jobs`: orchestration du job quotidien.
+- `features/admin`: roles, console admin, audit logs, email logs et jobs manuels.
+- `server/security`: sessions, tokens, mots de passe, rate limiting, audit.
+- `server/market-data`: interface provider, mock provider et price service.
+- `server/email`: transport SMTP/dev log et templates HTML Waren.
+
+## Structure
 
 ```txt
 .
+├── docs/BRAND.md
 ├── prisma
 │   ├── schema.prisma
 │   └── seed.ts
@@ -32,16 +46,7 @@ Ce projet n'execute aucun ordre reel et ne fournit aucun conseil financier.
 ├── src
 │   ├── app
 │   │   ├── (app)
-│   │   │   ├── assets
-│   │   │   ├── dashboard
-│   │   │   ├── orders
-│   │   │   ├── portfolios
-│   │   │   ├── profile
-│   │   │   └── settings
 │   │   ├── (auth)
-│   │   │   ├── auth
-│   │   │   ├── login
-│   │   │   └── register
 │   │   └── api/jobs/daily-summary
 │   ├── components
 │   │   ├── charts
@@ -51,19 +56,8 @@ Ce projet n'execute aucun ordre reel et ne fournit aucun conseil financier.
 │   │   └── ui
 │   ├── config
 │   ├── features
-│   │   ├── analytics
-│   │   ├── assets
-│   │   ├── auth
-│   │   ├── jobs
-│   │   ├── orders
-│   │   ├── portfolios
-│   │   └── users
 │   ├── lib
 │   ├── server
-│   │   ├── db
-│   │   ├── email
-│   │   ├── market-data
-│   │   └── security
 │   └── validation
 ├── SECURITY.md
 ├── .env.example
@@ -80,8 +74,9 @@ cp .env.example .env
 Renseigner au minimum:
 
 ```env
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/paper_invest?schema=public"
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/waren?schema=public"
 APP_URL="http://localhost:3000"
+APP_NAME="Waren"
 SESSION_SECRET="un-secret-long-et-aleatoire-de-32-caracteres-minimum"
 EMAIL_TOKEN_PEPPER="un-autre-secret-long-et-aleatoire"
 CRON_SECRET="secret-long-pour-le-cron"
@@ -93,7 +88,7 @@ PostgreSQL local optionnel avec Docker:
 docker compose up -d
 ```
 
-## Base de donnees
+## Base De Donnees
 
 ```bash
 npm run prisma:generate
@@ -108,7 +103,9 @@ demo@example.com
 DemoPassword123!
 ```
 
-## Lancement local
+Le compte seed est confirme et vide, comme un nouveau compte.
+
+## Lancement Local
 
 ```bash
 npm run dev
@@ -118,7 +115,8 @@ Puis ouvrir `http://localhost:3000`.
 
 ## Emails
 
-Si `SMTP_HOST` est vide, les emails sont logues dans la console serveur. Pour un vrai envoi:
+Si `SMTP_HOST` est vide, les emails sont journalises en developpement dans `.dev-emails.log`.
+Pour un vrai envoi:
 
 ```env
 SMTP_HOST="smtp.example.com"
@@ -126,14 +124,14 @@ SMTP_PORT="587"
 SMTP_SECURE="false"
 SMTP_USER="user"
 SMTP_PASSWORD="password"
-SMTP_FROM="Paper Invest Premium <no-reply@example.com>"
+SMTP_FROM="Waren <no-reply@example.com>"
 ```
 
 L'inscription cree un utilisateur non confirme, genere un token aleatoire, stocke uniquement son
 hash HMAC, puis envoie un lien `/auth/confirm-email?token=...`. Le token expire apres 24h et est
 marque comme utilise lors de la confirmation.
 
-## Jobs quotidiens
+## Jobs Quotidiens
 
 Execution locale:
 
@@ -152,22 +150,21 @@ Le job:
 
 - recalcule les valorisations,
 - cree ou met a jour le snapshot journalier,
-- genere le recapitulatif,
+- genere le recapitulatif Waren,
 - envoie l'email aux utilisateurs ayant active l'option,
 - logue le resultat dans `DailyEmailLog`.
 
-## Architecture
+## Design Waren
 
-La logique metier est separee des pages:
+La direction artistique Waren est documentee dans `docs/BRAND.md`.
 
-- `features/auth`: inscription, connexion, confirmation email, server actions.
-- `features/portfolios`: creation et controle proprietaire.
-- `features/orders`: moteur d'ordre marche simule, positions, ledger cash.
-- `features/analytics`: valorisation, P&L, drawdown, snapshots.
-- `features/jobs`: orchestration du job quotidien.
-- `server/security`: sessions, tokens, mots de passe, rate limiting, audit.
-- `server/market-data`: interface provider, mock provider et price service.
-- `server/email`: transport SMTP/console et templates HTML.
+Resume:
+
+- palette noir, blanc, gris clair, vert premium `#0f7a55` et rouge discret `#b42318`;
+- radius court de `6px`, bordures fines, ombres tres legeres;
+- typographie Inter, hierarchie forte, aucun effet decoratif lourd;
+- cartes KPI sobres, tables financieres lisibles, graphiques minimalistes;
+- ton clair, credible, personnel et premium.
 
 ## Securite
 
@@ -175,7 +172,10 @@ Voir `SECURITY.md` pour le detail. Le socle inclut Argon2id, tokens hashes, cook
 validation Zod, rate limiting, headers de securite, controle d'origine, audit logs et autorisations
 deny-by-default par utilisateur.
 
-## Scripts utiles
+Les donnees admin sont reservees aux roles `ADMIN` et `OWNER`. Le role `OWNER` est le seul a pouvoir
+promouvoir des administrateurs.
+
+## Scripts Utiles
 
 ```bash
 npm run dev
@@ -186,7 +186,7 @@ npm run format
 npm run prisma:studio
 ```
 
-## Evolutions preparees
+## Evolutions Preparees
 
 - Reset password securise
 - 2FA
@@ -202,7 +202,3 @@ npm run prisma:studio
 - Exports CSV/PDF
 - API personnelle privee
 - Application mobile
-=======
-# Finance_project
-Faire un trade site pour m'aider
->>>>>>> 2c05ba6deb5a4dbbc295cac5377dbee5f9774800

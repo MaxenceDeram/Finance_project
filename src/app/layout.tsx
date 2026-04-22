@@ -9,11 +9,11 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "Paper Invest Premium",
-    template: "%s | Paper Invest Premium"
+    default: "Waren",
+    template: "%s | Waren"
   },
   description:
-    "Plateforme personnelle de simulation d'investissement avec argent fictif."
+    "Waren est une plateforme personnelle premium de simulation d'investissement avec argent fictif."
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

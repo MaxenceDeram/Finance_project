@@ -17,7 +17,7 @@ export default async function PortfoliosPage() {
       <EmptyState
         icon={Briefcase}
         title="Aucun portefeuille"
-        description="Ajoutez un portefeuille fictif pour suivre votre strategie separement."
+        description="Ajoutez un portefeuille fictif Waren pour suivre chaque strategie separement."
         action={
           <Button asChild>
             <Link href="/portfolios/new">
@@ -34,10 +34,10 @@ export default async function PortfoliosPage() {
     <div className="space-y-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          <p className="text-sm font-semibold uppercase tracking-normal text-muted-foreground">
             Simulation
           </p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-normal">Portefeuilles</h1>
+          <h1 className="mt-2 text-4xl font-semibold tracking-normal">Portefeuilles</h1>
         </div>
         <Button asChild>
           <Link href="/portfolios/new">
@@ -48,22 +48,24 @@ export default async function PortfoliosPage() {
       </div>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {portfolios.map((portfolio) => (
-          <Card key={portfolio.id}>
+          <Card key={portfolio.id} className="transition hover:border-ring">
             <CardContent className="p-5">
               <h2 className="text-lg font-semibold tracking-normal">{portfolio.name}</h2>
               <p className="mt-1 text-sm text-muted-foreground">
                 Cree le {formatDateOnly(portfolio.createdAt)}
               </p>
-              <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
+              <div className="mt-5 grid grid-cols-2 gap-3 border-t border-border/70 pt-4 text-sm">
                 <div>
                   <p className="text-muted-foreground">Capital initial</p>
-                  <p className="font-medium">
+                  <p className="font-semibold tabular-nums">
                     {formatMoney(Number(portfolio.initialCash), portfolio.baseCurrency)}
                   </p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Positions</p>
-                  <p className="font-medium">{portfolio.positions.length}</p>
+                  <p className="font-semibold tabular-nums">
+                    {portfolio.positions.length}
+                  </p>
                 </div>
               </div>
               <Button asChild className="mt-5 w-full" variant="outline">

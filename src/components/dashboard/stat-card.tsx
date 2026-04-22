@@ -16,30 +16,34 @@ export function StatCard({
   tone?: "neutral" | "positive" | "negative";
 }) {
   return (
-    <Card>
+    <Card className="overflow-hidden">
       <CardContent className="p-5">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+            <p className="text-xs font-semibold uppercase tracking-normal text-muted-foreground">
               {label}
             </p>
             <p
               className={cn(
-                "mt-2 text-2xl font-semibold tracking-normal",
-                tone === "positive" && "text-emerald-700",
-                tone === "negative" && "text-red-700"
+                "mt-3 text-2xl font-semibold tracking-normal",
+                tone === "positive" && "text-[color:var(--positive)]",
+                tone === "negative" && "text-[color:var(--negative)]"
               )}
             >
               {value}
             </p>
           </div>
           {Icon ? (
-            <div className="rounded-md bg-accent p-2 text-accent-foreground">
+            <div className="rounded-md border border-border/70 bg-[color:var(--surface)] p-2 text-muted-foreground">
               <Icon className="size-4" aria-hidden="true" />
             </div>
           ) : null}
         </div>
-        {detail ? <p className="mt-3 text-sm text-muted-foreground">{detail}</p> : null}
+        {detail ? (
+          <p className="mt-4 border-t border-border/70 pt-3 text-sm text-muted-foreground">
+            {detail}
+          </p>
+        ) : null}
       </CardContent>
     </Card>
   );

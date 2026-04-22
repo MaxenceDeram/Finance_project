@@ -4,7 +4,7 @@ import { z } from "zod";
 const envSchema = z.object({
   DATABASE_URL: z.string().min(1),
   APP_URL: z.string().url().default("http://localhost:3000"),
-  APP_NAME: z.string().min(1).default("Paper Invest Premium"),
+  APP_NAME: z.string().min(1).default("Waren"),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   SESSION_COOKIE_NAME: z.string().min(1).default("sim_session"),
   SESSION_SECRET: z.string().min(32),
@@ -21,7 +21,7 @@ const envSchema = z.object({
     .transform((value) => value === "true"),
   SMTP_USER: z.string().optional().default(""),
   SMTP_PASSWORD: z.string().optional().default(""),
-  SMTP_FROM: z.string().min(1).default("Paper Invest Premium <no-reply@example.com>"),
+  SMTP_FROM: z.string().min(1).default("Waren <no-reply@example.com>"),
   DAILY_SUMMARY_DEFAULT_TIMEZONE: z.string().min(1).default("Europe/Paris")
 });
 

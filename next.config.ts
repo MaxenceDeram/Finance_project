@@ -29,6 +29,7 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  devIndicators: false,
   serverExternalPackages: ["@prisma/client", "prisma", "argon2"],
   async headers() {
     return [

@@ -1,20 +1,20 @@
 services:
   postgres:
     image: postgres:17-alpine
-    container_name: paper-invest-postgres
+    container_name: waren-postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: paper_invest
+      POSTGRES_DB: waren
     ports:
       - "5432:5432"
     volumes:
-      - paper-invest-postgres-data:/var/lib/postgresql/data
+      - waren-postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d paper_invest"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d waren"]
       interval: 5s
       timeout: 5s
       retries: 10
 
 volumes:
-  paper-invest-postgres-data:
+  waren-postgres-data:

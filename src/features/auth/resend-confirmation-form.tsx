@@ -18,7 +18,7 @@ export function ResendConfirmationForm({ email }: { email?: string }) {
         <Label htmlFor="email">Email</Label>
         <Input id="email" name="email" type="email" defaultValue={email} required />
       </div>
-      <SubmitButton className="w-full">Renvoyer le lien</SubmitButton>
+      <SubmitButton className="w-full">Renvoyer le lien Waren</SubmitButton>
     </form>
   );
 }

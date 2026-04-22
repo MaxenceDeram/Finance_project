@@ -6,9 +6,12 @@ export default function EmailConfirmedPage() {
   return (
     <main className="flex min-h-screen items-center justify-center px-6">
       <div className="max-w-md text-center">
-        <CheckCircle2 className="mx-auto size-12 text-emerald-600" aria-hidden="true" />
+        <CheckCircle2
+          className="mx-auto size-12 text-[color:var(--positive)]"
+          aria-hidden="true"
+        />
         <h1 className="mt-5 text-3xl font-semibold tracking-normal">Email confirme</h1>
-        <p className="mt-3 text-muted-foreground">Votre compte est pret.</p>
+        <p className="mt-3 text-muted-foreground">Votre compte Waren est pret.</p>
         <Button asChild className="mt-6">
           <Link href="/login">Se connecter</Link>
         </Button>

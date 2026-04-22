@@ -13,7 +13,13 @@ import { PerformanceChart } from "@/components/charts/performance-chart";
 import { PositionsTable } from "@/components/dashboard/positions-table";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card";
 import { getPortfolioOverview } from "@/features/analytics/service";
 import { listOrdersForUser } from "@/features/orders/service";
 import { formatMoney, formatPercent } from "@/lib/format";
@@ -36,19 +42,21 @@ export default async function PortfolioDetailPage({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          <p className="text-sm font-semibold uppercase tracking-normal text-muted-foreground">
             Portefeuille
           </p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-normal">{overview.portfolio.name}</h1>
+          <h1 className="mt-2 text-4xl font-semibold tracking-normal">
+            {overview.portfolio.name}
+          </h1>
           {overview.portfolio.description ? (
             <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">
               {overview.portfolio.description}
             </p>
           ) : null}
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button asChild variant="outline">
             <Link href={`/portfolios/${portfolioId}/edit`}>
               <Pencil aria-hidden="true" />
@@ -71,16 +79,38 @@ export default async function PortfolioDetailPage({
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Valeur totale" value={formatMoney(overview.totalValue, currency)} icon={WalletCards} />
-        <StatCard label="Cash disponible" value={formatMoney(overview.cashValue, currency)} icon={Landmark} />
-        <StatCard label="P&L total" value={formatMoney(overview.totalPnl, currency)} icon={ArrowUpRight} tone={overview.totalPnl >= 0 ? "positive" : "negative"} />
-        <StatCard label="Performance" value={formatPercent(overview.performancePercent)} icon={LineChart} tone={overview.performancePercent >= 0 ? "positive" : "negative"} detail={`Drawdown: ${formatPercent(overview.drawdownPercent)}`} />
+        <StatCard
+          label="Valeur totale"
+          value={formatMoney(overview.totalValue, currency)}
+          icon={WalletCards}
+        />
+        <StatCard
+          label="Cash disponible"
+          value={formatMoney(overview.cashValue, currency)}
+          icon={Landmark}
+        />
+        <StatCard
+          label="P&L total"
+          value={formatMoney(overview.totalPnl, currency)}
+          icon={ArrowUpRight}
+          tone={overview.totalPnl >= 0 ? "positive" : "negative"}
+        />
+        <StatCard
+          label="Performance"
+          value={formatPercent(overview.performancePercent)}
+          icon={LineChart}
+          tone={overview.performancePercent >= 0 ? "positive" : "negative"}
+          detail={`Drawdown: ${formatPercent(overview.drawdownPercent)}`}
+        />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.5fr_0.9fr]">
         <Card>
           <CardHeader>
             <CardTitle>Evolution</CardTitle>
+            <CardDescription>
+              Valorisation du portefeuille fictif dans le temps.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <PerformanceChart data={overview.chartData} currency={currency} />
@@ -89,6 +119,7 @@ export default async function PortfolioDetailPage({
         <Card>
           <CardHeader>
             <CardTitle>Allocation par actif</CardTitle>
+            <CardDescription>Poids relatif des positions ouvertes.</CardDescription>
           </CardHeader>
           <CardContent>
             <AllocationChart data={overview.allocation} currency={currency} />
@@ -99,6 +130,9 @@ export default async function PortfolioDetailPage({
       <Card>
         <CardHeader>
           <CardTitle>Positions ouvertes</CardTitle>
+          <CardDescription>
+            Quantite, prix moyen, valeur actuelle et P&L latent.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {overview.positions.length > 0 ? (
@@ -114,12 +148,15 @@ export default async function PortfolioDetailPage({
       <Card>
         <CardHeader>
           <CardTitle>Derniers ordres</CardTitle>
+          <CardDescription>Executions simulees et frais associes.</CardDescription>
         </CardHeader>
         <CardContent>
           {orders.length > 0 ? (
             <OrdersTable orders={orders} />
           ) : (
-            <p className="py-8 text-center text-sm text-muted-foreground">Aucun ordre execute.</p>
+            <p className="py-8 text-center text-sm text-muted-foreground">
+              Aucun ordre execute.
+            </p>
           )}
         </CardContent>
       </Card>

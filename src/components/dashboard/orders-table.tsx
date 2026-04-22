@@ -2,7 +2,14 @@ import type { OrderSide } from "@prisma/client";
 import { formatDateTime } from "@/lib/dates";
 import { formatMoney, formatQuantity } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table";
 
 type OrderRow = {
   id: string;
@@ -35,8 +42,10 @@ export function OrdersTable({ orders }: { orders: OrderRow[] }) {
           const execution = order.executions[0];
           return (
             <TableRow key={order.id}>
-              <TableCell>{formatDateTime(order.createdAt)}</TableCell>
-              <TableCell>{order.portfolio.name}</TableCell>
+              <TableCell className="text-muted-foreground">
+                {formatDateTime(order.createdAt)}
+              </TableCell>
+              <TableCell className="font-medium">{order.portfolio.name}</TableCell>
               <TableCell>
                 <div className="font-medium">{order.asset.symbol}</div>
                 <div className="text-xs text-muted-foreground">{order.asset.name}</div>
@@ -46,16 +55,25 @@ export function OrdersTable({ orders }: { orders: OrderRow[] }) {
                   {order.side === "BUY" ? "Achat" : "Vente"}
                 </Badge>
               </TableCell>
-              <TableCell>{formatQuantity(Number(order.quantity))}</TableCell>
-              <TableCell>
+              <TableCell className="tabular-nums">
+                {formatQuantity(Number(order.quantity))}
+              </TableCell>
+              <TableCell className="tabular-nums">
                 {execution
-                  ? formatMoney(Number(execution.executedPrice), order.portfolio.baseCurrency)
+                  ? formatMoney(
+                      Number(execution.executedPrice),
+                      order.portfolio.baseCurrency
+                    )
+                  : "-"}
+              </TableCell>
+              <TableCell className="tabular-nums">
+                {execution
+                  ? formatMoney(Number(execution.fees), order.portfolio.baseCurrency)
                   : "-"}
               </TableCell>
               <TableCell>
-                {execution ? formatMoney(Number(execution.fees), order.portfolio.baseCurrency) : "-"}
+                <Badge variant="secondary">{order.status}</Badge>
               </TableCell>
-              <TableCell>{order.status}</TableCell>
             </TableRow>
           );
         })}

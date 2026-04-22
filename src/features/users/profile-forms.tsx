@@ -22,7 +22,13 @@ export function UpdateProfileEmailForm({ currentEmail }: { currentEmail: string 
           {state.message ? <Alert>{state.message}</Alert> : null}
           <div className="grid gap-2">
             <Label htmlFor="email">Nouvel email</Label>
-            <Input id="email" name="email" type="email" defaultValue={currentEmail} required />
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              defaultValue={currentEmail}
+              required
+            />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="emailCurrentPassword">Mot de passe actuel</Label>
@@ -35,9 +41,10 @@ export function UpdateProfileEmailForm({ currentEmail }: { currentEmail: string 
             />
           </div>
           <p className="text-sm leading-6 text-muted-foreground">
-            Une nouvelle adresse doit etre confirmee par email avant de reutiliser l'espace prive.
+            Une nouvelle adresse doit etre confirmee par email avant de reutiliser
+            l'espace prive.
           </p>
-          <SubmitButton>Demander la modification</SubmitButton>
+          <SubmitButton>Demander la modification Waren</SubmitButton>
         </form>
       </CardContent>
     </Card>
@@ -86,7 +93,8 @@ export function ChangePasswordForm() {
             />
           </div>
           <p className="text-sm leading-6 text-muted-foreground">
-            Apres modification, toutes les sessions sont fermees et une reconnexion est demandee.
+            Apres modification, toutes les sessions sont fermees et une reconnexion est
+            demandee.
           </p>
           <SubmitButton>Changer le mot de passe</SubmitButton>
         </form>

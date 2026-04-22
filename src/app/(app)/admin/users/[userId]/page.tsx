@@ -4,7 +4,14 @@ import { getAdminUserDetails } from "@/features/admin/service";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table";
 import { formatDateTime } from "@/lib/dates";
 import { formatMoney } from "@/lib/format";
 import { requireAdmin } from "@/server/security/sessions";
@@ -20,14 +27,16 @@ export default async function AdminUserDetailPage({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          <p className="text-sm font-semibold uppercase tracking-normal text-muted-foreground">
             Utilisateur
           </p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-normal">{user.email}</h1>
+          <h1 className="mt-2 text-4xl font-semibold tracking-normal">{user.email}</h1>
           <div className="mt-3 flex flex-wrap gap-2">
-            <Badge variant={user.role === "OWNER" ? "success" : "outline"}>{user.role}</Badge>
+            <Badge variant={user.role === "OWNER" ? "success" : "outline"}>
+              {user.role}
+            </Badge>
             <Badge variant={user.status === "ACTIVE" ? "success" : "destructive"}>
               {user.status}
             </Badge>
@@ -57,7 +66,9 @@ export default async function AdminUserDetailPage({
             </div>
             <div className="flex justify-between gap-4">
               <span className="text-muted-foreground">Preferences email</span>
-              <span>{user.preferences?.dailyEmailEnabled ? "Activees" : "Desactivees"}</span>
+              <span>
+                {user.preferences?.dailyEmailEnabled ? "Activees" : "Desactivees"}
+              </span>
             </div>
           </CardContent>
         </Card>
@@ -111,7 +122,9 @@ export default async function AdminUserDetailPage({
               </TableBody>
             </Table>
           ) : (
-            <p className="py-6 text-center text-sm text-muted-foreground">Aucun portefeuille.</p>
+            <p className="py-6 text-center text-sm text-muted-foreground">
+              Aucun portefeuille.
+            </p>
           )}
         </CardContent>
       </Card>
@@ -137,13 +150,17 @@ export default async function AdminUserDetailPage({
                     <TableCell>{formatDateTime(session.createdAt)}</TableCell>
                     <TableCell>{formatDateTime(session.lastSeenAt)}</TableCell>
                     <TableCell>{formatDateTime(session.expiresAt)}</TableCell>
-                    <TableCell className="max-w-xs truncate">{session.userAgent ?? "-"}</TableCell>
+                    <TableCell className="max-w-xs truncate">
+                      {session.userAgent ?? "-"}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           ) : (
-            <p className="py-6 text-center text-sm text-muted-foreground">Aucune session active.</p>
+            <p className="py-6 text-center text-sm text-muted-foreground">
+              Aucune session active.
+            </p>
           )}
         </CardContent>
       </Card>

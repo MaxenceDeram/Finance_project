@@ -14,7 +14,7 @@ export default async function OrdersPage() {
       <EmptyState
         icon={ClipboardList}
         title="Aucun ordre"
-        description="Les achats, ventes, executions et frais simules apparaitront ici."
+        description="Les achats, ventes, executions et frais simules par Waren apparaitront ici."
       />
     );
   }
@@ -22,10 +22,12 @@ export default async function OrdersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+        <p className="text-sm font-semibold uppercase tracking-normal text-muted-foreground">
           Historique
         </p>
-        <h1 className="mt-1 text-3xl font-semibold tracking-normal">Ordres et executions</h1>
+        <h1 className="mt-2 text-4xl font-semibold tracking-normal">
+          Ordres et executions
+        </h1>
       </div>
       <Card>
         <CardHeader>

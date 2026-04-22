@@ -3,7 +3,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table";
 import { listAdminUsers } from "@/features/admin/service";
 import { formatDateOnly } from "@/lib/dates";
 import { requireAdmin } from "@/server/security/sessions";
@@ -20,10 +27,10 @@ export default async function AdminUsersPage({
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+        <p className="text-sm font-semibold uppercase tracking-normal text-muted-foreground">
           Administration
         </p>
-        <h1 className="mt-1 text-3xl font-semibold tracking-normal">Utilisateurs</h1>
+        <h1 className="mt-2 text-4xl font-semibold tracking-normal">Utilisateurs</h1>
       </div>
 
       <Card>
@@ -32,7 +39,11 @@ export default async function AdminUsersPage({
         </CardHeader>
         <CardContent>
           <form className="flex gap-3">
-            <Input name="q" defaultValue={params.q ?? ""} placeholder="email@domaine.com" />
+            <Input
+              name="q"
+              defaultValue={params.q ?? ""}
+              placeholder="email@domaine.com"
+            />
             <Button type="submit" variant="outline">
               Chercher
             </Button>

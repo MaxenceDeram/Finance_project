@@ -21,7 +21,7 @@ export function CreatePortfolioForm() {
           {state.message ? <Alert>{state.message}</Alert> : null}
           <div className="grid gap-2">
             <Label htmlFor="name">Nom</Label>
-            <Input id="name" name="name" placeholder="Portefeuille long terme" required />
+            <Input id="name" name="name" placeholder="Waren long terme" required />
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="grid gap-2">
@@ -34,22 +34,42 @@ export function CreatePortfolioForm() {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="initialCash">Capital fictif initial</Label>
-              <Input id="initialCash" name="initialCash" type="number" min="1" step="0.01" defaultValue="10000" required />
+              <Input
+                id="initialCash"
+                name="initialCash"
+                type="number"
+                min="1"
+                step="0.01"
+                defaultValue="10000"
+                required
+              />
             </div>
           </div>
           <div className="grid gap-2">
             <Label htmlFor="benchmarkSymbol">Benchmark optionnel</Label>
-            <Input id="benchmarkSymbol" name="benchmarkSymbol" placeholder="SPY, CW8, VUSA..." />
+            <Input
+              id="benchmarkSymbol"
+              name="benchmarkSymbol"
+              placeholder="SPY, CW8, VUSA..."
+            />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="description">Description</Label>
-            <Textarea id="description" name="description" placeholder="Objectif du portefeuille" />
+            <Textarea
+              id="description"
+              name="description"
+              placeholder="Objectif du portefeuille"
+            />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="strategy">Strategie</Label>
-            <Textarea id="strategy" name="strategy" placeholder="Regles d'allocation, horizon, discipline..." />
+            <Textarea
+              id="strategy"
+              name="strategy"
+              placeholder="Regles d'allocation, horizon, discipline..."
+            />
           </div>
-          <SubmitButton>Creer le portefeuille</SubmitButton>
+          <SubmitButton>Creer le portefeuille Waren</SubmitButton>
         </form>
       </CardContent>
     </Card>

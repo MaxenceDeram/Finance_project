@@ -13,20 +13,24 @@ export default async function ResendConfirmationPage({
 
   return (
     <AuthShell
-      title="Confirmation email"
+      title="Confirmation Waren"
       subtitle="Votre compte sera pleinement actif apres validation du lien recu par email."
     >
       <Card>
         <CardContent className="space-y-5 p-6">
           {params.sent ? (
             <Alert>
-              Si l'adresse est eligible, un lien de confirmation vient d'etre envoye.
+              Si l'adresse est eligible, un lien de confirmation Waren vient d'etre
+              envoye.
             </Alert>
           ) : null}
           <ResendConfirmationForm email={params.email} />
           <p className="text-center text-sm text-muted-foreground">
             Email deja confirme ?{" "}
-            <Link href="/login" className="font-medium text-foreground underline-offset-4 hover:underline">
+            <Link
+              href="/login"
+              className="font-medium text-foreground underline-offset-4 hover:underline"
+            >
               Se connecter
             </Link>
           </p>
