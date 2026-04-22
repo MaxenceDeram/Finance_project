@@ -1,8 +1,18 @@
 import { AssetType } from "@prisma/client";
 import { addDaysUtc, startOfUtcDay } from "@/lib/dates";
+import { deterministicMarketPrice } from "@/features/assets/market-simulation";
 import type { AssetLookupResult, HistoricalPrice, MarketDataProvider } from "./types";
 
 const catalog: AssetLookupResult[] = [
+  {
+    symbol: "NVDA",
+    name: "NVIDIA Corporation",
+    assetType: AssetType.STOCK,
+    exchange: "NASDAQ",
+    currency: "EUR",
+    sector: "Electronics",
+    country: "United States"
+  },
   {
     symbol: "AAPL",
     name: "Apple Inc.",
@@ -13,6 +23,15 @@ const catalog: AssetLookupResult[] = [
     country: "United States"
   },
   {
+    symbol: "AMZN",
+    name: "Amazon.com Inc.",
+    assetType: AssetType.STOCK,
+    exchange: "NASDAQ",
+    currency: "EUR",
+    sector: "Internet",
+    country: "United States"
+  },
+  {
     symbol: "MSFT",
     name: "Microsoft Corporation",
     assetType: AssetType.STOCK,
@@ -20,6 +39,24 @@ const catalog: AssetLookupResult[] = [
     currency: "USD",
     sector: "Technology",
     country: "United States"
+  },
+  {
+    symbol: "ETH",
+    name: "Ethereum",
+    assetType: AssetType.CRYPTO,
+    exchange: "CRYPTO",
+    currency: "EUR",
+    sector: "Digital Assets",
+    country: null
+  },
+  {
+    symbol: "SOL",
+    name: "Solana",
+    assetType: AssetType.CRYPTO,
+    exchange: "CRYPTO",
+    currency: "EUR",
+    sector: "Digital Assets",
+    country: null
   },
   {
     symbol: "VUSA",
@@ -93,7 +130,10 @@ export class MockMarketDataProvider implements MarketDataProvider {
     };
   }
 
-  async getHistoricalPrices(asset: AssetLookupResult, days: number): Promise<HistoricalPrice[]> {
+  async getHistoricalPrices(
+    asset: AssetLookupResult,
+    days: number
+  ): Promise<HistoricalPrice[]> {
     const end = startOfUtcDay(new Date());
     const start = addDaysUtc(end, -days + 1);
 
@@ -113,9 +153,5 @@ export class MockMarketDataProvider implements MarketDataProvider {
 }
 
 function deterministicPrice(symbol: string, date: Date) {
-  const seed = Array.from(symbol).reduce((sum, char) => sum + char.charCodeAt(0), 0);
-  const day = Math.floor(date.getTime() / 86_400_000);
-  const trend = Math.sin((day + seed) / 9) * 4 + Math.cos((day + seed) / 21) * 2;
-  const base = 20 + (seed % 420);
-  return Number((base + trend + (day % 17) * 0.11).toFixed(2));
+  return deterministicMarketPrice(symbol, date);
 }

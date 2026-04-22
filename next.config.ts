@@ -30,6 +30,16 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   devIndicators: false,
+  images: {
+    dangerouslyAllowSVG: true,
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "cdn.simpleicons.org"
+      }
+    ],
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;"
+  },
   serverExternalPackages: ["@prisma/client", "prisma", "argon2"],
   async headers() {
     return [
