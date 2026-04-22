@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Paper Invest Premium
 
 Plateforme personnelle de paper trading et simulation d'investissement avec argent fictif.
@@ -201,3 +202,7 @@ npm run prisma:studio
 - Exports CSV/PDF
 - API personnelle privee
 - Application mobile
+=======
+# Finance_project
+Faire un trade site pour m'aider
+>>>>>>> 2c05ba6deb5a4dbbc295cac5377dbee5f9774800
