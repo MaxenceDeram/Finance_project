@@ -1,7 +1,8 @@
 # Waren Brand System
 
-Waren doit donner l'impression d'un produit fintech premium, calme, lisible et personnel. La marque
-est inspiree des codes des apps d'investissement modernes sans copier une interface existante.
+Waren doit donner l'impression d'un produit SaaS premium, calme, lisible et personnel.
+La marque est inspiree des interfaces de productivite haut de gamme: sombres, nettes,
+serieuses, sans bruit.
 
 ## Palette
 
@@ -17,7 +18,7 @@ est inspiree des codes des apps d'investissement modernes sans copier une interf
 - Negatif doux: `#2a1417`
 - Warning: `#d6a732`
 
-Regle: ne pas ajouter de palette decorative large. Les graphiques utilisent prioritairement noir,
+Regle: ne pas ajouter de palette decorative large. Les vues utilisent prioritairement noir,
 gris et vert Waren.
 
 ## Typographie
@@ -26,7 +27,7 @@ gris et vert Waren.
 - Titres de page: `text-4xl font-semibold tracking-normal`.
 - Titres de cartes: `text-base font-semibold`.
 - Labels UI: `text-sm font-semibold`.
-- Donnees financieres: utiliser `tabular-nums` quand les chiffres doivent se comparer.
+- Donnees numeriques: utiliser `tabular-nums` quand les chiffres doivent se comparer.
 - Letter spacing: rester en `tracking-normal`, y compris pour les labels en majuscules.
 
 ## Spacing
@@ -35,7 +36,7 @@ gris et vert Waren.
 - Sections dashboard: `space-y-6`.
 - Grilles: `gap-4` pour KPI, `gap-6` pour blocs analytiques.
 - Formulaires: `gap-5` ou `gap-6`.
-- Les interfaces doivent respirer, mais rester denses pour un usage financier repete.
+- Les interfaces doivent respirer, mais rester denses pour un usage quotidien repete.
 
 ## Cards
 
@@ -57,7 +58,7 @@ gris et vert Waren.
 - Focus vert Waren avec anneau doux.
 - Placeholders calmes, jamais trop contrastes.
 
-## Etats Financiers
+## Etats Metier
 
 - Positif: `text-[color:var(--positive)]`, badge vert doux.
 - Negatif: `text-[color:var(--negative)]`, badge rouge doux.
@@ -68,10 +69,10 @@ gris et vert Waren.
 - Headers en majuscules mais sans letter spacing.
 - Lignes hautes, bordures fines, hover tres subtil.
 - Chiffres alignes visuellement avec `tabular-nums`.
-- Badges discrets pour statuts, roles et sens d'ordre.
+- Badges discrets pour statuts, roles et actions.
 
 ## Ton De Marque
 
-Waren parle comme un outil financier personnel serieux: sobre, precis, rassurant. Eviter le ton
-crypto agressif, scolaire ou trop marketing. Toujours rappeler que les ordres sont simules et que
-la plateforme ne fournit pas de conseil financier.
+Waren parle comme un outil personnel serieux: sobre, precis, rassurant. Eviter le ton
+startup gadget, scolaire ou trop marketing. La marque doit donner envie de revenir chaque
+jour pour suivre son pipeline sans friction.

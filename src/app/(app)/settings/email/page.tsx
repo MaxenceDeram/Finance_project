@@ -12,10 +12,9 @@ export default async function EmailSettingsPage() {
         <p className="text-sm font-semibold uppercase tracking-normal text-muted-foreground">
           Notifications
         </p>
-        <h1 className="mt-2 text-4xl font-semibold tracking-normal">Emails quotidiens</h1>
+        <h1 className="mt-2 text-4xl font-semibold tracking-normal">Rappels email</h1>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Ces preferences pilotent l'envoi automatique du recapitulatif Waren apres
-          cloture du marche.
+          Ces preferences pilotent l'envoi automatique du recap de suivi Waren.
         </p>
       </div>
       <EmailPreferencesForm preferences={preferences} />

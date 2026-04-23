@@ -4,24 +4,26 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md px-4 py-2 text-sm font-semibold tracking-normal transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-45 [&_svg]:size-4",
+  "inline-flex h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-sm font-semibold tracking-normal transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4",
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-[0_1px_0_rgba(255,255,255,0.08)_inset] hover:bg-[#23231f]",
-        destructive: "bg-destructive text-destructive-foreground hover:bg-[#9f1f17]",
+          "border border-[#4b57f5] bg-[linear-gradient(180deg,#5b66ff_0%,#4f46e5_100%)] text-primary-foreground shadow-[0_1px_0_rgba(255,255,255,0.18)_inset,0_14px_30px_rgba(79,70,229,0.24)] hover:-translate-y-px hover:brightness-105 active:translate-y-0",
+        destructive:
+          "border border-[#ef8a94] bg-[linear-gradient(180deg,#ed7180_0%,#e35d6a_100%)] text-destructive-foreground shadow-[0_1px_0_rgba(255,255,255,0.16)_inset,0_12px_28px_rgba(227,93,106,0.2)] hover:-translate-y-px hover:brightness-105 active:translate-y-0",
         outline:
-          "border border-border bg-card text-foreground hover:border-foreground/30 hover:bg-muted/40",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-[#e3e3db]",
-        ghost: "text-foreground hover:bg-muted",
+          "border border-border bg-white text-foreground shadow-[0_1px_2px_rgba(16,24,40,0.04)] hover:-translate-y-px hover:border-[#d7dded] hover:bg-[#fbfcff]",
+        secondary:
+          "border border-[#dde3f7] bg-[linear-gradient(180deg,#f7f9ff_0%,#eef2ff_100%)] text-secondary-foreground shadow-[0_1px_2px_rgba(16,24,40,0.04)] hover:-translate-y-px hover:border-[#cfd7f6] hover:bg-[#eef1ff]",
+        ghost: "text-muted-foreground hover:bg-[#eef2ff] hover:text-foreground",
         link: "h-auto px-0 py-0 text-primary underline-offset-4 hover:underline"
       },
       size: {
         default: "h-11 px-4 py-2",
-        sm: "h-9 rounded-md px-3 text-xs",
-        lg: "h-12 rounded-md px-6 text-sm",
-        icon: "size-11 p-0"
+        sm: "h-9 rounded-lg px-3.5 text-xs",
+        lg: "h-12 rounded-2xl px-6 text-sm",
+        icon: "size-10 rounded-xl p-0"
       }
     },
     defaultVariants: {

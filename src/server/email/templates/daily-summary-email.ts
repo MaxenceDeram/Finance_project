@@ -1,73 +1,84 @@
-import { formatMoney, formatPercent, formatSignedMoney } from "@/lib/format";
+import type { ApplicationStatus } from "@prisma/client";
+import { formatDateOnly } from "@/lib/dates";
 import { buttonLink, emailLayout, escapeHtml } from "./base";
+import { getApplicationStatusLabel } from "@/features/applications/constants";
 
 export type DailySummaryEmailInput = {
-  portfolioName: string;
-  currency: string;
-  totalValue: number;
-  dailyChangeAmount: number;
-  dailyChangePercent: number;
-  totalPerformancePercent: number;
-  topMovers: Array<{
-    symbol: string;
-    name: string;
-    pnl: number;
-    pnlPercent: number;
+  totalApplications: number;
+  responseRate: number;
+  upcomingFollowUps: Array<{
+    companyName: string;
+    roleTitle: string;
+    status: ApplicationStatus;
+    followUpDate: Date;
   }>;
-  positions: Array<{
-    symbol: string;
-    name: string;
-    value: number;
-    weight: number;
+  recentApplications: Array<{
+    companyName: string;
+    roleTitle: string;
+    status: ApplicationStatus;
+    applicationDate: Date;
   }>;
   dashboardUrl: string;
 };
 
 export function dailySummaryEmailTemplate(input: DailySummaryEmailInput) {
-  const subject = `Waren - Synthese quotidienne - ${input.portfolioName}`;
-  const moversRows = input.topMovers
-    .slice(0, 5)
+  const subject = "Waren - Rappel quotidien candidatures";
+
+  const followUpRows = input.upcomingFollowUps
     .map(
       (item) => `<tr>
-        <td style="padding:10px 0;border-bottom:1px solid #efefea;"><strong>${escapeHtml(item.symbol)}</strong><br><span style="color:#6f6f67;font-size:12px;">${escapeHtml(item.name)}</span></td>
-        <td align="right" style="padding:10px 0;border-bottom:1px solid #efefea;">${formatSignedMoney(item.pnl, input.currency)}<br><span style="color:#6f6f67;font-size:12px;">${formatPercent(item.pnlPercent)}</span></td>
+        <td style="padding:10px 0;border-bottom:1px solid #efefea;">
+          <strong>${escapeHtml(item.companyName)}</strong><br>
+          <span style="color:#6f6f67;font-size:12px;">${escapeHtml(item.roleTitle)}</span>
+        </td>
+        <td align="right" style="padding:10px 0;border-bottom:1px solid #efefea;">
+          ${escapeHtml(getApplicationStatusLabel(item.status))}<br>
+          <span style="color:#6f6f67;font-size:12px;">${escapeHtml(formatDateOnly(item.followUpDate))}</span>
+        </td>
       </tr>`
     )
     .join("");
 
-  const positionRows = input.positions
-    .slice(0, 6)
+  const recentRows = input.recentApplications
     .map(
       (item) => `<tr>
-        <td style="padding:10px 0;border-bottom:1px solid #efefea;"><strong>${escapeHtml(item.symbol)}</strong><br><span style="color:#6f6f67;font-size:12px;">${escapeHtml(item.name)}</span></td>
-        <td align="right" style="padding:10px 0;border-bottom:1px solid #efefea;">${formatMoney(item.value, input.currency)}<br><span style="color:#6f6f67;font-size:12px;">${formatPercent(item.weight)}</span></td>
+        <td style="padding:10px 0;border-bottom:1px solid #efefea;">
+          <strong>${escapeHtml(item.companyName)}</strong><br>
+          <span style="color:#6f6f67;font-size:12px;">${escapeHtml(item.roleTitle)}</span>
+        </td>
+        <td align="right" style="padding:10px 0;border-bottom:1px solid #efefea;">
+          ${escapeHtml(getApplicationStatusLabel(item.status))}<br>
+          <span style="color:#6f6f67;font-size:12px;">${escapeHtml(formatDateOnly(item.applicationDate))}</span>
+        </td>
       </tr>`
     )
     .join("");
 
   const body = `
     <p style="margin:0 0 18px;font-size:15px;line-height:1.7;color:#3c3c37;">
-      Resume Waren de fin de journee pour <strong>${escapeHtml(input.portfolioName)}</strong>.
+      Voici votre recap Waren du jour pour garder le fil sur vos candidatures.
     </p>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
       <tr>
         <td style="padding:14px;border:1px solid #deded6;border-radius:8px;">
-          <div style="color:#6f6f67;font-size:12px;text-transform:uppercase;">Valeur totale</div>
-          <div style="font-size:24px;font-weight:800;margin-top:4px;">${formatMoney(input.totalValue, input.currency)}</div>
+          <div style="color:#6f6f67;font-size:12px;text-transform:uppercase;">Total</div>
+          <div style="font-size:24px;font-weight:800;margin-top:4px;">${input.totalApplications}</div>
         </td>
         <td width="12"></td>
         <td style="padding:14px;border:1px solid #deded6;border-radius:8px;">
-          <div style="color:#6f6f67;font-size:12px;text-transform:uppercase;">Jour</div>
-          <div style="font-size:24px;font-weight:800;margin-top:4px;">${formatSignedMoney(input.dailyChangeAmount, input.currency)}</div>
-          <div style="color:#6f6f67;font-size:12px;">${formatPercent(input.dailyChangePercent)}</div>
+          <div style="color:#6f6f67;font-size:12px;text-transform:uppercase;">Taux de reponse</div>
+          <div style="font-size:24px;font-weight:800;margin-top:4px;">${input.responseRate}%</div>
         </td>
       </tr>
     </table>
-    <p style="margin:0 0 20px;color:#3c3c37;">Performance totale: <strong>${formatPercent(input.totalPerformancePercent)}</strong></p>
-    <h2 style="font-size:16px;margin:0 0 8px;">Top variations</h2>
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">${moversRows || "<tr><td style='color:#6f6f67;'>Aucune position ouverte.</td></tr>"}</table>
-    <h2 style="font-size:16px;margin:0 0 8px;">Principales positions</h2>
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 28px;">${positionRows || "<tr><td style='color:#6f6f67;'>Aucune position ouverte.</td></tr>"}</table>
+    <h2 style="font-size:16px;margin:0 0 8px;">Prochaines relances</h2>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
+      ${followUpRows || "<tr><td style='color:#6f6f67;'>Aucune relance planifiee pour le moment.</td></tr>"}
+    </table>
+    <h2 style="font-size:16px;margin:0 0 8px;">Candidatures recentes</h2>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 28px;">
+      ${recentRows || "<tr><td style='color:#6f6f67;'>Aucune candidature recente.</td></tr>"}
+    </table>
     <p style="margin:0;">${buttonLink("Ouvrir Waren", input.dashboardUrl)}</p>
   `;
 
@@ -75,16 +86,16 @@ export function dailySummaryEmailTemplate(input: DailySummaryEmailInput) {
     subject,
     html: emailLayout({
       title: subject,
-      preview: `Valeur: ${formatMoney(input.totalValue, input.currency)} - Jour: ${formatPercent(input.dailyChangePercent)}`,
+      preview: `${input.totalApplications} candidature(s) - ${input.upcomingFollowUps.length} relance(s) a surveiller`,
       body
     }),
     text: [
       subject,
       "",
-      `Valeur totale: ${formatMoney(input.totalValue, input.currency)}`,
-      `Evolution du jour: ${formatSignedMoney(input.dailyChangeAmount, input.currency)} (${formatPercent(input.dailyChangePercent)})`,
-      `Performance totale: ${formatPercent(input.totalPerformancePercent)}`,
+      `Total candidatures: ${input.totalApplications}`,
+      `Taux de reponse: ${input.responseRate}%`,
       "",
+      "Ouvrir le dashboard:",
       input.dashboardUrl
     ].join("\n")
   };

@@ -6,8 +6,8 @@ export default function SettingsPage() {
   const items = [
     {
       href: "/settings/email",
-      title: "Preferences email",
-      description: "Activer ou desactiver la synthese quotidienne Waren.",
+      title: "Rappels email",
+      description: "Activer ou desactiver le recap des suivis et relances.",
       icon: Mail
     },
     {
@@ -19,7 +19,7 @@ export default function SettingsPage() {
     {
       href: "/settings",
       title: "Securite",
-      description: "Base prete pour reset password, 2FA et sessions avancees.",
+      description: "Authentification, confirmation email et base prete pour aller plus loin.",
       icon: ShieldCheck
     }
   ];

@@ -37,10 +37,10 @@ export function EmailPreferencesForm({ preferences }: { preferences: Preferences
             />
             <span>
               <span className="block text-sm font-semibold">
-                Recevoir les emails Waren quotidiens
+                Recevoir les emails de rappel Waren
               </span>
               <span className="block text-sm text-muted-foreground">
-                Synthese apres la fermeture du marche.
+                Un recap des relances a venir et des candidatures recentes.
               </span>
             </span>
           </label>
@@ -67,7 +67,7 @@ export function EmailPreferencesForm({ preferences }: { preferences: Preferences
               </Select>
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="dailyEmailHour">Heure approximative</Label>
+              <Label htmlFor="dailyEmailHour">Heure approximative d'envoi</Label>
               <Input
                 id="dailyEmailHour"
                 name="dailyEmailHour"

@@ -3,19 +3,20 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-semibold tracking-normal transition-colors",
+  "inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold tracking-normal transition-colors",
   {
     variants: {
       variant: {
-        default: "border-transparent bg-primary text-primary-foreground",
-        secondary: "border-border bg-secondary text-secondary-foreground",
+        default: "border-[#d8ddff] bg-[#eef2ff] text-[#474bc8]",
+        secondary: "border-[#e5e7eb] bg-[#f5f6f8] text-[#596273]",
         destructive:
-          "border-[#efcdc8] bg-[color:var(--negative-soft)] text-[color:var(--negative)]",
-        outline: "border-border text-foreground",
+          "border-[#f5d3d7] bg-[color:var(--negative-soft)] text-[color:var(--negative)]",
+        outline: "border-border bg-white text-foreground",
         success:
-          "border-[#cfe8db] bg-[color:var(--positive-soft)] text-[color:var(--positive)]",
+          "border-[#ccebd8] bg-[color:var(--positive-soft)] text-[color:var(--positive)]",
         warning:
-          "border-[#eadcae] bg-[color:var(--warning-soft)] text-[color:var(--warning)]"
+          "border-[#f0deb6] bg-[color:var(--warning-soft)] text-[color:var(--warning)]",
+        info: "border-[#d7e7ff] bg-[color:var(--info-soft)] text-[color:var(--info)]"
       }
     },
     defaultVariants: {

@@ -82,6 +82,39 @@ enum AuditAction {
   ADMIN_DAILY_JOB_TRIGGERED
   DAILY_EMAIL_SENT
   DAILY_EMAIL_FAILED
+  APPLICATION_CREATED
+  APPLICATION_UPDATED
+  APPLICATION_DELETED
+  APPLICATION_DOCUMENT_UPLOADED
+  APPLICATION_DOCUMENT_DELETED
+}
+
+enum ContractType {
+  INTERNSHIP
+  APPRENTICESHIP
+  FULL_TIME
+  PART_TIME
+  FREELANCE
+  TEMPORARY
+  OTHER
+}
+
+enum ApplicationStatus {
+  TO_APPLY
+  APPLIED
+  FOLLOW_UP_SENT
+  HR_INTERVIEW
+  TECHNICAL_INTERVIEW
+  CASE_STUDY
+  OFFER_RECEIVED
+  REJECTED
+  ACCEPTED
+}
+
+enum ApplicationDocumentType {
+  RESUME
+  COVER_LETTER
+  OTHER
 }
 
 model User {
@@ -98,6 +131,8 @@ model User {
   verificationTokens EmailVerificationToken[]
   sessions           Session[]
   portfolios         Portfolio[]
+  jobApplications    JobApplication[]
+  applicationDocs    ApplicationDocument[]
   dailyEmailLogs     DailyEmailLog[]
   auditLogs          AuditLog[]
 
@@ -143,6 +178,48 @@ model UserPreferences {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model JobApplication {
+  id              String                @id @default(cuid())
+  userId          String
+  companyName     String
+  roleTitle       String
+  contractType    ContractType
+  location        String?
+  applicationDate DateTime?
+  status          ApplicationStatus     @default(TO_APPLY)
+  listingUrl      String?
+  hrContact       String?
+  compensation    String?
+  notes           String?
+  followUpDate    DateTime?
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  user            User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  documents       ApplicationDocument[]
+
+  @@index([userId, status, applicationDate])
+  @@index([userId, followUpDate])
+  @@index([companyName])
+}
+
+model ApplicationDocument {
+  id               String                  @id @default(cuid())
+  applicationId    String
+  userId           String
+  documentType     ApplicationDocumentType
+  originalFilename String
+  storageKey       String                  @unique
+  mimeType         String
+  sizeBytes        Int
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @updatedAt
+  application      JobApplication          @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  user             User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId, documentType, createdAt])
+  @@index([userId, createdAt])
 }
 
 model Portfolio {

@@ -5,7 +5,7 @@ export function Alert({ className, ...props }: React.HTMLAttributes<HTMLDivEleme
   return (
     <div
       className={cn(
-        "rounded-md border border-border bg-muted/50 p-4 text-sm leading-6",
+        "rounded-2xl border border-[#dce3f5] bg-[#f7f9ff] p-4 text-sm leading-6 text-[#344054] shadow-[0_1px_2px_rgba(16,24,40,0.03)]",
         className
       )}
       {...props}

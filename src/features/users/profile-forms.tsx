@@ -41,8 +41,8 @@ export function UpdateProfileEmailForm({ currentEmail }: { currentEmail: string 
             />
           </div>
           <p className="text-sm leading-6 text-muted-foreground">
-            Une nouvelle adresse doit etre confirmee par email avant de reutiliser
-            l'espace prive.
+            Une nouvelle adresse doit etre confirmee par email avant de reutiliser votre
+            espace prive.
           </p>
           <SubmitButton>Demander la modification Waren</SubmitButton>
         </form>

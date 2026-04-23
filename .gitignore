@@ -7,5 +7,6 @@ dist
 .env
 .env*.local
 *.log
+storage
 tsconfig.tsbuildinfo
 prisma/migrations/dev.db

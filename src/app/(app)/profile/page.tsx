@@ -16,7 +16,7 @@ export default async function ProfilePage() {
         <p className="text-sm font-semibold uppercase tracking-normal text-muted-foreground">
           Compte
         </p>
-        <h1 className="mt-2 text-4xl font-semibold tracking-normal">Profil Waren</h1>
+        <h1 className="mt-2 text-4xl font-semibold tracking-normal">Profil</h1>
       </div>
       <Card>
         <CardHeader>

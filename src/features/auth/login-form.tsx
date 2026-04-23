@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { LockKeyhole, Mail, MoveRight } from "lucide-react";
 import { useActionState } from "react";
 import { loginAction } from "@/features/auth/actions";
 import { initialActionState } from "@/lib/errors";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { Alert } from "@/components/ui/alert";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -14,37 +14,74 @@ export function LoginForm({ next }: { next?: string }) {
   const [state, action] = useActionState(loginAction, initialActionState);
 
   return (
-    <Card>
-      <CardContent className="p-6">
-        <form action={action} className="space-y-4">
-          {state.message ? <Alert>{state.message}</Alert> : null}
-          <input type="hidden" name="next" value={next ?? "/dashboard"} />
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" name="email" type="email" autoComplete="email" required />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Mot de passe</Label>
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              required
-            />
-          </div>
-          <SubmitButton className="w-full">Se connecter a Waren</SubmitButton>
-        </form>
-        <p className="mt-5 text-center text-sm text-muted-foreground">
-          Nouveau sur Waren ?{" "}
+    <form action={action} className="space-y-5">
+      {state.message ? <Alert>{state.message}</Alert> : null}
+      <input type="hidden" name="next" value={next ?? "/dashboard"} />
+
+      <div className="space-y-2">
+        <Label htmlFor="email">Email</Label>
+        <div className="relative">
+          <Mail
+            className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden="true"
+          />
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            placeholder="nom@email.com"
+            className="pl-11"
+          />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <div className="flex items-center justify-between gap-3">
+          <Label htmlFor="password">Mot de passe</Label>
           <Link
-            href="/register"
-            className="font-medium text-foreground underline-offset-4 hover:underline"
+            href="/auth/resend-confirmation"
+            className="text-xs font-medium text-muted-foreground transition hover:text-foreground"
           >
-            S'inscrire
+            Renvoyer un lien de confirmation
           </Link>
-        </p>
-      </CardContent>
-    </Card>
+        </div>
+        <div className="relative">
+          <LockKeyhole
+            className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden="true"
+          />
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            required
+            placeholder="Votre mot de passe"
+            className="pl-11"
+          />
+        </div>
+      </div>
+
+      <SubmitButton className="mt-2 w-full">
+        Se connecter
+        <MoveRight aria-hidden="true" />
+      </SubmitButton>
+
+      <div className="rounded-2xl border border-border bg-[#f8faff] px-4 py-3 text-sm text-muted-foreground">
+        Acces securise, email verifie et espace prive pour vos candidatures.
+      </div>
+
+      <p className="text-center text-sm text-muted-foreground">
+        Nouveau sur Waren ?{" "}
+        <Link
+          href="/register"
+          className="font-semibold text-foreground underline-offset-4 hover:underline"
+        >
+          Creer un compte
+        </Link>
+      </p>
+    </form>
   );
 }

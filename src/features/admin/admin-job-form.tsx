@@ -14,7 +14,7 @@ export function AdminDailySummaryJobForm() {
     <form action={action} className="space-y-4">
       {state.message ? <Alert>{state.message}</Alert> : null}
       <p className="text-sm leading-6 text-muted-foreground">
-        Lance le recalcul des snapshots et l'envoi des emails quotidiens aux utilisateurs
+        Lance l'envoi du recap quotidien de suivi des candidatures aux utilisateurs
         eligibles. L'action est auditee.
       </p>
       <SubmitButton>

@@ -10,6 +10,10 @@ const existingDemo = await prisma.user.findUnique({
 });
 
 if (existingDemo) {
+  await prisma.jobApplication.deleteMany({
+    where: { userId: existingDemo.id }
+  });
+
   await prisma.portfolio.deleteMany({
     where: { userId: existingDemo.id }
   });
@@ -67,15 +71,6 @@ await prisma.user.upsert({
         dailyEmailHour: 22
       }
     }
-  }
-});
-
-await prisma.asset.deleteMany({
-  where: {
-    OR: [
-      { symbol: "CW8", exchange: "EPA", currency: "EUR" },
-      { symbol: "MSFT", exchange: "NASDAQ", currency: "EUR" }
-    ]
   }
 });
 

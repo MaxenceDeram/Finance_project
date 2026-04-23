@@ -29,7 +29,7 @@ export default async function ConfirmEmailPage({
         />
         <h1 className="mt-5 text-3xl font-semibold tracking-normal">Email confirme</h1>
         <p className="mt-3 text-muted-foreground">
-          Votre compte Waren est actif. Vous pouvez maintenant vous connecter.
+          Votre compte est pret. Vous pouvez maintenant vous connecter et commencer votre suivi.
         </p>
         <Button asChild className="mt-6">
           <Link href="/login">Se connecter</Link>
@@ -51,7 +51,7 @@ function InvalidToken() {
           Lien invalide ou expire
         </h1>
         <p className="mt-3 text-muted-foreground">
-          Demandez un nouveau lien si votre compte Waren n'a pas encore ete confirme.
+          Demandez un nouveau lien si votre compte n'a pas encore ete confirme.
         </p>
         <div className="mt-6 flex justify-center gap-3">
           <Button asChild>

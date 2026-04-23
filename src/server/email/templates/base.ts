@@ -27,7 +27,7 @@ export function emailLayout(input: { title: string; preview: string; body: strin
             </tr>
             <tr>
               <td style="padding:20px 32px;border-top:1px solid #deded6;color:#6f6f67;font-size:12px;line-height:1.6;">
-                Plateforme de simulation uniquement. Aucun ordre reel, conseil financier ou service de courtage n'est fourni.
+                Espace personnel Waren. Vos donnees restent liees a votre compte et a votre suivi prive.
               </td>
             </tr>
           </table>

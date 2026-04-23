@@ -16,7 +16,7 @@ export default async function LoginPage({
   return (
     <AuthShell
       title="Connexion Waren"
-      subtitle="Accédez à vos portefeuilles fictifs sécurisés."
+      subtitle="Accedez a votre suivi de candidatures, relances et entretiens."
     >
       <LoginForm next={params.next} />
     </AuthShell>

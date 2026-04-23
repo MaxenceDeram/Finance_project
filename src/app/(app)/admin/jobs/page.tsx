@@ -18,7 +18,7 @@ export default async function AdminJobsPage() {
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>Synthese quotidienne</CardTitle>
+          <CardTitle>Recap quotidien</CardTitle>
         </CardHeader>
         <CardContent>
           <AdminDailySummaryJobForm />

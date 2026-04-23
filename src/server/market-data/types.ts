@@ -1,6 +1,11 @@
 import type { AssetType } from "@prisma/client";
 
-export type MarketDataSource = "alpha-vantage" | "coingecko" | "composite" | "mock";
+export type MarketDataSource =
+  | "fmp"
+  | "alpha-vantage"
+  | "coingecko"
+  | "composite"
+  | "mock";
 
 export type PriceRange = "1D" | "1W" | "1M" | "6M" | "1Y" | "5Y" | "MAX";
 

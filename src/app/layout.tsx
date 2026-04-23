@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     template: "%s | Waren"
   },
   description:
-    "Waren est une plateforme personnelle premium de simulation d'investissement avec argent fictif."
+    "Waren est un espace personnel moderne pour suivre vos candidatures, relances, entretiens et offres."
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

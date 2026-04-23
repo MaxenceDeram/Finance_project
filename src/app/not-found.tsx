@@ -13,7 +13,7 @@ export default function NotFound() {
           La ressource demandee n'existe pas ou n'est pas accessible avec votre compte.
         </p>
         <Button asChild className="mt-6">
-          <Link href="/dashboard">Retour a Waren</Link>
+          <Link href="/dashboard">Retour au dashboard</Link>
         </Button>
       </div>
     </main>

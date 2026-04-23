@@ -31,7 +31,7 @@ export function confirmationEmailTemplate(input: {
       "",
       `Ouvrez ce lien: ${input.confirmationUrl}`,
       "",
-      "Waren est une plateforme de simulation et ne traite aucun ordre reel."
+      "Votre compte Waren sera actif apres validation de ce lien."
     ].join("\n")
   };
 }

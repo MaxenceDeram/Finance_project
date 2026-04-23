@@ -1,14 +1,16 @@
 import {
-  Briefcase,
-  Landmark,
-  LineChart,
-  Newspaper,
+  ArrowRight,
+  BriefcaseBusiness,
+  CalendarClock,
+  CirclePercent,
+  Clock3,
+  MessagesSquare,
   Plus,
-  WalletCards
+  ShieldX,
+  Sparkles,
+  Target
 } from "lucide-react";
 import Link from "next/link";
-import { AllocationChart } from "@/components/charts/allocation-chart";
-import { PerformanceChart } from "@/components/charts/performance-chart";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { Button } from "@/components/ui/button";
@@ -19,30 +21,32 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card";
-import { getGlobalDashboard } from "@/features/analytics/service";
-import { formatMoney, formatPercent } from "@/lib/format";
+import { ApplicationStatusBadge } from "@/features/applications/application-status-badge";
+import { CompanyAvatar } from "@/features/applications/company-avatar";
+import { getApplicationStatusLabel } from "@/features/applications/constants";
+import { getApplicationDashboard } from "@/features/applications/service";
+import { formatDateOnly } from "@/lib/dates";
 import { requireUser } from "@/server/security/sessions";
-import { getMarketNews } from "@/server/market-data/price-service";
 
 export default async function DashboardPage() {
   const user = await requireUser();
-  const [dashboard, marketNews] = await Promise.all([
-    getGlobalDashboard(user.id),
-    getMarketNews({ limit: 6 })
-  ]);
-  const firstPortfolio = dashboard.portfolios[0];
+  const dashboard = await getApplicationDashboard(user.id);
+  const statusBreakdown = dashboard.statusBreakdown
+    .filter((item) => item.count > 0)
+    .sort((left, right) => right.count - left.count);
+  const maxBreakdown = statusBreakdown[0]?.count ?? 1;
 
-  if (dashboard.portfolios.length === 0) {
+  if (dashboard.totalApplications === 0) {
     return (
       <EmptyState
-        icon={Briefcase}
-        title="Aucun portefeuille"
-        description="Creez votre premier portefeuille Waren avec un capital fictif pour commencer a simuler."
+        icon={BriefcaseBusiness}
+        title="Aucune candidature pour le moment"
+        description="Ajoutez votre premiere candidature pour transformer Waren en cockpit de suivi: pipeline, relances, entretiens et documents associes."
         action={
           <Button asChild>
-            <Link href="/portfolios/new">
+            <Link href="/applications/new">
               <Plus aria-hidden="true" />
-              Nouveau portefeuille
+              Ajouter une candidature
             </Link>
           </Button>
         }
@@ -51,162 +55,270 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+    <div className="space-y-8">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-normal text-muted-foreground">
-            Vue Waren
+          <p className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+            Vue d'ensemble
           </p>
-          <h1 className="mt-2 text-4xl font-semibold tracking-normal">Tableau de bord</h1>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-            Suivez la valeur fictive, le cash, l'allocation et la performance globale de
-            vos simulations.
+          <h1 className="mt-3 text-4xl font-semibold tracking-normal text-foreground sm:text-5xl">
+            Votre pipeline, propre et lisible.
+          </h1>
+          <p className="mt-4 max-w-3xl text-sm leading-7 text-muted-foreground sm:text-base">
+            Visualisez les candidatures actives, les relances a venir et la sante globale
+            de votre recherche dans un espace pense pour un usage quotidien.
           </p>
         </div>
-        <Button asChild>
-          <Link href="/portfolios/new">
+        <Button asChild size="lg">
+          <Link href="/applications/new">
             <Plus aria-hidden="true" />
-            Nouveau portefeuille
+            Nouvelle candidature
           </Link>
         </Button>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          label="Valeur totale"
-          value={formatMoney(
-            dashboard.totalValue,
-            firstPortfolio?.portfolio.baseCurrency ?? "EUR"
-          )}
-          icon={WalletCards}
-        />
-        <StatCard
-          label="Cash"
-          value={formatMoney(
-            dashboard.cashValue,
-            firstPortfolio?.portfolio.baseCurrency ?? "EUR"
-          )}
-          icon={Landmark}
-        />
-        <StatCard
-          label="Investi"
-          value={formatMoney(
-            dashboard.investedValue,
-            firstPortfolio?.portfolio.baseCurrency ?? "EUR"
-          )}
-          icon={Briefcase}
-        />
-        <StatCard
-          label="Performance"
-          value={formatPercent(dashboard.performancePercent)}
-          icon={LineChart}
-          tone={dashboard.performancePercent >= 0 ? "positive" : "negative"}
-          detail={formatMoney(
-            dashboard.totalPnl,
-            firstPortfolio?.portfolio.baseCurrency ?? "EUR"
-          )}
-        />
-      </div>
-
-      <div className="grid gap-6 xl:grid-cols-[1.5fr_0.9fr]">
-        <Card>
-          <CardHeader>
-            <CardTitle>Évolution principale</CardTitle>
-            <CardDescription>
-              Snapshots de valeur et benchmark si configuré.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <PerformanceChart
-              data={firstPortfolio.chartData}
-              currency={firstPortfolio.portfolio.baseCurrency}
-            />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Allocation</CardTitle>
-            <CardDescription>Repartition par actif ouvert.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <AllocationChart
-              data={firstPortfolio.allocation}
-              currency={firstPortfolio.portfolio.baseCurrency}
-            />
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Portefeuilles Waren</CardTitle>
-          <CardDescription>
-            Chaque portefeuille conserve son propre cash et historique.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {dashboard.portfolios.map((overview) => (
-            <Link
-              key={overview.portfolio.id}
-              href={`/portfolios/${overview.portfolio.id}`}
-              className="rounded-md border border-border/80 bg-[color:var(--surface)] p-5 transition hover:border-ring hover:bg-card"
-            >
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <h2 className="font-semibold tracking-normal">
-                    {overview.portfolio.name}
-                  </h2>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {overview.positions.length} positions ouvertes
-                  </p>
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.55fr)_360px]">
+        <section className="space-y-6">
+          <div className="premium-dark-card overflow-hidden rounded-[32px] border border-transparent px-7 py-7 text-white sm:px-8">
+            <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-2xl">
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-medium text-white/75">
+                  <Sparkles className="size-3.5" aria-hidden="true" />
+                  Vue quotidienne
                 </div>
-                <p className="text-right font-semibold tabular-nums">
-                  {formatMoney(overview.totalValue, overview.portfolio.baseCurrency)}
+                <h2 className="mt-5 text-3xl font-semibold leading-tight tracking-normal sm:text-[2.1rem]">
+                  {dashboard.activePipelineCount} candidatures encore en mouvement.
+                </h2>
+                <p className="mt-3 max-w-xl text-sm leading-7 text-white/68">
+                  {dashboard.toApplyCount} opportunites restent a traiter et votre taux de
+                  reponse actuel atteint {Math.round(dashboard.responseRate)} %.
                 </p>
               </div>
-              <p className="mt-5 border-t border-border/70 pt-4 text-sm text-muted-foreground">
-                Performance: {formatPercent(overview.performancePercent)}
-              </p>
-            </Link>
-          ))}
-        </CardContent>
-      </Card>
 
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <Newspaper className="size-5 text-[color:var(--positive)]" />
-            <div>
-              <CardTitle>Veille de marché</CardTitle>
-              <CardDescription>
-                Actualités récupérées via le provider market data configuré.
-              </CardDescription>
+              <div className="grid gap-3 sm:grid-cols-3 lg:min-w-[360px]">
+                {[
+                  ["Actives", String(dashboard.activePipelineCount)],
+                  ["A preparer", String(dashboard.toApplyCount)],
+                  ["Relances proches", String(dashboard.upcomingFollowUps.length)]
+                ].map(([label, value]) => (
+                  <div
+                    key={label}
+                    className="rounded-[24px] border border-white/10 bg-white/[0.06] px-4 py-4 shadow-[0_1px_0_rgba(255,255,255,0.05)_inset]"
+                  >
+                    <p className="text-xs font-medium uppercase tracking-[0.1em] text-white/55">
+                      {label}
+                    </p>
+                    <p className="mt-3 text-3xl font-semibold text-white">{value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Button asChild variant="secondary" size="sm">
+                <Link href="/applications">
+                  Voir toutes les candidatures
+                  <ArrowRight aria-hidden="true" />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                className="text-white/75 hover:bg-white/10 hover:text-white"
+              >
+                <Link href="/applications/new">Ajouter une opportunite</Link>
+              </Button>
             </div>
           </div>
-        </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {marketNews.map((item) => (
-            <a
-              key={item.id}
-              href={item.url ?? "#"}
-              target={item.url ? "_blank" : undefined}
-              rel="noreferrer"
-              className="rounded-md border border-border/80 bg-[color:var(--surface)] p-5 transition hover:border-ring hover:bg-card"
-            >
-              <p className="text-xs font-semibold uppercase text-muted-foreground">
-                {item.source ?? item.provider}
-              </p>
-              <h2 className="mt-3 line-clamp-2 font-semibold leading-6">{item.title}</h2>
-              <p className="mt-4 text-xs text-muted-foreground">
-                {new Intl.DateTimeFormat("fr-FR", {
-                  dateStyle: "medium",
-                  timeStyle: "short"
-                }).format(new Date(item.publishedAt))}
-              </p>
-            </a>
-          ))}
-        </CardContent>
-      </Card>
+
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <StatCard
+              label="Total"
+              value={String(dashboard.totalApplications)}
+              icon={BriefcaseBusiness}
+              detail="Toutes les opportunites enregistrees dans votre espace."
+              highlight
+            />
+            <StatCard
+              label="Envoyees"
+              value={String(dashboard.sentApplications)}
+              icon={Target}
+              detail="Candidatures deja envoyees."
+            />
+            <StatCard
+              label="Entretiens"
+              value={String(dashboard.interviewsCount)}
+              icon={MessagesSquare}
+              detail="Entretiens RH, techniques et cas pratiques."
+            />
+            <StatCard
+              label="Offres"
+              value={String(dashboard.offersCount)}
+              icon={CirclePercent}
+              tone={dashboard.offersCount > 0 ? "positive" : "neutral"}
+              detail="Opportunites arrivant a la decision."
+            />
+            <StatCard
+              label="Refus"
+              value={String(dashboard.refusalsCount)}
+              icon={ShieldX}
+              tone={dashboard.refusalsCount > 0 ? "negative" : "neutral"}
+              detail="Historique des refus recueillis."
+            />
+            <StatCard
+              label="Taux de reponse"
+              value={`${Math.round(dashboard.responseRate)}%`}
+              icon={CalendarClock}
+              tone={dashboard.responseRate > 0 ? "positive" : "neutral"}
+              detail="Base sur les candidatures deja envoyees."
+            />
+          </div>
+
+          <Card>
+            <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <CardTitle>Candidatures recentes</CardTitle>
+                <CardDescription>
+                  Les dossiers les plus recemment mis a jour dans votre pipeline.
+                </CardDescription>
+              </div>
+              <Button asChild variant="outline" size="sm">
+                <Link href="/applications">Ouvrir la liste complete</Link>
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {dashboard.recentApplications.map((application) => (
+                <Link
+                  key={application.id}
+                  href={`/applications/${application.id}/edit`}
+                  className="flex flex-col gap-4 rounded-[24px] border border-border/80 bg-[#fbfcff] px-4 py-4 transition hover:border-[#d8ddff] hover:bg-white sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div className="flex items-center gap-4">
+                    <CompanyAvatar companyName={application.companyName} />
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">
+                        {application.companyName}
+                      </p>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {application.roleTitle}
+                        {application.location ? ` · ${application.location}` : ""}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 sm:gap-6">
+                    <div className="text-sm text-muted-foreground">
+                      {application.followUpDate
+                        ? `Relance ${formatDateOnly(application.followUpDate)}`
+                        : "Aucune relance"}
+                    </div>
+                    <ApplicationStatusBadge status={application.status} />
+                  </div>
+                </Link>
+              ))}
+            </CardContent>
+          </Card>
+        </section>
+
+        <aside className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Prochaines relances</CardTitle>
+              <CardDescription>
+                Les prochaines actions a ne pas laisser sortir du radar.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {dashboard.upcomingFollowUps.length > 0 ? (
+                dashboard.upcomingFollowUps.map((application) => (
+                  <Link
+                    key={application.id}
+                    href={`/applications/${application.id}/edit`}
+                    className="block rounded-[24px] border border-border/80 bg-[#fbfcff] px-4 py-4 transition hover:border-[#d8ddff] hover:bg-white"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-foreground">
+                          {application.companyName}
+                        </p>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                          {application.roleTitle}
+                        </p>
+                      </div>
+                      <ApplicationStatusBadge status={application.status} />
+                    </div>
+                    <p className="mt-4 inline-flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                      <Clock3 className="size-3.5" aria-hidden="true" />
+                      {application.followUpDate
+                        ? formatDateOnly(application.followUpDate)
+                        : "Date a definir"}
+                    </p>
+                  </Link>
+                ))
+              ) : (
+                <p className="rounded-[24px] border border-dashed border-border bg-[#fbfcff] px-4 py-8 text-sm text-muted-foreground">
+                  Aucune relance planifiee pour le moment.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Activite recente</CardTitle>
+              <CardDescription>
+                Dernieres fiches mises a jour dans votre espace.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {dashboard.recentActivity.map((application) => (
+                <div key={application.id} className="flex gap-3">
+                  <div className="mt-1 inline-flex size-2.5 shrink-0 rounded-full bg-[#4f46e5]" />
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-foreground">
+                      {application.companyName}{" "}
+                      <span className="font-normal text-muted-foreground">
+                        · {application.roleTitle}
+                      </span>
+                    </p>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Statut actuel: {getApplicationStatusLabel(application.status)} ·
+                      mise a jour le {formatDateOnly(application.updatedAt)}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Repartition des statuts</CardTitle>
+              <CardDescription>
+                Repartition de votre pipeline pour comprendre ou se situe l&apos;effort.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {statusBreakdown.map((item) => (
+                <div key={item.status} className="space-y-2">
+                  <div className="flex items-center justify-between gap-3">
+                    <ApplicationStatusBadge status={item.status} />
+                    <span className="text-sm font-semibold text-foreground">
+                      {item.count}
+                    </span>
+                  </div>
+                  <div className="h-2 overflow-hidden rounded-full bg-[#edf1f7]">
+                    <div
+                      className="h-full rounded-full bg-[linear-gradient(90deg,#6366f1_0%,#8b5cf6_100%)]"
+                      style={{ width: `${(item.count / maxBreakdown) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </aside>
+      </div>
     </div>
   );
 }
