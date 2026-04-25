@@ -17,7 +17,8 @@
     "prisma:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
-    "job:daily-summary": "tsx scripts/run-daily-summary.ts"
+    "job:daily-summary": "tsx scripts/run-daily-summary.ts",
+    "release:ec2": "bash scripts/create-ec2-release.sh"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1037.0",
