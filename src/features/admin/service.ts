@@ -1,4 +1,10 @@
-import { AuditAction, Prisma, UserRole, UserStatus } from "@prisma/client";
+import {
+  ApplicationStatus,
+  AuditAction,
+  Prisma,
+  UserRole,
+  UserStatus
+} from "@prisma/client";
 import { AppError } from "@/lib/errors";
 import { prisma } from "@/server/db/prisma";
 import { sendConfirmationEmail } from "@/features/auth/service";
@@ -21,16 +27,26 @@ export async function getAdminDashboardStats() {
     activeUsers,
     suspendedUsers,
     unverifiedUsers,
-    portfolios,
-    orders,
+    totalApplications,
+    activeInterviews,
     failedEmails
   ] = await Promise.all([
     prisma.user.count(),
     prisma.user.count({ where: { status: UserStatus.ACTIVE } }),
     prisma.user.count({ where: { status: UserStatus.SUSPENDED } }),
     prisma.user.count({ where: { emailVerified: false } }),
-    prisma.portfolio.count(),
-    prisma.order.count(),
+    prisma.jobApplication.count(),
+    prisma.jobApplication.count({
+      where: {
+        status: {
+          in: [
+            ApplicationStatus.HR_INTERVIEW,
+            ApplicationStatus.TECHNICAL_INTERVIEW,
+            ApplicationStatus.CASE_STUDY
+          ]
+        }
+      }
+    }),
     prisma.dailyEmailLog.count({ where: { status: "FAILED" } })
   ]);
 
@@ -39,8 +55,8 @@ export async function getAdminDashboardStats() {
     activeUsers,
     suspendedUsers,
     unverifiedUsers,
-    portfolios,
-    orders,
+    totalApplications,
+    activeInterviews,
     failedEmails
   };
 }
@@ -69,7 +85,7 @@ export async function listAdminUsers(query?: string) {
       updatedAt: true,
       _count: {
         select: {
-          portfolios: true,
+          jobApplications: true,
           sessions: true,
           dailyEmailLogs: true
         }
@@ -84,21 +100,15 @@ export async function getAdminUserDetails(userId: string) {
     where: { id: parsed.userId },
     include: {
       preferences: true,
-      portfolios: {
-        orderBy: { createdAt: "desc" },
+      jobApplications: {
+        orderBy: { updatedAt: "desc" },
         select: {
           id: true,
-          name: true,
-          baseCurrency: true,
-          initialCash: true,
-          createdAt: true,
-          _count: {
-            select: {
-              orders: true,
-              positions: true,
-              snapshots: true
-            }
-          }
+          companyName: true,
+          roleTitle: true,
+          status: true,
+          followUpDate: true,
+          updatedAt: true
         }
       },
       sessions: {
@@ -153,11 +163,6 @@ export async function listDailyEmailLogs() {
       user: {
         select: {
           email: true
-        }
-      },
-      portfolio: {
-        select: {
-          name: true
         }
       }
     }

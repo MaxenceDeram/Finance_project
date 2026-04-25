@@ -7,7 +7,11 @@ import { sendEmail } from "@/server/email/mailer";
 import { confirmationEmailTemplate } from "@/server/email/templates/confirmation-email";
 import { writeAuditLog } from "@/server/security/audit";
 import { createRandomToken, hashToken } from "@/server/security/crypto";
-import { hashPassword, validatePasswordPolicy, verifyPassword } from "@/server/security/password";
+import {
+  hashPassword,
+  validatePasswordPolicy,
+  verifyPassword
+} from "@/server/security/password";
 import { createSession } from "@/server/security/sessions";
 
 const EMAIL_TOKEN_TTL_MS = 1000 * 60 * 60 * 24;
@@ -51,7 +55,6 @@ export async function registerUser(input: {
       preferences: {
         create: {
           timezone: env.DAILY_SUMMARY_DEFAULT_TIMEZONE,
-          preferredCurrency: "EUR",
           dailyEmailEnabled: true
         }
       }
@@ -59,7 +62,11 @@ export async function registerUser(input: {
   });
 
   await sendConfirmationEmail(user.id, user.email);
-  await writeAuditLog({ userId: user.id, action: AuditAction.REGISTER, ipHash: input.ipHash });
+  await writeAuditLog({
+    userId: user.id,
+    action: AuditAction.REGISTER,
+    ipHash: input.ipHash
+  });
 }
 
 export async function sendConfirmationEmail(userId: string, email: string) {
@@ -90,7 +97,10 @@ export async function sendConfirmationEmail(userId: string, email: string) {
   await sendEmail({ to: email, ...emailContent });
 }
 
-export async function resendConfirmationEmail(input: { email: string; ipHash?: string | null }) {
+export async function resendConfirmationEmail(input: {
+  email: string;
+  ipHash?: string | null;
+}) {
   const email = normalizeEmail(input.email);
   const user = await prisma.user.findUnique({ where: { email } });
 
@@ -167,7 +177,11 @@ export async function loginUser(input: {
   }
 
   if (!user.emailVerified) {
-    throw new AppError("FORBIDDEN", "Confirmez votre email avant de vous connecter.", 403);
+    throw new AppError(
+      "FORBIDDEN",
+      "Confirmez votre email avant de vous connecter.",
+      403
+    );
   }
 
   if (user.status !== UserStatus.ACTIVE) {

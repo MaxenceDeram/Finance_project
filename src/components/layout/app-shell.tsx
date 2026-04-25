@@ -1,6 +1,7 @@
 import { Bell, LogOut, Plus, Search } from "lucide-react";
 import Link from "next/link";
 import type { UserRole } from "@prisma/client";
+import { WarenLogo } from "@/components/brand/waren-logo";
 import { appNavigation } from "@/config/navigation";
 import { logoutAction } from "@/features/auth/actions";
 import { Button } from "@/components/ui/button";
@@ -26,12 +27,11 @@ export function AppShell({
     <div className="min-h-screen bg-background text-foreground">
       <aside className="fixed inset-y-0 left-0 z-20 hidden w-[284px] flex-col border-r border-white/10 bg-[linear-gradient(180deg,#101626_0%,#131a2d_100%)] px-5 py-6 text-white shadow-[0_24px_60px_rgba(2,6,23,0.28)] lg:flex">
         <Link href="/dashboard" className="block rounded-2xl">
-          <span className="flex items-center gap-3 text-xl font-semibold tracking-normal">
-            <span className="inline-flex size-10 items-center justify-center rounded-2xl bg-[linear-gradient(180deg,#7c83ff_0%,#4f46e5_100%)] text-sm font-bold text-white shadow-[0_12px_28px_rgba(79,70,229,0.28)]">
-              W
-            </span>
-            Waren
-          </span>
+          <WarenLogo
+            className="gap-2.5"
+            markClassName="h-10 w-10"
+            wordmarkClassName="text-[1.65rem] text-white"
+          />
           <span className="mt-2 block text-sm text-white/55">
             Suivi premium des candidatures
           </span>
@@ -96,7 +96,11 @@ export function AppShell({
               href="/dashboard"
               className="text-lg font-semibold tracking-normal lg:hidden"
             >
-              Waren
+              <WarenLogo
+                className="gap-2"
+                markClassName="h-8 w-8"
+                wordmarkClassName="text-[1.3rem]"
+              />
             </Link>
 
             <form

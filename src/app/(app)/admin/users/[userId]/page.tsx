@@ -13,7 +13,7 @@ import {
   TableRow
 } from "@/components/ui/table";
 import { formatDateTime } from "@/lib/dates";
-import { formatMoney } from "@/lib/format";
+import { getApplicationStatusLabel } from "@/features/applications/constants";
 import { requireAdmin } from "@/server/security/sessions";
 
 export default async function AdminUserDetailPage({
@@ -93,37 +93,39 @@ export default async function AdminUserDetailPage({
 
       <Card>
         <CardHeader>
-          <CardTitle>Portefeuilles</CardTitle>
+          <CardTitle>Candidatures recentes</CardTitle>
         </CardHeader>
         <CardContent>
-          {user.portfolios.length > 0 ? (
+          {user.jobApplications.length > 0 ? (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Nom</TableHead>
-                  <TableHead>Capital initial</TableHead>
-                  <TableHead>Ordres</TableHead>
-                  <TableHead>Positions</TableHead>
-                  <TableHead>Snapshots</TableHead>
+                  <TableHead>Entreprise</TableHead>
+                  <TableHead>Poste</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead>Relance</TableHead>
+                  <TableHead>Maj</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {user.portfolios.map((portfolio) => (
-                  <TableRow key={portfolio.id}>
-                    <TableCell className="font-medium">{portfolio.name}</TableCell>
+                {user.jobApplications.map((application) => (
+                  <TableRow key={application.id}>
+                    <TableCell className="font-medium">{application.companyName}</TableCell>
+                    <TableCell>{application.roleTitle}</TableCell>
+                    <TableCell>{getApplicationStatusLabel(application.status)}</TableCell>
                     <TableCell>
-                      {formatMoney(Number(portfolio.initialCash), portfolio.baseCurrency)}
+                      {application.followUpDate
+                        ? formatDateTime(application.followUpDate)
+                        : "-"}
                     </TableCell>
-                    <TableCell>{portfolio._count.orders}</TableCell>
-                    <TableCell>{portfolio._count.positions}</TableCell>
-                    <TableCell>{portfolio._count.snapshots}</TableCell>
+                    <TableCell>{formatDateTime(application.updatedAt)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           ) : (
             <p className="py-6 text-center text-sm text-muted-foreground">
-              Aucun portefeuille.
+              Aucune candidature.
             </p>
           )}
         </CardContent>

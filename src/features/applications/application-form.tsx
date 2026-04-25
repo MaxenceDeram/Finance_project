@@ -327,7 +327,7 @@ function SelectField({
   label: string;
   name: string;
   defaultValue: string;
-  options: Array<{ value: string; label: string }>;
+  options: ReadonlyArray<{ value: string; label: string }>;
   error?: string;
 }) {
   return (

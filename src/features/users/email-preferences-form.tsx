@@ -8,12 +8,10 @@ import { Alert } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
 
 type Preferences = {
   dailyEmailEnabled: boolean;
   timezone: string;
-  preferredCurrency: string;
   dailyEmailHour: number;
 };
 
@@ -28,7 +26,7 @@ export function EmailPreferencesForm({ preferences }: { preferences: Preferences
       <CardContent className="p-6">
         <form action={action} className="grid gap-5">
           {state.message ? <Alert>{state.message}</Alert> : null}
-          <label className="flex items-center gap-3 rounded-md border border-border bg-[color:var(--surface)] p-4">
+          <label className="flex items-center gap-3 rounded-2xl border border-border bg-[#fbfcff] p-4">
             <input
               type="checkbox"
               name="dailyEmailEnabled"
@@ -44,7 +42,7 @@ export function EmailPreferencesForm({ preferences }: { preferences: Preferences
               </span>
             </span>
           </label>
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2">
             <div className="grid gap-2">
               <Label htmlFor="timezone">Fuseau horaire</Label>
               <Input
@@ -53,18 +51,6 @@ export function EmailPreferencesForm({ preferences }: { preferences: Preferences
                 defaultValue={preferences.timezone}
                 required
               />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="preferredCurrency">Devise preferee</Label>
-              <Select
-                id="preferredCurrency"
-                name="preferredCurrency"
-                defaultValue={preferences.preferredCurrency}
-              >
-                <option value="EUR">EUR</option>
-                <option value="USD">USD</option>
-                <option value="GBP">GBP</option>
-              </Select>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="dailyEmailHour">Heure approximative d'envoi</Label>

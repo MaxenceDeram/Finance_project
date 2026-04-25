@@ -4,7 +4,11 @@ import { normalizeEmail } from "@/lib/utils";
 import { prisma } from "@/server/db/prisma";
 import { sendConfirmationEmail } from "@/features/auth/service";
 import { writeAuditLog } from "@/server/security/audit";
-import { hashPassword, validatePasswordPolicy, verifyPassword } from "@/server/security/password";
+import {
+  hashPassword,
+  validatePasswordPolicy,
+  verifyPassword
+} from "@/server/security/password";
 import { updateEmailPreferencesSchema } from "@/validation/preferences";
 import { changePasswordSchema, updateProfileEmailSchema } from "@/validation/profile";
 
@@ -16,7 +20,6 @@ export async function getUserPreferences(userId: string) {
       userId,
       dailyEmailEnabled: true,
       timezone: "Europe/Paris",
-      preferredCurrency: "EUR",
       dailyEmailHour: 22
     }
   });
@@ -27,10 +30,16 @@ export async function updateUserPreferences(userId: string, values: unknown) {
 
   return prisma.userPreferences.upsert({
     where: { userId },
-    update: parsed,
+    update: {
+      dailyEmailEnabled: parsed.dailyEmailEnabled,
+      timezone: parsed.timezone,
+      dailyEmailHour: parsed.dailyEmailHour
+    },
     create: {
       userId,
-      ...parsed
+      dailyEmailEnabled: parsed.dailyEmailEnabled,
+      timezone: parsed.timezone,
+      dailyEmailHour: parsed.dailyEmailHour
     }
   });
 }

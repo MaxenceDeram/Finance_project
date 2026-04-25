@@ -6,7 +6,7 @@ const envSchema = z.object({
   APP_URL: z.string().url().default("http://localhost:3000"),
   APP_NAME: z.string().min(1).default("Waren"),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
-  SESSION_COOKIE_NAME: z.string().min(1).default("sim_session"),
+  SESSION_COOKIE_NAME: z.string().min(1).default("waren_session"),
   SESSION_COOKIE_SECURE: z
     .string()
     .optional()
@@ -17,23 +17,6 @@ const envSchema = z.object({
   EMAIL_TOKEN_PEPPER: z.string().min(32),
   CRON_SECRET: z.string().min(32),
   PASSWORD_MIN_LENGTH: z.coerce.number().int().min(10).default(12),
-  SIMULATED_FEE_BPS: z.coerce.number().min(0).max(500).default(5),
-  MARKET_DATA_PROVIDER: z
-    .enum(["composite", "fmp", "alpha-vantage", "coingecko", "mock"])
-    .default("composite"),
-  MARKET_DATA_CACHE_TTL_SECONDS: z.coerce.number().int().min(5).default(60),
-  MARKET_DATA_HISTORY_CACHE_TTL_SECONDS: z.coerce.number().int().min(60).default(900),
-  MARKET_NEWS_CACHE_TTL_SECONDS: z.coerce.number().int().min(60).default(900),
-  MARKET_DATA_HTTP_TIMEOUT_MS: z.coerce.number().int().min(1000).default(9000),
-  FMP_API_KEY: z.string().optional().default(""),
-  FMP_API_BASE_URL: z
-    .string()
-    .url()
-    .default("https://financialmodelingprep.com/stable"),
-  ALPHA_VANTAGE_API_KEY: z.string().optional().default(""),
-  COINGECKO_API_KEY: z.string().optional().default(""),
-  COINGECKO_API_BASE_URL: z.string().url().default("https://api.coingecko.com/api/v3"),
-  ASSET_UNIVERSE_SYNC_EXCHANGES: z.string().optional().default(""),
   SMTP_HOST: z.string().optional().default(""),
   SMTP_PORT: z.coerce.number().int().positive().default(587),
   SMTP_SECURE: z

@@ -6,9 +6,6 @@ export type AppErrorCode =
   | "CONFLICT"
   | "RATE_LIMITED"
   | "VALIDATION_ERROR"
-  | "MARKET_DATA_ERROR"
-  | "INSUFFICIENT_CASH"
-  | "INSUFFICIENT_POSITION"
   | "INTERNAL_ERROR";
 
 export class AppError extends Error {
@@ -25,7 +22,10 @@ export class AppError extends Error {
   }
 }
 
-export function getSafeErrorMessage(error: unknown, fallback = "Une erreur est survenue.") {
+export function getSafeErrorMessage(
+  error: unknown,
+  fallback = "Une erreur est survenue."
+) {
   if (error instanceof AppError && error.expose) {
     return error.message;
   }

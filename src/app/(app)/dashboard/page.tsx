@@ -11,6 +11,7 @@ import {
   Target
 } from "lucide-react";
 import Link from "next/link";
+import { WarenLogo } from "@/components/brand/waren-logo";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,7 @@ import {
 import { ApplicationStatusBadge } from "@/features/applications/application-status-badge";
 import { CompanyAvatar } from "@/features/applications/company-avatar";
 import { getApplicationStatusLabel } from "@/features/applications/constants";
+import { getBrandToneForApplicationStatus } from "@/features/applications/status-brand";
 import { getApplicationDashboard } from "@/features/applications/service";
 import { formatDateOnly } from "@/lib/dates";
 import { requireUser } from "@/server/security/sessions";
@@ -150,6 +152,15 @@ export default async function DashboardPage() {
               label="Entretiens"
               value={String(dashboard.interviewsCount)}
               icon={MessagesSquare}
+              marker={
+                <div className="rounded-2xl border border-[#f0deb6] bg-[#fff6e8] px-3 py-2">
+                  <WarenLogo
+                    tone="in-progress"
+                    withWordmark={false}
+                    markClassName="h-5 w-5"
+                  />
+                </div>
+              }
               detail="Entretiens RH, techniques et cas pratiques."
             />
             <StatCard
@@ -157,6 +168,15 @@ export default async function DashboardPage() {
               value={String(dashboard.offersCount)}
               icon={CirclePercent}
               tone={dashboard.offersCount > 0 ? "positive" : "neutral"}
+              marker={
+                <div className="rounded-2xl border border-[#ccebd8] bg-[#eaf9f1] px-3 py-2">
+                  <WarenLogo
+                    tone="accepted"
+                    withWordmark={false}
+                    markClassName="h-5 w-5"
+                  />
+                </div>
+              }
               detail="Opportunites arrivant a la decision."
             />
             <StatCard
@@ -164,6 +184,15 @@ export default async function DashboardPage() {
               value={String(dashboard.refusalsCount)}
               icon={ShieldX}
               tone={dashboard.refusalsCount > 0 ? "negative" : "neutral"}
+              marker={
+                <div className="rounded-2xl border border-[#f5d3d7] bg-[#fff1f3] px-3 py-2">
+                  <WarenLogo
+                    tone="rejected"
+                    withWordmark={false}
+                    markClassName="h-5 w-5"
+                  />
+                </div>
+              }
               detail="Historique des refus recueillis."
             />
             <StatCard
@@ -273,7 +302,13 @@ export default async function DashboardPage() {
             <CardContent className="space-y-4">
               {dashboard.recentActivity.map((application) => (
                 <div key={application.id} className="flex gap-3">
-                  <div className="mt-1 inline-flex size-2.5 shrink-0 rounded-full bg-[#4f46e5]" />
+                  <div className="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-[#f6f8ff]">
+                    <WarenLogo
+                      tone={getBrandToneForApplicationStatus(application.status)}
+                      withWordmark={false}
+                      markClassName="h-3.5 w-3.5"
+                    />
+                  </div>
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-foreground">
                       {application.companyName}{" "}
@@ -302,7 +337,14 @@ export default async function DashboardPage() {
               {statusBreakdown.map((item) => (
                 <div key={item.status} className="space-y-2">
                   <div className="flex items-center justify-between gap-3">
-                    <ApplicationStatusBadge status={item.status} />
+                    <div className="flex items-center gap-2.5">
+                      <WarenLogo
+                        tone={getBrandToneForApplicationStatus(item.status)}
+                        withWordmark={false}
+                        markClassName="h-[18px] w-[18px]"
+                      />
+                      <ApplicationStatusBadge status={item.status} />
+                    </div>
                     <span className="text-sm font-semibold text-foreground">
                       {item.count}
                     </span>

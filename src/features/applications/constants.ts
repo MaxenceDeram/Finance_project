@@ -1,4 +1,8 @@
-import { ApplicationDocumentType, ApplicationStatus, ContractType } from "@prisma/client";
+import type {
+  ApplicationDocumentType,
+  ApplicationStatus,
+  ContractType
+} from "@prisma/client";
 
 export const applicationDateRangeOptions = [
   { value: "ALL", label: "Toutes les dates" },
@@ -10,45 +14,45 @@ export const applicationDateRangeOptions = [
 
 export type ApplicationDateRange = (typeof applicationDateRangeOptions)[number]["value"];
 
-export const applicationStatusOptions: Array<{
+export const applicationStatusOptions = [
+  { value: "TO_APPLY", label: "À postuler" },
+  { value: "APPLIED", label: "Candidature envoyée" },
+  { value: "FOLLOW_UP_SENT", label: "Relance envoyée" },
+  { value: "HR_INTERVIEW", label: "Entretien RH" },
+  { value: "TECHNICAL_INTERVIEW", label: "Entretien technique" },
+  { value: "CASE_STUDY", label: "Étude de cas" },
+  { value: "OFFER_RECEIVED", label: "Offre reçue" },
+  { value: "REJECTED", label: "Refusée" },
+  { value: "ACCEPTED", label: "Acceptée" }
+] as const satisfies ReadonlyArray<{
   value: ApplicationStatus;
   label: string;
-}> = [
-  { value: ApplicationStatus.TO_APPLY, label: "À postuler" },
-  { value: ApplicationStatus.APPLIED, label: "Candidature envoyée" },
-  { value: ApplicationStatus.FOLLOW_UP_SENT, label: "Relance envoyée" },
-  { value: ApplicationStatus.HR_INTERVIEW, label: "Entretien RH" },
-  { value: ApplicationStatus.TECHNICAL_INTERVIEW, label: "Entretien technique" },
-  { value: ApplicationStatus.CASE_STUDY, label: "Étude de cas" },
-  { value: ApplicationStatus.OFFER_RECEIVED, label: "Offre reçue" },
-  { value: ApplicationStatus.REJECTED, label: "Refusée" },
-  { value: ApplicationStatus.ACCEPTED, label: "Acceptée" }
-];
+}>;
 
-export const contractTypeOptions: Array<{ value: ContractType; label: string }> = [
-  { value: ContractType.INTERNSHIP, label: "Stage" },
-  { value: ContractType.APPRENTICESHIP, label: "Alternance" },
-  { value: ContractType.FULL_TIME, label: "CDI / Temps plein" },
-  { value: ContractType.PART_TIME, label: "Temps partiel" },
-  { value: ContractType.FREELANCE, label: "Freelance" },
-  { value: ContractType.TEMPORARY, label: "CDD / Temporaire" },
-  { value: ContractType.OTHER, label: "Autre" }
-];
+export const contractTypeOptions = [
+  { value: "INTERNSHIP", label: "Stage" },
+  { value: "APPRENTICESHIP", label: "Alternance" },
+  { value: "FULL_TIME", label: "CDI / Temps plein" },
+  { value: "PART_TIME", label: "Temps partiel" },
+  { value: "FREELANCE", label: "Freelance" },
+  { value: "TEMPORARY", label: "CDD / Temporaire" },
+  { value: "OTHER", label: "Autre" }
+] as const satisfies ReadonlyArray<{ value: ContractType; label: string }>;
 
 export const interviewStatuses = new Set<ApplicationStatus>([
-  ApplicationStatus.HR_INTERVIEW,
-  ApplicationStatus.TECHNICAL_INTERVIEW,
-  ApplicationStatus.CASE_STUDY
+  "HR_INTERVIEW",
+  "TECHNICAL_INTERVIEW",
+  "CASE_STUDY"
 ]);
 
 export const responseStatuses = new Set<ApplicationStatus>([
-  ApplicationStatus.FOLLOW_UP_SENT,
-  ApplicationStatus.HR_INTERVIEW,
-  ApplicationStatus.TECHNICAL_INTERVIEW,
-  ApplicationStatus.CASE_STUDY,
-  ApplicationStatus.OFFER_RECEIVED,
-  ApplicationStatus.REJECTED,
-  ApplicationStatus.ACCEPTED
+  "FOLLOW_UP_SENT",
+  "HR_INTERVIEW",
+  "TECHNICAL_INTERVIEW",
+  "CASE_STUDY",
+  "OFFER_RECEIVED",
+  "REJECTED",
+  "ACCEPTED"
 ]);
 
 export const applicationStatusLabels = Object.fromEntries(

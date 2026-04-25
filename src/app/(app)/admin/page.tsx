@@ -1,9 +1,9 @@
 import {
+  BriefcaseBusiness,
   ClipboardList,
   MailWarning,
   ShieldCheck,
-  Users,
-  WalletCards
+  Users
 } from "lucide-react";
 import Link from "next/link";
 import { StatCard } from "@/components/dashboard/stat-card";
@@ -50,9 +50,9 @@ export default async function AdminDashboardPage() {
           tone={stats.unverifiedUsers > 0 ? "negative" : "neutral"}
         />
         <StatCard
-          label="Portefeuilles"
-          value={String(stats.portfolios)}
-          icon={WalletCards}
+          label="Candidatures"
+          value={String(stats.totalApplications)}
+          icon={BriefcaseBusiness}
         />
       </div>
 
@@ -108,8 +108,8 @@ export default async function AdminDashboardPage() {
             <p className="mt-1 text-xl font-semibold">{stats.suspendedUsers}</p>
           </div>
           <div>
-            <p className="text-muted-foreground">Ordres simules</p>
-            <p className="mt-1 text-xl font-semibold">{stats.orders}</p>
+            <p className="text-muted-foreground">Entretiens actifs</p>
+            <p className="mt-1 text-xl font-semibold">{stats.activeInterviews}</p>
           </div>
           <div>
             <p className="text-muted-foreground">Emails en echec</p>

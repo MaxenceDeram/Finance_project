@@ -14,10 +14,6 @@ if (existingDemo) {
     where: { userId: existingDemo.id }
   });
 
-  await prisma.portfolio.deleteMany({
-    where: { userId: existingDemo.id }
-  });
-
   await prisma.dailyEmailLog.deleteMany({
     where: { userId: existingDemo.id }
   });
@@ -46,13 +42,11 @@ await prisma.user.upsert({
         update: {
           dailyEmailEnabled: true,
           timezone: "Europe/Paris",
-          preferredCurrency: "EUR",
           dailyEmailHour: 22
         },
         create: {
           dailyEmailEnabled: true,
           timezone: "Europe/Paris",
-          preferredCurrency: "EUR",
           dailyEmailHour: 22
         }
       }
@@ -67,7 +61,6 @@ await prisma.user.upsert({
       create: {
         dailyEmailEnabled: true,
         timezone: "Europe/Paris",
-        preferredCurrency: "EUR",
         dailyEmailHour: 22
       }
     }

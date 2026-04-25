@@ -25,7 +25,7 @@ export async function runDailySummaryJob(date = new Date()) {
 
   const results: Array<{
     userId: string;
-    portfolioId: string;
+    summaryScope: string;
     status: DailyEmailStatus;
   }> = [];
 
@@ -33,7 +33,6 @@ export async function runDailySummaryJob(date = new Date()) {
     const existingLog = await prisma.dailyEmailLog.findFirst({
       where: {
         userId: user.id,
-        portfolioId: null,
         periodDate
       }
     });
@@ -41,7 +40,7 @@ export async function runDailySummaryJob(date = new Date()) {
     if (existingLog?.status === DailyEmailStatus.SENT) {
       results.push({
         userId: user.id,
-        portfolioId: "applications",
+        summaryScope: "applications",
         status: DailyEmailStatus.SKIPPED
       });
       continue;
@@ -82,7 +81,7 @@ export async function runDailySummaryJob(date = new Date()) {
 
       results.push({
         userId: user.id,
-        portfolioId: "applications",
+        summaryScope: "applications",
         status: DailyEmailStatus.SKIPPED
       });
       continue;
@@ -138,7 +137,7 @@ export async function runDailySummaryJob(date = new Date()) {
 
       results.push({
         userId: user.id,
-        portfolioId: "applications",
+        summaryScope: "applications",
         status: DailyEmailStatus.SENT
       });
     } catch (error) {
@@ -161,7 +160,7 @@ export async function runDailySummaryJob(date = new Date()) {
 
       results.push({
         userId: user.id,
-        portfolioId: "applications",
+        summaryScope: "applications",
         status: DailyEmailStatus.FAILED
       });
     }
@@ -169,7 +168,7 @@ export async function runDailySummaryJob(date = new Date()) {
 
   return {
     processedUsers: users.length,
-    processedPortfolios: results.length,
+    processedSummaries: results.length,
     results
   };
 }
@@ -197,7 +196,6 @@ async function upsertDailyEmailLog(input: {
   return prisma.dailyEmailLog.create({
     data: {
       userId: input.userId,
-      portfolioId: null,
       periodDate: input.periodDate,
       status: input.status,
       subject: input.subject,

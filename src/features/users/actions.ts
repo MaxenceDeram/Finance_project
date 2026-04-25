@@ -21,7 +21,6 @@ export async function updateEmailPreferencesAction(
     const raw = {
       dailyEmailEnabled: formData.get("dailyEmailEnabled") === "on",
       timezone: formData.get("timezone"),
-      preferredCurrency: formData.get("preferredCurrency"),
       dailyEmailHour: formData.get("dailyEmailHour")
     };
     const parsed = updateEmailPreferencesSchema.safeParse(raw);

@@ -117,7 +117,7 @@ export async function adminRunDailySummaryAction(
     revalidatePath("/admin/email-logs");
     return {
       ok: true,
-      message: `Job execute: ${result.processedPortfolios} envoi(s) traite(s).`
+      message: `Job execute: ${result.processedSummaries} recap(s) traite(s).`
     };
   } catch (error) {
     return { ok: false, message: getSafeErrorMessage(error) };

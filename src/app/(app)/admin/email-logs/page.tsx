@@ -34,7 +34,6 @@ export default async function AdminEmailLogsPage() {
               <TableRow>
                 <TableHead>Date</TableHead>
                 <TableHead>Utilisateur</TableHead>
-                <TableHead>Portefeuille</TableHead>
                 <TableHead>Statut</TableHead>
                 <TableHead>Sujet</TableHead>
                 <TableHead>Erreur</TableHead>
@@ -45,7 +44,6 @@ export default async function AdminEmailLogsPage() {
                 <TableRow key={log.id}>
                   <TableCell>{formatDateTime(log.sentAt)}</TableCell>
                   <TableCell>{log.user.email}</TableCell>
-                  <TableCell>{log.portfolio?.name ?? "-"}</TableCell>
                   <TableCell>
                     <Badge variant={log.status === "SENT" ? "success" : "destructive"}>
                       {log.status}

@@ -1,5 +1,6 @@
 import { Plus, Search } from "lucide-react";
 import Link from "next/link";
+import { WarenLogo } from "@/components/brand/waren-logo";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +22,7 @@ import {
   isApplicationDateRange,
   isApplicationStatus
 } from "@/features/applications/constants";
+import { getBrandToneForApplicationStatus } from "@/features/applications/status-brand";
 import { listJobApplications } from "@/features/applications/service";
 import { formatDateOnly } from "@/lib/dates";
 import { requireUser } from "@/server/security/sessions";
@@ -246,10 +248,19 @@ export default async function ApplicationsPage({
                     href={`/applications/${application.id}/edit`}
                     className="flex items-center gap-3 rounded-[22px] border border-border/80 bg-[#fbfcff] px-4 py-4 transition hover:border-[#d8ddff] hover:bg-white"
                   >
-                    <CompanyAvatar
-                      companyName={application.companyName}
-                      className="size-10 rounded-xl text-xs"
-                    />
+                    <div className="relative">
+                      <CompanyAvatar
+                        companyName={application.companyName}
+                        className="size-10 rounded-xl text-xs"
+                      />
+                      <span className="absolute -bottom-1 -right-1 inline-flex size-5 items-center justify-center rounded-full border border-white bg-white shadow-[0_1px_2px_rgba(16,24,40,0.12)]">
+                        <WarenLogo
+                          tone={getBrandToneForApplicationStatus(application.status)}
+                          withWordmark={false}
+                          markClassName="h-3 w-3"
+                        />
+                      </span>
+                    </div>
                     <div className="min-w-0">
                       <p className="truncate text-sm font-semibold text-foreground">
                         {application.companyName}

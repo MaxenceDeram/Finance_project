@@ -7,6 +7,7 @@ export function StatCard({
   value,
   detail,
   icon: Icon,
+  marker,
   tone = "neutral",
   highlight = false
 }: {
@@ -14,6 +15,7 @@ export function StatCard({
   value: string;
   detail?: string;
   icon?: LucideIcon;
+  marker?: React.ReactNode;
   tone?: "neutral" | "positive" | "negative";
   highlight?: boolean;
 }) {
@@ -48,7 +50,7 @@ export function StatCard({
               {value}
             </p>
           </div>
-          {Icon ? (
+          {marker ? marker : Icon ? (
             <div
               className={cn(
                 "rounded-2xl border border-border bg-[#f8faff] p-2.5 text-muted-foreground shadow-[0_1px_2px_rgba(16,24,40,0.05)]",

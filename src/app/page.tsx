@@ -9,6 +9,7 @@ import {
 import Link from "next/link";
 import type { ApplicationStatus } from "@prisma/client";
 import type { LucideIcon } from "lucide-react";
+import { WarenLogo } from "@/components/brand/waren-logo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ApplicationStatusBadge } from "@/features/applications/application-status-badge";
@@ -41,10 +42,11 @@ export default function LandingPage() {
             href="/"
             className="flex items-center gap-3 text-xl font-semibold tracking-normal"
           >
-            <span className="inline-flex size-10 items-center justify-center rounded-2xl bg-[linear-gradient(180deg,#7c83ff_0%,#4f46e5_100%)] text-sm font-bold text-white shadow-[0_12px_28px_rgba(79,70,229,0.28)]">
-              W
-            </span>
-            Waren
+            <WarenLogo
+              className="gap-2.5"
+              markClassName="h-10 w-10"
+              wordmarkClassName="text-[1.75rem]"
+            />
           </Link>
           <div className="flex items-center gap-2">
             <Button asChild variant="ghost" size="sm">

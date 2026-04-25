@@ -2,9 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 const protectedPrefixes = [
   "/dashboard",
-  "/portfolios",
-  "/orders",
-  "/assets",
+  "/applications",
   "/settings",
   "/profile",
   "/admin"
@@ -12,7 +10,7 @@ const protectedPrefixes = [
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const cookieName = process.env.SESSION_COOKIE_NAME || "sim_session";
+  const cookieName = process.env.SESSION_COOKIE_NAME || "waren_session";
   const hasSession = Boolean(request.cookies.get(cookieName)?.value);
   const isProtected = protectedPrefixes.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
@@ -33,9 +31,7 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/dashboard/:path*",
-    "/portfolios/:path*",
-    "/orders/:path*",
-    "/assets/:path*",
+    "/applications/:path*",
     "/settings/:path*",
     "/profile/:path*",
     "/admin/:path*"

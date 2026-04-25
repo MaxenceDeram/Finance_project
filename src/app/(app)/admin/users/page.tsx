@@ -60,7 +60,7 @@ export default async function AdminUsersPage({
                 <TableHead>Role</TableHead>
                 <TableHead>Statut</TableHead>
                 <TableHead>Confirme</TableHead>
-                <TableHead>Portefeuilles</TableHead>
+                <TableHead>Candidatures</TableHead>
                 <TableHead>Sessions</TableHead>
                 <TableHead>Creation</TableHead>
                 <TableHead></TableHead>
@@ -81,7 +81,7 @@ export default async function AdminUsersPage({
                     </Badge>
                   </TableCell>
                   <TableCell>{user.emailVerified ? "Oui" : "Non"}</TableCell>
-                  <TableCell>{user._count.portfolios}</TableCell>
+                  <TableCell>{user._count.jobApplications}</TableCell>
                   <TableCell>{user._count.sessions}</TableCell>
                   <TableCell>{formatDateOnly(user.createdAt)}</TableCell>
                   <TableCell>
