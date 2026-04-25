@@ -1,22 +1,38 @@
 "use client";
 
+import {
+  Briefcase,
+  LayoutDashboard,
+  Settings,
+  UserRound,
+  type LucideIcon
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+const iconMap = {
+  dashboard: LayoutDashboard,
+  briefcase: Briefcase,
+  settings: Settings,
+  user: UserRound
+} satisfies Record<string, LucideIcon>;
+
+export type AppNavIconName = keyof typeof iconMap;
 
 export function AppNavLink({
   href,
   label,
-  icon: Icon,
+  icon,
   mobile = false
 }: {
   href: string;
   label: string;
-  icon: LucideIcon;
+  icon: AppNavIconName;
   mobile?: boolean;
 }) {
   const pathname = usePathname();
+  const Icon = iconMap[icon];
   const isActive =
     pathname === href || (href !== "/dashboard" && pathname.startsWith(`${href}/`));
 

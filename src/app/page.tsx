@@ -23,8 +23,8 @@ const metrics = [
 
 const previewRows = [
   ["Linear", "Product Design Intern", "Entretien RH"],
-  ["Notion", "Growth Intern", "Candidature envoyee"],
-  ["Alan", "BizOps Intern", "A postuler"]
+  ["Carrefour", "Chef de projet digital", "Candidature envoyee"],
+  ["Canal+", "Assistant marketing", "A postuler"]
 ] as const;
 
 const previewMetrics: ReadonlyArray<[string, string, LucideIcon]> = [
@@ -33,7 +33,14 @@ const previewMetrics: ReadonlyArray<[string, string, LucideIcon]> = [
   ["Entretiens", "5", MailCheck]
 ];
 
-const heroCompanies = ["Linear", "Notion", "Stripe", "Google", "Airbnb", "Alan"] as const;
+const heroCompanies = [
+  "Linear",
+  "Carrefour",
+  "Stripe",
+  "Google",
+  "Airbnb",
+  "Canal+"
+] as const;
 
 export default function LandingPage() {
   return (

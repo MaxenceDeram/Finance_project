@@ -1,6 +1,16 @@
 import Link from "next/link";
 import { ArrowUpRight, CheckCircle2, Clock3, Sparkles } from "lucide-react";
 import { WarenLogo } from "@/components/brand/waren-logo";
+import { CompanyAvatar } from "@/features/applications/company-avatar";
+
+const authCompanies = [
+  "Carrefour",
+  "Canal+",
+  "Google",
+  "Stripe",
+  "Airbnb",
+  "Doctolib"
+] as const;
 
 export function AuthShell({
   title,
@@ -104,6 +114,23 @@ export function AuthShell({
                 <p className="mt-1 leading-6">{body}</p>
               </div>
             ))}
+          </div>
+
+          <div className="relative z-10 mt-8">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-white/50">
+              Exemples d&apos;entreprises suivies
+            </p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              {authCompanies.map((company) => (
+                <div
+                  key={company}
+                  className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.08] px-3.5 py-2"
+                >
+                  <CompanyAvatar companyName={company} className="size-8 rounded-xl" />
+                  <span className="text-sm font-medium text-white/78">{company}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 

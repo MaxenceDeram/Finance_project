@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 export type WarenLogoTone = "default" | "accepted" | "in-progress" | "rejected";
@@ -66,21 +67,33 @@ export function WarenLogo({
   wordmarkClassName?: string;
 }) {
   const palette = toneClasses[tone];
+  const useImageLogo = tone === "default" && withWordmark;
 
   return (
     <span className={cn("inline-flex items-center gap-3", className)}>
-      <svg
-        viewBox="0 0 64 64"
-        aria-hidden="true"
-        className={cn("h-9 w-9 flex-none", palette.glow, markClassName)}
-      >
-        <polygon points="6,28 29,18 41,26 19,37" className={palette.shardA} />
-        <polygon points="32,18 53,8 41,27 28,19" className={palette.shardB} />
-        <polygon points="41,27 56,13 48,40 33,31" className={palette.shardC} />
-        <polygon points="27,39 46,48 38,63 18,51" className={palette.shardD} />
-        <polygon points="19,52 29,60 19,63" className={palette.shardE} />
-      </svg>
-      {withWordmark ? (
+      {useImageLogo ? (
+        <Image
+          src="/brand/waren-logo.png"
+          alt="Waren"
+          width={342}
+          height={228}
+          priority
+          className={cn("h-11 w-auto flex-none object-contain", markClassName)}
+        />
+      ) : (
+        <svg
+          viewBox="0 0 64 64"
+          aria-hidden="true"
+          className={cn("h-9 w-9 flex-none", palette.glow, markClassName)}
+        >
+          <polygon points="6,28 29,18 41,26 19,37" className={palette.shardA} />
+          <polygon points="32,18 53,8 41,27 28,19" className={palette.shardB} />
+          <polygon points="41,27 56,13 48,40 33,31" className={palette.shardC} />
+          <polygon points="27,39 46,48 38,63 18,51" className={palette.shardD} />
+          <polygon points="19,52 29,60 19,63" className={palette.shardE} />
+        </svg>
+      )}
+      {withWordmark && !useImageLogo ? (
         <span
           className={cn(
             "text-[1.75rem] font-semibold leading-none tracking-normal",

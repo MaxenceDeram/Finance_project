@@ -4,8 +4,10 @@ import { cn } from "@/lib/utils";
 const knownCompanyLogos: Record<
   string,
   {
-    src: string;
+    src?: string;
     bgClassName: string;
+    text?: string;
+    textClassName?: string;
   }
 > = {
   google: {
@@ -16,10 +18,6 @@ const knownCompanyLogos: Record<
     src: "https://cdn.simpleicons.org/stripe/635bff",
     bgClassName: "bg-white"
   },
-  notion: {
-    src: "https://cdn.simpleicons.org/notion/111111",
-    bgClassName: "bg-white"
-  },
   linear: {
     src: "https://cdn.simpleicons.org/linear/111827",
     bgClassName: "bg-white"
@@ -28,8 +26,8 @@ const knownCompanyLogos: Record<
     src: "https://cdn.simpleicons.org/airbnb/ff5a5f",
     bgClassName: "bg-white"
   },
-  alan: {
-    src: "https://cdn.simpleicons.org/alan/5b5bd6",
+  carrefour: {
+    src: "https://cdn.simpleicons.org/carrefour/004e9f",
     bgClassName: "bg-white"
   },
   vercel: {
@@ -52,6 +50,10 @@ const knownCompanyLogos: Record<
     src: "https://cdn.simpleicons.org/doctolib/0596de",
     bgClassName: "bg-white"
   },
+  canalplus: {
+    src: "/company-logos/canalplus.svg",
+    bgClassName: "bg-white"
+  },
   mistral: {
     src: "https://cdn.simpleicons.org/mistralai/f97316",
     bgClassName: "bg-white"
@@ -71,6 +73,10 @@ function normalizeCompanyName(value: string) {
 
   if (normalized.includes("mistral")) {
     return "mistral";
+  }
+
+  if (normalized.includes("canal")) {
+    return "canalplus";
   }
 
   return normalized;
@@ -115,14 +121,20 @@ export function CompanyAvatar({
       aria-hidden="true"
     >
       {knownLogo ? (
-        <Image
-          src={knownLogo.src}
-          alt=""
-          width={20}
-          height={20}
-          unoptimized
-          className="size-5 object-contain"
-        />
+        knownLogo.src ? (
+          <Image
+            src={knownLogo.src}
+            alt=""
+            width={20}
+            height={20}
+            unoptimized
+            className="size-5 object-contain"
+          />
+        ) : (
+          <span className={cn("text-[10px] font-bold", knownLogo.textClassName)}>
+            {knownLogo.text}
+          </span>
+        )
       ) : (
         initials || "?"
       )}
