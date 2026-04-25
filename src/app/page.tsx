@@ -33,6 +33,8 @@ const previewMetrics: ReadonlyArray<[string, string, LucideIcon]> = [
   ["Entretiens", "5", MailCheck]
 ];
 
+const heroCompanies = ["Linear", "Notion", "Stripe", "Google", "Airbnb", "Alan"] as const;
+
 export default function LandingPage() {
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -79,6 +81,23 @@ export default function LandingPage() {
               <Button asChild variant="outline" size="lg">
                 <Link href="/login">Voir mon espace</Link>
               </Button>
+            </div>
+
+            <div className="mt-8">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                Pense pour suivre vos candidatures chez
+              </p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                {heroCompanies.map((company) => (
+                  <div
+                    key={company}
+                    className="inline-flex items-center gap-3 rounded-full border border-border/80 bg-white/85 px-4 py-2 shadow-[0_8px_24px_rgba(15,23,42,0.05)]"
+                  >
+                    <CompanyAvatar companyName={company} className="size-9 rounded-xl" />
+                    <span className="text-sm font-medium text-foreground">{company}</span>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="mt-12 grid gap-4 sm:grid-cols-3">

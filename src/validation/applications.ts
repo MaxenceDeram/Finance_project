@@ -1,13 +1,29 @@
-import { ApplicationStatus, ContractType } from "@prisma/client";
 import { z } from "zod";
 import { idSchema } from "./common";
 
-const optionalTrimmedString = z
-  .string()
-  .trim()
-  .max(200)
-  .optional()
-  .or(z.literal(""));
+const contractTypeSchema = z.enum([
+  "INTERNSHIP",
+  "APPRENTICESHIP",
+  "FULL_TIME",
+  "PART_TIME",
+  "FREELANCE",
+  "TEMPORARY",
+  "OTHER"
+]);
+
+const applicationStatusSchema = z.enum([
+  "TO_APPLY",
+  "APPLIED",
+  "FOLLOW_UP_SENT",
+  "HR_INTERVIEW",
+  "TECHNICAL_INTERVIEW",
+  "CASE_STUDY",
+  "OFFER_RECEIVED",
+  "REJECTED",
+  "ACCEPTED"
+]);
+
+const optionalTrimmedString = z.string().trim().max(200).optional().or(z.literal(""));
 
 const optionalUrl = z.preprocess((value) => {
   if (typeof value !== "string") {
@@ -41,10 +57,10 @@ const optionalDate = z.preprocess((value) => {
 export const applicationInputSchema = z.object({
   companyName: z.string().trim().min(1, "Entreprise requise.").max(120),
   roleTitle: z.string().trim().min(1, "Poste requis.").max(160),
-  contractType: z.nativeEnum(ContractType),
+  contractType: contractTypeSchema,
   location: optionalTrimmedString,
   applicationDate: optionalDate,
-  status: z.nativeEnum(ApplicationStatus),
+  status: applicationStatusSchema,
   listingUrl: optionalUrl,
   hrContact: optionalTrimmedString,
   compensation: optionalTrimmedString,

@@ -1,4 +1,3 @@
-import { UserRole, UserStatus } from "@prisma/client";
 import { z } from "zod";
 import { idSchema } from "./common";
 
@@ -8,10 +7,10 @@ export const adminUserIdSchema = z.object({
 
 export const updateUserRoleSchema = z.object({
   userId: idSchema,
-  role: z.enum([UserRole.USER, UserRole.ADMIN])
+  role: z.enum(["USER", "ADMIN"])
 });
 
 export const updateUserStatusSchema = z.object({
   userId: idSchema,
-  status: z.enum([UserStatus.ACTIVE, UserStatus.SUSPENDED])
+  status: z.enum(["ACTIVE", "SUSPENDED"])
 });
