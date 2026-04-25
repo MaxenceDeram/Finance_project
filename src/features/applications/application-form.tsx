@@ -34,6 +34,7 @@ type ApplicationFormValues = {
   status: ApplicationStatus;
   listingUrl?: string | null;
   hrContact?: string | null;
+  contactEmail?: string | null;
   compensation?: string | null;
   notes?: string | null;
   followUpDate?: string | null;
@@ -133,8 +134,17 @@ export function ApplicationForm({
                 name="hrContact"
                 defaultValue={values?.hrContact}
                 error={state.fieldErrors?.hrContact?.[0]}
+                placeholder="Sarah Dupont, Talent Partner"
+                description="Nom du recruteur, intitulé ou contact LinkedIn."
+              />
+              <Field
+                label="Email de contact"
+                name="contactEmail"
+                type="email"
+                defaultValue={values?.contactEmail}
+                error={state.fieldErrors?.contactEmail?.[0]}
                 placeholder="prenom.nom@entreprise.com"
-                description="Email, nom du recruteur ou contact LinkedIn."
+                description="Utilise pour les relances email depuis la fiche candidature."
               />
             </div>
           </SectionCard>

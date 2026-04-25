@@ -12,6 +12,23 @@ enum DailyEmailStatus {
   FAILED
 }
 
+enum EmailProvider {
+  CONSOLE
+  SMTP
+  SES
+}
+
+enum EmailLogStatus {
+  SENT
+  FAILED
+}
+
+enum EmailCategory {
+  EMAIL_CONFIRMATION
+  DAILY_SUMMARY
+  APPLICATION_FOLLOW_UP
+}
+
 enum UserRole {
   USER
   ADMIN
@@ -48,6 +65,12 @@ enum AuditAction {
   APPLICATION_DELETED
   APPLICATION_DOCUMENT_UPLOADED
   APPLICATION_DOCUMENT_DELETED
+  PROFILE_AVATAR_UPDATED
+  PROFILE_AVATAR_REMOVED
+  FOLLOW_UP_EMAIL_SENT
+  FOLLOW_UP_TEMPLATE_CREATED
+  FOLLOW_UP_TEMPLATE_UPDATED
+  FOLLOW_UP_TEMPLATE_DELETED
 }
 
 enum ContractType {
@@ -81,11 +104,15 @@ enum ApplicationDocumentType {
 model User {
   id                 String                   @id @default(cuid())
   email              String                   @unique
+  displayName        String?
   passwordHash       String
   role               UserRole                 @default(USER)
   status             UserStatus               @default(ACTIVE)
   emailVerified      Boolean                  @default(false)
   emailVerifiedAt    DateTime?
+  avatarStorageKey   String?
+  avatarMimeType     String?
+  avatarUpdatedAt    DateTime?
   createdAt          DateTime                 @default(now())
   updatedAt          DateTime                 @updatedAt
   preferences        UserPreferences?
@@ -94,6 +121,8 @@ model User {
   jobApplications    JobApplication[]
   applicationDocs    ApplicationDocument[]
   dailyEmailLogs     DailyEmailLog[]
+  emailTemplates     EmailTemplate[]
+  emailLogs          EmailLog[]
   auditLogs          AuditLog[]
 
   @@index([emailVerified])
@@ -150,6 +179,7 @@ model JobApplication {
   status          ApplicationStatus     @default(TO_APPLY)
   listingUrl      String?
   hrContact       String?
+  contactEmail    String?
   compensation    String?
   notes           String?
   followUpDate    DateTime?
@@ -157,6 +187,7 @@ model JobApplication {
   updatedAt       DateTime              @updatedAt
   user            User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   documents       ApplicationDocument[]
+  emailLogs       EmailLog[]
 
   @@index([userId, status, applicationDate])
   @@index([userId, followUpDate])
@@ -194,6 +225,48 @@ model DailyEmailLog {
   @@unique([userId, periodDate])
   @@index([userId, sentAt])
   @@index([status])
+}
+
+model EmailTemplate {
+  id              String     @id @default(cuid())
+  userId          String
+  name            String
+  subjectTemplate String
+  bodyTemplate    String
+  isDefault       Boolean    @default(false)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emailLogs       EmailLog[]
+
+  @@index([userId, createdAt])
+}
+
+model EmailLog {
+  id                String         @id @default(cuid())
+  userId            String
+  applicationId     String?
+  templateId        String?
+  category          EmailCategory
+  provider          EmailProvider
+  status            EmailLogStatus
+  toEmail           String
+  fromEmail         String
+  subject           String
+  htmlBody          String
+  textBody          String
+  providerMessageId String?
+  errorMessage      String?
+  sentAt            DateTime?
+  createdAt         DateTime       @default(now())
+  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  application       JobApplication? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
+  template          EmailTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([applicationId, createdAt])
+  @@index([category, createdAt])
+  @@index([status, createdAt])
 }
 
 model AuditLog {

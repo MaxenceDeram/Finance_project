@@ -53,10 +53,11 @@ export default function LandingPage() {
             className="flex items-center gap-3 text-xl font-semibold tracking-normal"
           >
             <WarenLogo
+              size="lg"
               surface="light"
-              className="gap-3"
-              markClassName="h-14"
-              wordmarkClassName="text-[2rem]"
+              className="items-end"
+              markClassName="h-10 w-10 sm:h-12 sm:w-12"
+              wordmarkClassName="text-[1.7rem] sm:text-[2.45rem]"
             />
           </Link>
           <div className="flex items-center gap-2">

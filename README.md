@@ -11,6 +11,9 @@ centraliser les relances et piloter son pipeline d'entretiens depuis une interfa
 - Ajout, edition et suppression de candidatures
 - Filtres par statut et recherche par entreprise / poste / localisation
 - Suivi des relances a venir
+- Photo de profil via upload S3 pre-signe
+- Templates de relance reutilisables
+- Historique des emails envoye depuis l'application
 - Preferences email pour les rappels quotidiens
 - Base admin et audit logs conservees
 
@@ -22,7 +25,8 @@ centraliser les relances et piloter son pipeline d'entretiens depuis une interfa
 - Prisma + PostgreSQL
 - Argon2id pour les mots de passe
 - Sessions serveur avec cookies `httpOnly`
-- Nodemailer pour les emails transactionnels
+- SMTP ou AWS SES pour les emails transactionnels
+- AWS S3 pour les avatars utilisateur
 - Zod pour les validations serveur
 
 ## Architecture
@@ -32,9 +36,11 @@ centraliser les relances et piloter son pipeline d'entretiens depuis une interfa
 - `src/features/auth`: login, register, confirmation email
 - `src/features/applications`: CRUD des candidatures, badges, formulaires, table
 - `src/features/users`: profil, preferences, mot de passe
+- `src/features/emails`: templates, relances personnalisees et historique
 - `src/features/jobs`: job quotidien de rappel par email
 - `src/server/security`: sessions, rate limit, audit, crypto
-- `src/server/email`: transport SMTP et templates
+- `src/server/email`: transport SMTP/SES, templates et logs
+- `src/server/storage`: helpers S3 pour avatars
 - `prisma`: schema, migrations, seed
 
 ## Variables D'environnement
@@ -62,9 +68,17 @@ SMTP_SECURE="false"
 SMTP_USER=""
 SMTP_PASSWORD=""
 SMTP_FROM="Waren <no-reply@example.com>"
+EMAIL_PROVIDER="auto"
+AWS_REGION=""
+AWS_SES_REGION=""
+AWS_SES_CONFIGURATION_SET=""
+AWS_S3_BUCKET=""
+AWS_S3_AVATAR_PREFIX="avatars"
+AWS_S3_PUBLIC_BASE_URL=""
 ```
 
-Si `SMTP_HOST` est vide, les emails sont ecrits dans `.dev-emails.log` en local.
+Si `EMAIL_PROVIDER=console` ou si aucun provider n'est configure, les emails sont ecrits
+dans `.dev-emails.log` en local.
 
 ## Installation
 
@@ -101,9 +115,10 @@ Puis ouvrir [http://localhost:3000](http://localhost:3000).
 3. Se connecter
 4. Ajouter une candidature
 5. Filtrer la liste par statut
-6. Modifier une candidature
-7. Supprimer une candidature
-8. Verifier le dashboard et les relances a venir
+6. Ajouter un avatar dans `/profile`
+7. Modifier une candidature et renseigner un email de contact
+8. Envoyer une relance depuis `/applications/[id]/edit`
+9. Verifier le dashboard, l'historique email et les relances a venir
 
 ## Emails
 
@@ -116,6 +131,17 @@ Lors de l'inscription:
 - seul son hash est stocke
 - un email avec lien de validation est envoye
 - le compte reste non confirme tant que le lien n'est pas utilise
+- chaque tentative est journalisee dans `EmailLog`
+
+### Relances personnalisees
+
+Depuis la fiche d'une candidature:
+
+- choix d'un template ou message libre
+- personnalisation via `{{companyName}}`, `{{roleTitle}}`, `{{contactName}}`, etc.
+- envoi via SMTP ou AWS SES
+- historique visible dans l'application
+- journalisation complete dans `EmailLog`
 
 ### Rappel quotidien
 
@@ -155,6 +181,25 @@ Le socle inclut:
 
 Le detail est documente dans `SECURITY.md`.
 
+## AWS S3 + SES
+
+Le guide de configuration pour S3 et SES se trouve dans `docs/AWS_S3_SES.md`.
+
+## Test Local Avant VM
+
+```bash
+cp .env.example .env
+npm run prisma:generate
+npm run dev
+```
+
+Renseignez ensuite vos vraies valeurs `DATABASE_URL`, `SESSION_SECRET`, et si vous voulez
+tester les nouvelles features:
+
+- `EMAIL_PROVIDER="ses"` ou `"smtp"` pour un vrai envoi
+- `AWS_REGION`, `AWS_S3_BUCKET`, `AWS_S3_PUBLIC_BASE_URL` pour les avatars
+- `AWS_SES_REGION` si SES utilise une region differente
+
 ## Deploiement VM
 
 Les fichiers de deploiement AWS deja presents dans `deploy/aws-ec2` restent utilisables.
@@ -166,6 +211,9 @@ npm run prisma:deploy
 npm run build
 sudo systemctl restart waren
 ```
+
+Pour un redeploiement par archive sur EC2, regenez le paquet local puis recopiez-le sur la
+VM avant rebuild.
 
 ## Scripts Utiles
 

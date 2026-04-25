@@ -26,6 +26,13 @@ const envSchema = z.object({
   SMTP_USER: z.string().optional().default(""),
   SMTP_PASSWORD: z.string().optional().default(""),
   SMTP_FROM: z.string().min(1).default("Waren <no-reply@example.com>"),
+  EMAIL_PROVIDER: z.enum(["auto", "console", "smtp", "ses"]).default("auto"),
+  AWS_REGION: z.string().optional().default(""),
+  AWS_SES_REGION: z.string().optional().default(""),
+  AWS_SES_CONFIGURATION_SET: z.string().optional().default(""),
+  AWS_S3_BUCKET: z.string().optional().default(""),
+  AWS_S3_AVATAR_PREFIX: z.string().optional().default("avatars"),
+  AWS_S3_PUBLIC_BASE_URL: z.string().optional().default(""),
   DAILY_SUMMARY_DEFAULT_TIMEZONE: z.string().min(1).default("Europe/Paris")
 });
 

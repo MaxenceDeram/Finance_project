@@ -1,9 +1,16 @@
-import { ApplicationStatus, AuditAction, DailyEmailStatus } from "@prisma/client";
+import {
+  ApplicationStatus,
+  AuditAction,
+  DailyEmailStatus,
+  EmailCategory,
+  EmailLogStatus
+} from "@prisma/client";
 import { getEnv } from "@/config/env";
 import { startOfUtcDay } from "@/lib/dates";
 import { getSafeErrorMessage } from "@/lib/errors";
 import { prisma } from "@/server/db/prisma";
-import { sendEmail } from "@/server/email/mailer";
+import { sendEmail, getConfiguredEmailProvider } from "@/server/email/mailer";
+import { createEmailLog } from "@/server/email/logs";
 import { dailySummaryEmailTemplate } from "@/server/email/templates/daily-summary-email";
 import { writeAuditLog } from "@/server/security/audit";
 import { responseStatuses } from "@/features/applications/constants";
@@ -87,37 +94,52 @@ export async function runDailySummaryJob(date = new Date()) {
       continue;
     }
 
+    const sentApplications = applications.filter(
+      (application) => application.status !== ApplicationStatus.TO_APPLY
+    ).length;
+    const responsesCount = applications.filter((application) =>
+      responseStatuses.has(application.status)
+    ).length;
+    const responseRate =
+      sentApplications > 0 ? Math.round((responsesCount / sentApplications) * 100) : 0;
+
+    const emailContent = dailySummaryEmailTemplate({
+      totalApplications: applications.length,
+      responseRate,
+      upcomingFollowUps: upcomingFollowUps.map((application) => ({
+        companyName: application.companyName,
+        roleTitle: application.roleTitle,
+        status: application.status,
+        followUpDate: application.followUpDate ?? application.updatedAt
+      })),
+      recentApplications: recentApplications.map((application) => ({
+        companyName: application.companyName,
+        roleTitle: application.roleTitle,
+        status: application.status,
+        applicationDate: application.applicationDate ?? application.updatedAt
+      })),
+      dashboardUrl: `${env.APP_URL}/dashboard`
+    });
+
     try {
-      const sentApplications = applications.filter(
-        (application) => application.status !== ApplicationStatus.TO_APPLY
-      ).length;
-      const responsesCount = applications.filter((application) =>
-        responseStatuses.has(application.status)
-      ).length;
-      const responseRate =
-        sentApplications > 0 ? Math.round((responsesCount / sentApplications) * 100) : 0;
 
-      const emailContent = dailySummaryEmailTemplate({
-        totalApplications: applications.length,
-        responseRate,
-        upcomingFollowUps: upcomingFollowUps.map((application) => ({
-          companyName: application.companyName,
-          roleTitle: application.roleTitle,
-          status: application.status,
-          followUpDate: application.followUpDate ?? application.updatedAt
-        })),
-        recentApplications: recentApplications.map((application) => ({
-          companyName: application.companyName,
-          roleTitle: application.roleTitle,
-          status: application.status,
-          applicationDate: application.applicationDate ?? application.updatedAt
-        })),
-        dashboardUrl: `${env.APP_URL}/dashboard`
-      });
-
-      await sendEmail({
+      const delivery = await sendEmail({
         to: user.email,
         ...emailContent
+      });
+
+      await createEmailLog({
+        userId: user.id,
+        category: EmailCategory.DAILY_SUMMARY,
+        provider: delivery.provider,
+        status: EmailLogStatus.SENT,
+        toEmail: user.email,
+        fromEmail: delivery.from,
+        subject: emailContent.subject,
+        htmlBody: emailContent.html,
+        textBody: emailContent.text,
+        providerMessageId: delivery.messageId,
+        sentAt: new Date()
       });
 
       await upsertDailyEmailLog({
@@ -142,6 +164,19 @@ export async function runDailySummaryJob(date = new Date()) {
       });
     } catch (error) {
       const message = getSafeErrorMessage(error, "Erreur lors de l'envoi quotidien.");
+
+      await createEmailLog({
+        userId: user.id,
+        category: EmailCategory.DAILY_SUMMARY,
+        provider: getConfiguredEmailProvider(),
+        status: EmailLogStatus.FAILED,
+        toEmail: user.email,
+        fromEmail: env.SMTP_FROM,
+        subject: emailContent.subject,
+        htmlBody: emailContent.html,
+        textBody: emailContent.text,
+        errorMessage: message
+      });
 
       await upsertDailyEmailLog({
         existingLogId: existingLog?.id,

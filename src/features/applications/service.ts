@@ -32,6 +32,7 @@ export async function createJobApplication(input: {
       status: parsed.status,
       listingUrl: emptyToNull(parsed.listingUrl),
       hrContact: emptyToNull(parsed.hrContact),
+      contactEmail: emptyToNull(parsed.contactEmail),
       compensation: emptyToNull(parsed.compensation),
       notes: emptyToNull(parsed.notes),
       followUpDate: parsed.followUpDate ?? null
@@ -67,6 +68,7 @@ export async function updateJobApplication(input: {
       status: parsed.status,
       listingUrl: emptyToNull(parsed.listingUrl),
       hrContact: emptyToNull(parsed.hrContact),
+      contactEmail: emptyToNull(parsed.contactEmail),
       compensation: emptyToNull(parsed.compensation),
       notes: emptyToNull(parsed.notes),
       followUpDate: parsed.followUpDate ?? null
@@ -138,7 +140,9 @@ export async function listJobApplications(input: {
             OR: [
               { companyName: { contains: query, mode: "insensitive" } },
               { roleTitle: { contains: query, mode: "insensitive" } },
-              { location: { contains: query, mode: "insensitive" } }
+              { location: { contains: query, mode: "insensitive" } },
+              { hrContact: { contains: query, mode: "insensitive" } },
+              { contactEmail: { contains: query, mode: "insensitive" } }
             ]
           }
         : {})
@@ -228,6 +232,20 @@ async function assertApplicationOwner(applicationId: string, userId: string) {
     include: {
       documents: {
         orderBy: [{ documentType: "asc" }, { createdAt: "desc" }]
+      },
+      emailLogs: {
+        where: {
+          category: "APPLICATION_FOLLOW_UP"
+        },
+        orderBy: { createdAt: "desc" },
+        take: 20,
+        include: {
+          template: {
+            select: {
+              name: true
+            }
+          }
+        }
       }
     }
   });

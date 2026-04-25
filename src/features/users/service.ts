@@ -3,6 +3,7 @@ import { AppError } from "@/lib/errors";
 import { normalizeEmail } from "@/lib/utils";
 import { prisma } from "@/server/db/prisma";
 import { sendConfirmationEmail } from "@/features/auth/service";
+import { getAvatarUrl, removeAvatar } from "@/server/storage/avatar-storage";
 import { writeAuditLog } from "@/server/security/audit";
 import {
   hashPassword,
@@ -10,7 +11,11 @@ import {
   verifyPassword
 } from "@/server/security/password";
 import { updateEmailPreferencesSchema } from "@/validation/preferences";
-import { changePasswordSchema, updateProfileEmailSchema } from "@/validation/profile";
+import {
+  changePasswordSchema,
+  updateProfileEmailSchema,
+  updateProfileIdentitySchema
+} from "@/validation/profile";
 
 export async function getUserPreferences(userId: string) {
   return prisma.userPreferences.upsert({
@@ -40,6 +45,32 @@ export async function updateUserPreferences(userId: string, values: unknown) {
       dailyEmailEnabled: parsed.dailyEmailEnabled,
       timezone: parsed.timezone,
       dailyEmailHour: parsed.dailyEmailHour
+    }
+  });
+}
+
+export async function getUserPresentation(input: {
+  id: string;
+  email: string;
+  displayName?: string | null;
+  avatarStorageKey?: string | null;
+}) {
+  return {
+    displayName: getPreferredUserName(input.displayName, input.email),
+    avatarUrl: await getAvatarUrl(input.avatarStorageKey)
+  };
+}
+
+export async function updateProfileIdentity(input: {
+  userId: string;
+  values: unknown;
+}) {
+  const parsed = updateProfileIdentitySchema.parse(input.values);
+
+  return prisma.user.update({
+    where: { id: input.userId },
+    data: {
+      displayName: parsed.displayName || null
     }
   });
 }
@@ -134,4 +165,32 @@ export async function changeUserPassword(input: {
     action: AuditAction.PROFILE_PASSWORD_CHANGED,
     ipHash: input.ipHash
   });
+}
+
+export async function deleteUserAvatar(input: {
+  userId: string;
+  ipHash?: string | null;
+}) {
+  await removeAvatar(input.userId);
+
+  await writeAuditLog({
+    userId: input.userId,
+    action: AuditAction.PROFILE_AVATAR_REMOVED,
+    ipHash: input.ipHash
+  });
+}
+
+export function getPreferredUserName(displayName: string | null | undefined, email: string) {
+  const trimmed = displayName?.trim();
+
+  if (trimmed) {
+    return trimmed;
+  }
+
+  const localPart = email.split("@")[0] ?? email;
+  return localPart
+    .split(/[._-]+/)
+    .filter(Boolean)
+    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+    .join(" ");
 }

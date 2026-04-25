@@ -1,9 +1,15 @@
-import { AuditAction, UserStatus } from "@prisma/client";
+import {
+  AuditAction,
+  EmailCategory,
+  EmailLogStatus,
+  UserStatus
+} from "@prisma/client";
 import { getEnv } from "@/config/env";
-import { AppError } from "@/lib/errors";
+import { AppError, getSafeErrorMessage } from "@/lib/errors";
 import { normalizeEmail } from "@/lib/utils";
 import { prisma } from "@/server/db/prisma";
-import { sendEmail } from "@/server/email/mailer";
+import { sendEmail, getConfiguredEmailProvider } from "@/server/email/mailer";
+import { createEmailLog } from "@/server/email/logs";
 import { confirmationEmailTemplate } from "@/server/email/templates/confirmation-email";
 import { writeAuditLog } from "@/server/security/audit";
 import { createRandomToken, hashToken } from "@/server/security/crypto";
@@ -94,7 +100,42 @@ export async function sendConfirmationEmail(userId: string, email: string) {
 
   const confirmationUrl = `${env.APP_URL}/auth/confirm-email?token=${encodeURIComponent(token)}`;
   const emailContent = confirmationEmailTemplate({ email, confirmationUrl });
-  await sendEmail({ to: email, ...emailContent });
+
+  try {
+    const delivery = await sendEmail({ to: email, ...emailContent });
+
+    await createEmailLog({
+      userId,
+      category: EmailCategory.EMAIL_CONFIRMATION,
+      provider: delivery.provider,
+      status: EmailLogStatus.SENT,
+      toEmail: email,
+      fromEmail: delivery.from,
+      subject: emailContent.subject,
+      htmlBody: emailContent.html,
+      textBody: emailContent.text,
+      providerMessageId: delivery.messageId,
+      sentAt: new Date()
+    });
+  } catch (error) {
+    await createEmailLog({
+      userId,
+      category: EmailCategory.EMAIL_CONFIRMATION,
+      provider: getConfiguredEmailProvider(),
+      status: EmailLogStatus.FAILED,
+      toEmail: email,
+      fromEmail: env.SMTP_FROM,
+      subject: emailContent.subject,
+      htmlBody: emailContent.html,
+      textBody: emailContent.text,
+      errorMessage: getSafeErrorMessage(
+        error,
+        "Impossible d'envoyer l'email de confirmation."
+      )
+    });
+
+    throw error;
+  }
 }
 
 export async function resendConfirmationEmail(input: {

@@ -7,8 +7,17 @@ import { assertRateLimit } from "@/server/security/rate-limit";
 import { assertSameOrigin, getRequestMetadata } from "@/server/security/request";
 import { destroyCurrentSession, requireUser } from "@/server/security/sessions";
 import { updateEmailPreferencesSchema } from "@/validation/preferences";
-import { changePasswordSchema, updateProfileEmailSchema } from "@/validation/profile";
-import { changeUserPassword, updateProfileEmail, updateUserPreferences } from "./service";
+import {
+  changePasswordSchema,
+  updateProfileEmailSchema,
+  updateProfileIdentitySchema
+} from "@/validation/profile";
+import {
+  changeUserPassword,
+  updateProfileEmail,
+  updateProfileIdentity,
+  updateUserPreferences
+} from "./service";
 
 export async function updateEmailPreferencesAction(
   _state: ActionState,
@@ -37,6 +46,41 @@ export async function updateEmailPreferencesAction(
     revalidatePath("/settings/email");
 
     return { ok: true, message: "Preferences enregistrees." };
+  } catch (error) {
+    return { ok: false, message: getSafeErrorMessage(error) };
+  }
+}
+
+export async function updateProfileIdentityAction(
+  _state: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  const user = await requireUser();
+
+  try {
+    await assertSameOrigin();
+    const raw = {
+      displayName: formData.get("displayName")
+    };
+    const parsed = updateProfileIdentitySchema.safeParse(raw);
+
+    if (!parsed.success) {
+      return {
+        ok: false,
+        message: "Verifiez les champs du formulaire.",
+        fieldErrors: parsed.error.flatten().fieldErrors
+      };
+    }
+
+    await updateProfileIdentity({
+      userId: user.id,
+      values: parsed.data
+    });
+
+    revalidatePath("/profile");
+    revalidatePath("/dashboard");
+
+    return { ok: true, message: "Profil mis a jour." };
   } catch (error) {
     return { ok: false, message: getSafeErrorMessage(error) };
   }

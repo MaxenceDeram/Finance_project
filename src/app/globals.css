@@ -203,18 +203,6 @@ select {
   }
 }
 
-@keyframes brand-pulse {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0);
-    filter: drop-shadow(0 0 0 rgb(99 102 241 / 0));
-  }
-  50% {
-    transform: translate3d(0, -1px, 0);
-    filter: drop-shadow(0 12px 20px rgb(99 102 241 / 0.18));
-  }
-}
-
 .auth-gradient-panel {
   background:
     radial-gradient(circle at 16% 18%, rgb(255 255 255 / 0.2), transparent 18%),
@@ -282,12 +270,8 @@ select {
   animation: spark-rise 3.6s ease-in-out infinite;
 }
 
-.brand-wordmark-image {
-  animation: brand-pulse 7s ease-in-out infinite;
-}
-
-.brand-mark-image,
 .brand-mark-float,
 .brand-icon-shell {
   animation: surface-float 6s ease-in-out infinite;
+  will-change: transform;
 }

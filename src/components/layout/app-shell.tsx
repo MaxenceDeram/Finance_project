@@ -2,22 +2,23 @@ import { Bell, LogOut, Plus, Search } from "lucide-react";
 import Link from "next/link";
 import type { UserRole } from "@prisma/client";
 import { WarenLogo } from "@/components/brand/waren-logo";
+import { UserAvatar } from "@/components/users/user-avatar";
 import { appNavigation } from "@/config/navigation";
 import { logoutAction } from "@/features/auth/actions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AppNavLink } from "./app-nav-link";
 
-function getInitial(email: string) {
-  return email.charAt(0).toUpperCase();
-}
-
 export function AppShell({
   userEmail,
+  userDisplayName,
+  userAvatarUrl,
   userRole,
   children
 }: {
   userEmail: string;
+  userDisplayName?: string | null;
+  userAvatarUrl?: string | null;
   userRole: UserRole;
   children: React.ReactNode;
 }) {
@@ -28,10 +29,10 @@ export function AppShell({
       <aside className="fixed inset-y-0 left-0 z-20 hidden w-[284px] flex-col border-r border-white/10 bg-[linear-gradient(180deg,#101626_0%,#131a2d_100%)] px-5 py-6 text-white shadow-[0_24px_60px_rgba(2,6,23,0.28)] lg:flex">
         <Link href="/dashboard" className="block rounded-2xl">
           <WarenLogo
+            size="xl"
             surface="dark"
-            className="gap-3"
-            markClassName="h-12 w-12"
-            wordmarkClassName="text-[2rem] text-white"
+            className="items-end"
+            wordmarkClassName="text-white"
           />
           <span className="mt-2 block text-sm text-white/55">
             Suivi premium des candidatures
@@ -63,11 +64,17 @@ export function AppShell({
 
         <div className="mt-auto rounded-[24px] border border-white/10 bg-white/[0.055] p-4 shadow-[0_1px_0_rgba(255,255,255,0.05)_inset]">
           <div className="flex items-center gap-3">
-            <div className="inline-flex size-11 items-center justify-center rounded-2xl bg-white/10 text-sm font-semibold">
-              {getInitial(userEmail)}
-            </div>
+            <UserAvatar
+              avatarUrl={userAvatarUrl}
+              name={userDisplayName}
+              email={userEmail}
+              className="size-11 rounded-2xl border-white/10 bg-white/10 text-white shadow-none"
+              fallbackClassName="text-white"
+            />
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold">{userEmail}</p>
+              <p className="truncate text-sm font-semibold">
+                {userDisplayName || userEmail}
+              </p>
               <p className="text-xs text-white/50">Espace personnel</p>
             </div>
           </div>
@@ -97,12 +104,7 @@ export function AppShell({
               href="/dashboard"
               className="text-lg font-semibold tracking-normal lg:hidden"
             >
-              <WarenLogo
-                surface="light"
-                className="gap-2"
-                markClassName="h-10"
-                wordmarkClassName="text-[1.45rem]"
-              />
+              <WarenLogo size="md" surface="light" />
             </Link>
 
             <form
@@ -132,11 +134,16 @@ export function AppShell({
                 <Bell aria-hidden="true" />
               </Button>
               <div className="hidden items-center gap-3 rounded-2xl border border-border bg-white px-3 py-2 shadow-[0_1px_2px_rgba(16,24,40,0.04)] sm:flex">
-                <div className="inline-flex size-9 items-center justify-center rounded-xl bg-[#eef2ff] text-sm font-semibold text-[#4f46e5]">
-                  {getInitial(userEmail)}
-                </div>
+                <UserAvatar
+                  avatarUrl={userAvatarUrl}
+                  name={userDisplayName}
+                  email={userEmail}
+                  className="size-9 rounded-xl"
+                />
                 <div className="max-w-[180px]">
-                  <p className="truncate text-sm font-semibold">{userEmail}</p>
+                  <p className="truncate text-sm font-semibold">
+                    {userDisplayName || userEmail}
+                  </p>
                   <p className="text-xs text-muted-foreground">Suivi candidatures</p>
                 </div>
               </div>

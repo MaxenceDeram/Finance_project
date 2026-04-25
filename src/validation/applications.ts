@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { idSchema } from "./common";
+import { emailSchema, idSchema } from "./common";
 
 const contractTypeSchema = z.enum([
   "INTERNSHIP",
@@ -54,6 +54,14 @@ const optionalDate = z.preprocess((value) => {
   return value;
 }, z.coerce.date().optional());
 
+const optionalEmail = z.preprocess((value) => {
+  if (value === "" || value == null) {
+    return undefined;
+  }
+
+  return value;
+}, emailSchema.optional());
+
 export const applicationInputSchema = z.object({
   companyName: z.string().trim().min(1, "Entreprise requise.").max(120),
   roleTitle: z.string().trim().min(1, "Poste requis.").max(160),
@@ -63,6 +71,7 @@ export const applicationInputSchema = z.object({
   status: applicationStatusSchema,
   listingUrl: optionalUrl,
   hrContact: optionalTrimmedString,
+  contactEmail: optionalEmail,
   compensation: optionalTrimmedString,
   notes: z.string().trim().max(4000).optional().or(z.literal("")),
   followUpDate: optionalDate

@@ -44,10 +44,10 @@ export function AuthShell({
               className="flex items-center gap-3 text-xl font-semibold tracking-normal"
             >
               <WarenLogo
+                size="hero"
                 surface="dark"
-                className="gap-3"
-                markClassName="h-12 w-12"
-                wordmarkClassName="text-[2rem] text-white"
+                className="items-end"
+                wordmarkClassName="text-white"
               />
             </Link>
             <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-medium text-white/80">
@@ -142,12 +142,7 @@ export function AuthShell({
         <section className="flex flex-1 items-center justify-center bg-[linear-gradient(180deg,rgba(248,250,255,0.78),rgba(255,255,255,0.96))] px-5 py-8 sm:px-8 lg:px-12">
           <div className="w-full max-w-md">
             <Link href="/" className="text-lg font-semibold tracking-normal lg:hidden">
-              <WarenLogo
-                surface="light"
-                className="gap-2"
-                markClassName="h-10"
-                wordmarkClassName="text-[1.45rem]"
-              />
+              <WarenLogo size="md" surface="light" />
             </Link>
 
             <div className="mt-4 rounded-[30px] border border-white/70 bg-white/96 p-8 shadow-[0_24px_60px_rgba(15,23,42,0.08)] sm:p-9">

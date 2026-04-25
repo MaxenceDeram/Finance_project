@@ -10,6 +10,9 @@ import { ApplicationForm } from "@/features/applications/application-form";
 import { ApplicationStatusBadge } from "@/features/applications/application-status-badge";
 import { getBrandToneForApplicationStatus } from "@/features/applications/status-brand";
 import { getJobApplicationForUser } from "@/features/applications/service";
+import { ApplicationFollowUpComposer } from "@/features/emails/application-follow-up-composer";
+import { getFollowUpTokens, listEmailTemplatesForUser } from "@/features/emails/service";
+import { getPreferredUserName } from "@/features/users/service";
 import { requireUser } from "@/server/security/sessions";
 
 export default async function EditApplicationPage({
@@ -29,6 +32,8 @@ export default async function EditApplicationPage({
   if (!application) {
     notFound();
   }
+
+  const templates = await listEmailTemplatesForUser(user.id);
 
   return (
     <div className="mx-auto max-w-7xl space-y-6">
@@ -89,6 +94,7 @@ export default async function EditApplicationPage({
           status: application.status,
           listingUrl: application.listingUrl,
           hrContact: application.hrContact,
+          contactEmail: application.contactEmail,
           compensation: application.compensation,
           notes: application.notes,
           followUpDate: application.followUpDate?.toISOString().slice(0, 10) ?? ""
@@ -103,6 +109,39 @@ export default async function EditApplicationPage({
           originalFilename: document.originalFilename,
           sizeBytes: document.sizeBytes,
           createdAt: document.createdAt.toISOString()
+        }))}
+      />
+
+      <ApplicationFollowUpComposer
+        applicationId={application.id}
+        defaultToEmail={application.contactEmail}
+        templates={templates.map((template) => ({
+          id: template.id,
+          name: template.name,
+          subjectTemplate: template.subjectTemplate,
+          bodyTemplate: template.bodyTemplate,
+          isDefault: template.isDefault
+        }))}
+        templateTokens={getFollowUpTokens()}
+        templateContext={{
+          companyName: application.companyName,
+          roleTitle: application.roleTitle,
+          contactName: application.hrContact,
+          contactEmail: application.contactEmail,
+          applicationDate: application.applicationDate?.toISOString() ?? null,
+          userName: getPreferredUserName(user.displayName, user.email),
+          userEmail: user.email
+        }}
+        history={application.emailLogs.map((log) => ({
+          id: log.id,
+          status: log.status,
+          provider: log.provider,
+          toEmail: log.toEmail,
+          subject: log.subject,
+          templateName: log.template?.name ?? null,
+          sentAt: log.sentAt?.toISOString() ?? null,
+          createdAt: log.createdAt.toISOString(),
+          errorMessage: log.errorMessage ?? null
         }))}
       />
     </div>

@@ -47,7 +47,7 @@ export async function getAdminDashboardStats() {
         }
       }
     }),
-    prisma.dailyEmailLog.count({ where: { status: "FAILED" } })
+    prisma.emailLog.count({ where: { status: "FAILED" } })
   ]);
 
   return {
@@ -155,14 +155,25 @@ export async function listAuditLogs() {
   });
 }
 
-export async function listDailyEmailLogs() {
-  return prisma.dailyEmailLog.findMany({
-    orderBy: { sentAt: "desc" },
+export async function listEmailLogs() {
+  return prisma.emailLog.findMany({
+    orderBy: [{ sentAt: "desc" }, { createdAt: "desc" }],
     take: 200,
     include: {
       user: {
         select: {
           email: true
+        }
+      },
+      application: {
+        select: {
+          companyName: true,
+          roleTitle: true
+        }
+      },
+      template: {
+        select: {
+          name: true
         }
       }
     }

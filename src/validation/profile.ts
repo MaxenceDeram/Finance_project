@@ -1,6 +1,10 @@
 import { z } from "zod";
 import { emailSchema } from "./common";
 
+export const updateProfileIdentitySchema = z.object({
+  displayName: z.string().trim().max(80).optional().or(z.literal(""))
+});
+
 export const updateProfileEmailSchema = z.object({
   email: emailSchema,
   currentPassword: z.string().min(1)

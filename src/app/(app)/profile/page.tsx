@@ -1,14 +1,18 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  ProfileAvatarCard,
+  UpdateProfileIdentityForm,
   ChangePasswordForm,
   UpdateProfileEmailForm
 } from "@/features/users/profile-forms";
 import { formatDateTime } from "@/lib/dates";
+import { getUserPresentation } from "@/features/users/service";
 import { requireUser } from "@/server/security/sessions";
 
 export default async function ProfilePage() {
   const user = await requireUser();
+  const presentation = await getUserPresentation(user);
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -26,6 +30,12 @@ export default async function ProfilePage() {
           <div className="flex items-center justify-between gap-4 border-b pb-4">
             <span className="text-sm text-muted-foreground">Email</span>
             <span className="font-semibold">{user.email}</span>
+          </div>
+          <div className="flex items-center justify-between gap-4 border-b pb-4">
+            <span className="text-sm text-muted-foreground">Nom affiche</span>
+            <span className="font-semibold">
+              {presentation.displayName || "Non renseigne"}
+            </span>
           </div>
           <div className="flex items-center justify-between gap-4 border-b pb-4">
             <span className="text-sm text-muted-foreground">Statut</span>
@@ -51,6 +61,12 @@ export default async function ProfilePage() {
           </div>
         </CardContent>
       </Card>
+      <ProfileAvatarCard
+        currentAvatarUrl={presentation.avatarUrl}
+        currentDisplayName={presentation.displayName}
+        currentEmail={user.email}
+      />
+      <UpdateProfileIdentityForm currentDisplayName={user.displayName} />
       <div className="grid gap-6 lg:grid-cols-2">
         <UpdateProfileEmailForm currentEmail={user.email} />
         <ChangePasswordForm />

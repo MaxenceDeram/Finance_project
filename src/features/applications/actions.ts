@@ -42,6 +42,7 @@ export async function createJobApplicationAction(
       status: formData.get("status"),
       listingUrl: formData.get("listingUrl"),
       hrContact: formData.get("hrContact"),
+      contactEmail: formData.get("contactEmail"),
       compensation: formData.get("compensation"),
       notes: formData.get("notes"),
       followUpDate: formData.get("followUpDate")
@@ -97,6 +98,7 @@ export async function updateJobApplicationAction(
       status: formData.get("status"),
       listingUrl: formData.get("listingUrl"),
       hrContact: formData.get("hrContact"),
+      contactEmail: formData.get("contactEmail"),
       compensation: formData.get("compensation"),
       notes: formData.get("notes"),
       followUpDate: formData.get("followUpDate")

@@ -1,7 +1,7 @@
-import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 export type WarenLogoTone = "default" | "accepted" | "in-progress" | "rejected";
+export type WarenLogoSize = "xs" | "sm" | "md" | "lg" | "xl" | "hero";
 
 const toneClasses: Record<
   WarenLogoTone,
@@ -16,7 +16,7 @@ const toneClasses: Record<
   }
 > = {
   default: {
-    glow: "drop-shadow-[0_0_16px_rgba(79,70,229,0.22)]",
+    glow: "drop-shadow-[0_0_18px_rgba(79,70,229,0.18)]",
     wordmark: "text-[#252766]",
     shardA: "fill-[#1e225f]",
     shardB: "fill-[#2d3487]",
@@ -25,7 +25,7 @@ const toneClasses: Record<
     shardE: "fill-[#1e2466]"
   },
   accepted: {
-    glow: "drop-shadow-[0_0_16px_rgba(24,178,107,0.22)]",
+    glow: "drop-shadow-[0_0_18px_rgba(24,178,107,0.2)]",
     wordmark: "text-[#0f6c44]",
     shardA: "fill-[#0f6c44]",
     shardB: "fill-[#157a4d]",
@@ -34,7 +34,7 @@ const toneClasses: Record<
     shardE: "fill-[#0f6c44]"
   },
   "in-progress": {
-    glow: "drop-shadow-[0_0_16px_rgba(214,145,42,0.2)]",
+    glow: "drop-shadow-[0_0_18px_rgba(214,145,42,0.18)]",
     wordmark: "text-[#9a6215]",
     shardA: "fill-[#935d14]",
     shardB: "fill-[#b06d14]",
@@ -43,7 +43,7 @@ const toneClasses: Record<
     shardE: "fill-[#935d14]"
   },
   rejected: {
-    glow: "drop-shadow-[0_0_16px_rgba(227,93,106,0.22)]",
+    glow: "drop-shadow-[0_0_18px_rgba(227,93,106,0.2)]",
     wordmark: "text-[#b23b49]",
     shardA: "fill-[#a93d4a]",
     shardB: "fill-[#c14957]",
@@ -53,8 +53,49 @@ const toneClasses: Record<
   }
 };
 
+const lockupSizes: Record<
+  WarenLogoSize,
+  {
+    gap: string;
+    mark: string;
+    wordmark: string;
+  }
+> = {
+  xs: {
+    gap: "gap-1.5",
+    mark: "h-4 w-4",
+    wordmark: "text-[1rem]"
+  },
+  sm: {
+    gap: "gap-2",
+    mark: "h-6 w-6",
+    wordmark: "text-[1.25rem]"
+  },
+  md: {
+    gap: "gap-2.5",
+    mark: "h-9 w-9",
+    wordmark: "text-[1.85rem]"
+  },
+  lg: {
+    gap: "gap-3",
+    mark: "h-[2.7rem] w-[2.7rem]",
+    wordmark: "text-[2.25rem]"
+  },
+  xl: {
+    gap: "gap-3.5",
+    mark: "h-12 w-12",
+    wordmark: "text-[2.75rem]"
+  },
+  hero: {
+    gap: "gap-4",
+    mark: "h-14 w-14",
+    wordmark: "text-[3.35rem]"
+  }
+};
+
 export function WarenLogo({
   tone = "default",
+  size = "md",
   withWordmark = true,
   surface = "light",
   className,
@@ -62,6 +103,7 @@ export function WarenLogo({
   wordmarkClassName
 }: {
   tone?: WarenLogoTone;
+  size?: WarenLogoSize;
   withWordmark?: boolean;
   surface?: "light" | "dark";
   className?: string;
@@ -69,59 +111,39 @@ export function WarenLogo({
   wordmarkClassName?: string;
 }) {
   const palette = toneClasses[tone];
-  const useImageLogo = tone === "default" && withWordmark && surface === "light";
-  const showImageMark = tone === "default" && surface === "light";
-  const defaultWordmarkClass =
-    surface === "dark" ? "text-white" : palette.wordmark;
+  const sizeClasses = lockupSizes[size];
+  const defaultWordmarkClass = surface === "dark" ? "text-white" : palette.wordmark;
 
   return (
-    <span className={cn("inline-flex items-center gap-3", className)}>
-      {useImageLogo ? (
-        <Image
-          src="/brand/waren-logo.png"
-          alt="Waren"
-          width={342}
-          height={228}
-          priority
-          className={cn(
-            "brand-wordmark-image h-14 w-auto flex-none object-contain sm:h-16",
-            markClassName
-          )}
-        />
-      ) : (
-        <span className="relative inline-flex items-center justify-center">
-          {showImageMark ? (
-            <Image
-              src="/brand/waren-mark.png"
-              alt=""
-              aria-hidden="true"
-              width={110}
-              height={204}
-              priority
-              className={cn(
-                "brand-mark-image h-11 w-auto flex-none object-contain sm:h-12",
-                markClassName
-              )}
-            />
-          ) : (
-            <svg
-              viewBox="0 0 64 64"
-              aria-hidden="true"
-              className={cn("brand-mark-float h-10 w-10 flex-none", palette.glow, markClassName)}
-            >
-              <polygon points="6,28 29,18 41,26 19,37" className={palette.shardA} />
-              <polygon points="32,18 53,8 41,27 28,19" className={palette.shardB} />
-              <polygon points="41,27 56,13 48,40 33,31" className={palette.shardC} />
-              <polygon points="27,39 46,48 38,63 18,51" className={palette.shardD} />
-              <polygon points="19,52 29,60 19,63" className={palette.shardE} />
-            </svg>
-          )}
-        </span>
+    <span
+      className={cn(
+        "inline-flex shrink-0 items-center leading-none",
+        sizeClasses.gap,
+        className
       )}
-      {withWordmark && !useImageLogo ? (
+    >
+      <svg
+        viewBox="0 0 64 64"
+        aria-hidden="true"
+        className={cn(
+          "brand-mark-float shrink-0 overflow-visible",
+          palette.glow,
+          sizeClasses.mark,
+          markClassName
+        )}
+      >
+        <polygon points="6,28 29,18 41,26 19,37" className={palette.shardA} />
+        <polygon points="32,18 53,8 41,27 28,19" className={palette.shardB} />
+        <polygon points="41,27 56,13 48,40 33,31" className={palette.shardC} />
+        <polygon points="27,39 46,48 38,63 18,51" className={palette.shardD} />
+        <polygon points="19,52 29,60 19,63" className={palette.shardE} />
+      </svg>
+
+      {withWordmark ? (
         <span
           className={cn(
-            "text-[1.9rem] font-semibold leading-none tracking-normal sm:text-[2rem]",
+            "shrink-0 font-semibold leading-none tracking-normal",
+            sizeClasses.wordmark,
             defaultWordmarkClass,
             wordmarkClassName
           )}
