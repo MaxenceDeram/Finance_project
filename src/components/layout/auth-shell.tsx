@@ -44,9 +44,10 @@ export function AuthShell({
               className="flex items-center gap-3 text-xl font-semibold tracking-normal"
             >
               <WarenLogo
-                className="gap-2.5"
-                markClassName="h-10 w-10"
-                wordmarkClassName="text-[1.7rem] text-white"
+                surface="dark"
+                className="gap-3"
+                markClassName="h-12 w-12"
+                wordmarkClassName="text-[2rem] text-white"
               />
             </Link>
             <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-medium text-white/80">
@@ -126,7 +127,11 @@ export function AuthShell({
                   key={company}
                   className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.08] px-3.5 py-2"
                 >
-                  <CompanyAvatar companyName={company} className="size-8 rounded-xl" />
+                  <CompanyAvatar
+                    companyName={company}
+                    surface="dark"
+                    className="size-8 rounded-xl"
+                  />
                   <span className="text-sm font-medium text-white/78">{company}</span>
                 </div>
               ))}
@@ -138,9 +143,10 @@ export function AuthShell({
           <div className="w-full max-w-md">
             <Link href="/" className="text-lg font-semibold tracking-normal lg:hidden">
               <WarenLogo
+                surface="light"
                 className="gap-2"
-                markClassName="h-8 w-8"
-                wordmarkClassName="text-[1.3rem]"
+                markClassName="h-10"
+                wordmarkClassName="text-[1.45rem]"
               />
             </Link>
 

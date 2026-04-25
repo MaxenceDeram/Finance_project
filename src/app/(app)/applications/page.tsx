@@ -246,11 +246,12 @@ export default async function ApplicationsPage({
                   <Link
                     key={application.id}
                     href={`/applications/${application.id}/edit`}
-                    className="flex items-center gap-3 rounded-[22px] border border-border/80 bg-[#fbfcff] px-4 py-4 transition hover:border-[#d8ddff] hover:bg-white"
+                    className="surface-hover-lift flex items-center gap-3 rounded-[22px] border border-border/80 bg-[#fbfcff] px-4 py-4 transition hover:border-[#d8ddff] hover:bg-white"
                   >
                     <div className="relative">
                       <CompanyAvatar
                         companyName={application.companyName}
+                        listingUrl={application.listingUrl}
                         className="size-10 rounded-xl text-xs"
                       />
                       <span className="absolute -bottom-1 -right-1 inline-flex size-5 items-center justify-center rounded-full border border-white bg-white shadow-[0_1px_2px_rgba(16,24,40,0.12)]">
@@ -296,7 +297,7 @@ export default async function ApplicationsPage({
                 activeInterviews.slice(0, 4).map((application) => (
                   <div
                     key={application.id}
-                    className="rounded-[22px] border border-border/80 bg-[#fbfcff] px-4 py-4"
+                    className="surface-hover-lift rounded-[22px] border border-border/80 bg-[#fbfcff] px-4 py-4"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">

@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { WarenLogo } from "@/components/brand/waren-logo";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { CompanyAvatar } from "@/features/applications/company-avatar";
 import { ApplicationDocumentsManager } from "@/features/applications/application-documents-manager";
 import { ApplicationForm } from "@/features/applications/application-form";
 import { ApplicationStatusBadge } from "@/features/applications/application-status-badge";
@@ -33,12 +34,19 @@ export default async function EditApplicationPage({
     <div className="mx-auto max-w-7xl space-y-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div className="flex items-start gap-4">
-          <div className="rounded-[24px] border border-border bg-white px-4 py-3 shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
-            <WarenLogo
-              tone={getBrandToneForApplicationStatus(application.status)}
-              withWordmark={false}
-              markClassName="h-9 w-9"
+          <div className="relative">
+            <CompanyAvatar
+              companyName={application.companyName}
+              listingUrl={application.listingUrl}
+              className="size-16 rounded-[22px] border-white bg-white shadow-[0_12px_28px_rgba(15,23,42,0.08)]"
             />
+            <div className="absolute -bottom-2 -right-2 rounded-2xl border border-border bg-white px-2.5 py-2 shadow-[0_8px_18px_rgba(15,23,42,0.08)]">
+              <WarenLogo
+                tone={getBrandToneForApplicationStatus(application.status)}
+                withWordmark={false}
+                markClassName="h-5 w-5"
+              />
+            </div>
           </div>
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">

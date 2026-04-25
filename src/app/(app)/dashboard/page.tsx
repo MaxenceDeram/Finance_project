@@ -81,7 +81,7 @@ export default async function DashboardPage() {
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.55fr)_360px]">
         <section className="space-y-6">
-          <div className="premium-dark-card overflow-hidden rounded-[32px] border border-transparent px-7 py-7 text-white sm:px-8">
+          <div className="premium-dark-card panel-glow overflow-hidden rounded-[32px] border border-transparent px-7 py-7 text-white sm:px-8">
             <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
               <div className="max-w-2xl">
                 <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-medium text-white/75">
@@ -105,7 +105,7 @@ export default async function DashboardPage() {
                 ].map(([label, value]) => (
                   <div
                     key={label}
-                    className="rounded-[24px] border border-white/10 bg-white/[0.06] px-4 py-4 shadow-[0_1px_0_rgba(255,255,255,0.05)_inset]"
+                    className="surface-hover-lift rounded-[24px] border border-white/10 bg-white/[0.06] px-4 py-4 shadow-[0_1px_0_rgba(255,255,255,0.05)_inset]"
                   >
                     <p className="text-xs font-medium uppercase tracking-[0.1em] text-white/55">
                       {label}
@@ -221,10 +221,13 @@ export default async function DashboardPage() {
                 <Link
                   key={application.id}
                   href={`/applications/${application.id}/edit`}
-                  className="flex flex-col gap-4 rounded-[24px] border border-border/80 bg-[#fbfcff] px-4 py-4 transition hover:border-[#d8ddff] hover:bg-white sm:flex-row sm:items-center sm:justify-between"
+                  className="surface-hover-lift flex flex-col gap-4 rounded-[24px] border border-border/80 bg-[#fbfcff] px-4 py-4 transition hover:border-[#d8ddff] hover:bg-white sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="flex items-center gap-4">
-                    <CompanyAvatar companyName={application.companyName} />
+                    <CompanyAvatar
+                      companyName={application.companyName}
+                      listingUrl={application.listingUrl}
+                    />
                     <div>
                       <p className="text-sm font-semibold text-foreground">
                         {application.companyName}
@@ -263,7 +266,7 @@ export default async function DashboardPage() {
                   <Link
                     key={application.id}
                     href={`/applications/${application.id}/edit`}
-                    className="block rounded-[24px] border border-border/80 bg-[#fbfcff] px-4 py-4 transition hover:border-[#d8ddff] hover:bg-white"
+                    className="surface-hover-lift block rounded-[24px] border border-border/80 bg-[#fbfcff] px-4 py-4 transition hover:border-[#d8ddff] hover:bg-white"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0">
@@ -351,7 +354,7 @@ export default async function DashboardPage() {
                   </div>
                   <div className="h-2 overflow-hidden rounded-full bg-[#edf1f7]">
                     <div
-                      className="h-full rounded-full bg-[linear-gradient(90deg,#6366f1_0%,#8b5cf6_100%)]"
+                      className="progress-fill-animated h-full rounded-full bg-[linear-gradient(90deg,#6366f1_0%,#8b5cf6_100%)]"
                       style={{ width: `${(item.count / maxBreakdown) * 100}%` }}
                     />
                   </div>

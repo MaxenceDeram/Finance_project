@@ -24,7 +24,7 @@ export function StatCard({
   return (
     <Card
       className={cn(
-        "overflow-hidden border-border/80",
+        "surface-hover-lift overflow-hidden border-border/80",
         highlight && "premium-dark-card border-transparent text-white"
       )}
     >
@@ -66,12 +66,12 @@ export function StatCard({
             <span
               key={`${label}-${index}`}
               className={cn(
-                "w-2 rounded-full bg-[#dfe5ff]",
+                "spark-bar w-2 rounded-full bg-[#dfe5ff]",
                 tone === "positive" && "bg-[#9ae6c1]",
                 tone === "negative" && "bg-[#f3b5bc]",
                 highlight && "bg-white/20"
               )}
-              style={{ height }}
+              style={{ height, animationDelay: `${index * 0.12}s` }}
             />
           ))}
         </div>

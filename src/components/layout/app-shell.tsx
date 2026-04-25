@@ -28,9 +28,10 @@ export function AppShell({
       <aside className="fixed inset-y-0 left-0 z-20 hidden w-[284px] flex-col border-r border-white/10 bg-[linear-gradient(180deg,#101626_0%,#131a2d_100%)] px-5 py-6 text-white shadow-[0_24px_60px_rgba(2,6,23,0.28)] lg:flex">
         <Link href="/dashboard" className="block rounded-2xl">
           <WarenLogo
-            className="gap-2.5"
-            markClassName="h-10 w-10"
-            wordmarkClassName="text-[1.65rem] text-white"
+            surface="dark"
+            className="gap-3"
+            markClassName="h-12 w-12"
+            wordmarkClassName="text-[2rem] text-white"
           />
           <span className="mt-2 block text-sm text-white/55">
             Suivi premium des candidatures
@@ -97,9 +98,10 @@ export function AppShell({
               className="text-lg font-semibold tracking-normal lg:hidden"
             >
               <WarenLogo
+                surface="light"
                 className="gap-2"
-                markClassName="h-8 w-8"
-                wordmarkClassName="text-[1.3rem]"
+                markClassName="h-10"
+                wordmarkClassName="text-[1.45rem]"
               />
             </Link>
 

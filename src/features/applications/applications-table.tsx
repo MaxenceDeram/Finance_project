@@ -38,6 +38,7 @@ export function ApplicationsTable({ applications }: { applications: JobApplicati
               <div className="flex items-center gap-3">
                 <CompanyAvatar
                   companyName={application.companyName}
+                  listingUrl={application.listingUrl}
                   className="size-10 rounded-xl text-xs"
                 />
                 <div className="min-w-0">

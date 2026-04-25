@@ -162,6 +162,59 @@ select {
   }
 }
 
+@keyframes surface-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -3px, 0);
+  }
+}
+
+@keyframes spark-rise {
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: scaleY(0.92);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleY(1.05);
+  }
+}
+
+@keyframes panel-glow {
+  0%,
+  100% {
+    box-shadow: 0 24px 48px rgb(15 23 42 / 0.24);
+  }
+  50% {
+    box-shadow: 0 32px 68px rgb(79 70 229 / 0.2);
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes brand-pulse {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+    filter: drop-shadow(0 0 0 rgb(99 102 241 / 0));
+  }
+  50% {
+    transform: translate3d(0, -1px, 0);
+    filter: drop-shadow(0 12px 20px rgb(99 102 241 / 0.18));
+  }
+}
+
 .auth-gradient-panel {
   background:
     radial-gradient(circle at 16% 18%, rgb(255 255 255 / 0.2), transparent 18%),
@@ -200,4 +253,41 @@ select {
     radial-gradient(circle at top left, rgb(99 102 241 / 0.22), transparent 28%),
     linear-gradient(160deg, #101626 0%, #161d33 52%, #1c2440 100%);
   box-shadow: 0 24px 48px rgb(15 23 42 / 0.24);
+}
+
+.surface-hover-lift {
+  transition:
+    transform 240ms ease,
+    box-shadow 240ms ease,
+    border-color 240ms ease,
+    background-color 240ms ease;
+}
+
+.surface-hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 22px 40px rgb(15 23 42 / 0.08);
+}
+
+.panel-glow {
+  animation: panel-glow 9s ease-in-out infinite;
+}
+
+.progress-fill-animated {
+  background-size: 200% 100%;
+  animation: gradient-shift 8s linear infinite;
+}
+
+.spark-bar {
+  transform-origin: bottom center;
+  animation: spark-rise 3.6s ease-in-out infinite;
+}
+
+.brand-wordmark-image {
+  animation: brand-pulse 7s ease-in-out infinite;
+}
+
+.brand-mark-image,
+.brand-mark-float,
+.brand-icon-shell {
+  animation: surface-float 6s ease-in-out infinite;
 }

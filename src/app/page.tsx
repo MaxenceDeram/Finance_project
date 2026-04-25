@@ -39,6 +39,7 @@ const heroCompanies = [
   "Stripe",
   "Google",
   "Airbnb",
+  "Doctolib",
   "Canal+"
 ] as const;
 
@@ -52,9 +53,10 @@ export default function LandingPage() {
             className="flex items-center gap-3 text-xl font-semibold tracking-normal"
           >
             <WarenLogo
-              className="gap-2.5"
-              markClassName="h-10 w-10"
-              wordmarkClassName="text-[1.75rem]"
+              surface="light"
+              className="gap-3"
+              markClassName="h-14"
+              wordmarkClassName="text-[2rem]"
             />
           </Link>
           <div className="flex items-center gap-2">
@@ -98,7 +100,7 @@ export default function LandingPage() {
                 {heroCompanies.map((company) => (
                   <div
                     key={company}
-                    className="inline-flex items-center gap-3 rounded-full border border-border/80 bg-white/85 px-4 py-2 shadow-[0_8px_24px_rgba(15,23,42,0.05)]"
+                    className="surface-hover-lift inline-flex items-center gap-3 rounded-full border border-border/80 bg-white/85 px-4 py-2 shadow-[0_8px_24px_rgba(15,23,42,0.05)]"
                   >
                     <CompanyAvatar companyName={company} className="size-9 rounded-xl" />
                     <span className="text-sm font-medium text-foreground">{company}</span>
@@ -152,7 +154,7 @@ export default function LandingPage() {
                   {previewMetrics.map(([label, value, Icon]) => (
                     <div
                       key={label}
-                      className="rounded-[24px] border border-border/80 bg-white px-4 py-4"
+                      className="surface-hover-lift rounded-[24px] border border-border/80 bg-white px-4 py-4"
                     >
                       <div className="inline-flex size-9 items-center justify-center rounded-2xl bg-[#f3f5fb] text-muted-foreground">
                         <Icon className="size-4" aria-hidden="true" />
@@ -180,7 +182,7 @@ export default function LandingPage() {
                     {previewRows.map(([company, role, status]) => (
                       <div
                         key={`${company}-${role}`}
-                        className="flex items-center justify-between gap-3 rounded-[22px] border border-border/80 bg-[#fbfcff] px-4 py-3"
+                        className="surface-hover-lift flex items-center justify-between gap-3 rounded-[22px] border border-border/80 bg-[#fbfcff] px-4 py-3"
                       >
                         <div className="flex items-center gap-3">
                           <CompanyAvatar

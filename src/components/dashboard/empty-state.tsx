@@ -13,8 +13,8 @@ export function EmptyState({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="premium-card flex min-h-80 flex-col items-center justify-center rounded-[28px] border border-dashed border-border px-6 py-14 text-center">
-      <div className="rounded-2xl border border-border bg-[#f8faff] p-3 text-muted-foreground">
+    <div className="premium-card surface-hover-lift flex min-h-80 flex-col items-center justify-center rounded-[28px] border border-dashed border-border px-6 py-14 text-center">
+      <div className="brand-icon-shell rounded-2xl border border-border bg-[#f8faff] p-3 text-muted-foreground">
         <Icon className="size-6" aria-hidden="true" />
       </div>
       <h2 className="mt-5 text-xl font-semibold tracking-normal">{title}</h2>

@@ -10,3 +10,4 @@ dist
 storage
 tsconfig.tsbuildinfo
 prisma/migrations/dev.db
+deploy/aws-ec2/waren-ec2-release.tar.gz

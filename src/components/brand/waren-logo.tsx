@@ -56,18 +56,23 @@ const toneClasses: Record<
 export function WarenLogo({
   tone = "default",
   withWordmark = true,
+  surface = "light",
   className,
   markClassName,
   wordmarkClassName
 }: {
   tone?: WarenLogoTone;
   withWordmark?: boolean;
+  surface?: "light" | "dark";
   className?: string;
   markClassName?: string;
   wordmarkClassName?: string;
 }) {
   const palette = toneClasses[tone];
-  const useImageLogo = tone === "default" && withWordmark;
+  const useImageLogo = tone === "default" && withWordmark && surface === "light";
+  const showImageMark = tone === "default" && surface === "light";
+  const defaultWordmarkClass =
+    surface === "dark" ? "text-white" : palette.wordmark;
 
   return (
     <span className={cn("inline-flex items-center gap-3", className)}>
@@ -78,26 +83,46 @@ export function WarenLogo({
           width={342}
           height={228}
           priority
-          className={cn("h-11 w-auto flex-none object-contain", markClassName)}
+          className={cn(
+            "brand-wordmark-image h-14 w-auto flex-none object-contain sm:h-16",
+            markClassName
+          )}
         />
       ) : (
-        <svg
-          viewBox="0 0 64 64"
-          aria-hidden="true"
-          className={cn("h-9 w-9 flex-none", palette.glow, markClassName)}
-        >
-          <polygon points="6,28 29,18 41,26 19,37" className={palette.shardA} />
-          <polygon points="32,18 53,8 41,27 28,19" className={palette.shardB} />
-          <polygon points="41,27 56,13 48,40 33,31" className={palette.shardC} />
-          <polygon points="27,39 46,48 38,63 18,51" className={palette.shardD} />
-          <polygon points="19,52 29,60 19,63" className={palette.shardE} />
-        </svg>
+        <span className="relative inline-flex items-center justify-center">
+          {showImageMark ? (
+            <Image
+              src="/brand/waren-mark.png"
+              alt=""
+              aria-hidden="true"
+              width={110}
+              height={204}
+              priority
+              className={cn(
+                "brand-mark-image h-11 w-auto flex-none object-contain sm:h-12",
+                markClassName
+              )}
+            />
+          ) : (
+            <svg
+              viewBox="0 0 64 64"
+              aria-hidden="true"
+              className={cn("brand-mark-float h-10 w-10 flex-none", palette.glow, markClassName)}
+            >
+              <polygon points="6,28 29,18 41,26 19,37" className={palette.shardA} />
+              <polygon points="32,18 53,8 41,27 28,19" className={palette.shardB} />
+              <polygon points="41,27 56,13 48,40 33,31" className={palette.shardC} />
+              <polygon points="27,39 46,48 38,63 18,51" className={palette.shardD} />
+              <polygon points="19,52 29,60 19,63" className={palette.shardE} />
+            </svg>
+          )}
+        </span>
       )}
       {withWordmark && !useImageLogo ? (
         <span
           className={cn(
-            "text-[1.75rem] font-semibold leading-none tracking-normal",
-            palette.wordmark,
+            "text-[1.9rem] font-semibold leading-none tracking-normal sm:text-[2rem]",
+            defaultWordmarkClass,
             wordmarkClassName
           )}
         >
