@@ -23,8 +23,8 @@ export default async function NewApplicationPage({
     : "INTERNSHIP";
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6">
-      <div>
+    <div className="mx-auto max-w-7xl space-y-6" data-motion-page>
+      <div data-motion-intro>
         <p className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">
           Nouvelle entree
         </p>

@@ -73,7 +73,10 @@ export function ApplicationsKanban({
   return (
     <div className="space-y-4">
       {message ? (
-        <p className="rounded-2xl border border-border bg-[#fbfcff] px-4 py-3 text-sm text-muted-foreground">
+        <p
+          className="rounded-2xl border border-border bg-[#fbfcff] px-4 py-3 text-sm text-muted-foreground"
+          data-motion-row
+        >
           {message}
         </p>
       ) : null}
@@ -95,6 +98,7 @@ export function ApplicationsKanban({
                 }
               }}
               className="min-h-[220px] min-w-[280px] rounded-[24px] border border-border/80 bg-[#f7f9fd] p-3"
+              data-motion-card
             >
               <div className="mb-3 flex items-center justify-between gap-3 px-1">
                 <ApplicationStatusBadge status={option.value} />
@@ -116,6 +120,7 @@ export function ApplicationsKanban({
                       }}
                       onDragEnd={() => setDraggedApplicationId(null)}
                       className="surface-hover-lift rounded-[20px] border border-border/80 bg-white p-4 shadow-[0_1px_2px_rgba(16,24,40,0.04)]"
+                      data-motion-row
                     >
                       <div className="flex items-start gap-3">
                         <CompanyAvatar

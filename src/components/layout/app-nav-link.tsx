@@ -41,7 +41,10 @@ export function AppNavLink({
   return (
     <Link
       href={href}
+      data-active={isActive ? "true" : "false"}
+      data-motion-nav-item
       className={cn(
+        "app-nav-link relative overflow-hidden",
         mobile
           ? "flex shrink-0 items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold transition-all"
           : "group flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold transition-all",

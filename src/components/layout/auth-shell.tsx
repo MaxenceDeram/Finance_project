@@ -1,6 +1,9 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { ArrowUpRight, CheckCircle2, Clock3, Sparkles } from "lucide-react";
 import { WarenLogo } from "@/components/brand/waren-logo";
+import { FinanceFlowBackground } from "@/components/motion/finance-flow-background";
+import { MotionScope } from "@/components/motion/motion-scope";
 import { CompanyAvatar } from "@/features/applications/company-avatar";
 
 const authCompanies = [
@@ -19,18 +22,29 @@ export function AuthShell({
 }: {
   title: string;
   subtitle: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-background px-4 py-5 sm:px-6 lg:px-8">
+    <MotionScope
+      as="main"
+      variant="auth"
+      className="relative min-h-screen overflow-hidden bg-background px-4 py-5 sm:px-6 lg:px-8"
+    >
       <div className="pointer-events-none absolute inset-0">
         <div className="auth-orb absolute left-[-4rem] top-16 size-72 rounded-full bg-[#dfe3ff]" />
         <div className="auth-orb absolute right-[-2rem] top-12 size-80 rounded-full bg-[#d8e9ff] [animation-delay:2s]" />
         <div className="auth-orb absolute bottom-[-5rem] left-[22%] size-96 rounded-full bg-[#ece6ff] [animation-delay:4s]" />
       </div>
 
-      <div className="relative mx-auto flex min-h-[calc(100vh-2.5rem)] max-w-7xl overflow-hidden rounded-[36px] border border-white/60 bg-white/70 shadow-[0_28px_90px_rgba(15,23,42,0.12)] backdrop-blur-xl">
-        <section className="auth-gradient-panel relative hidden w-[48%] overflow-hidden px-10 py-10 text-white lg:flex lg:flex-col">
+      <div
+        className="relative mx-auto flex min-h-[calc(100vh-2.5rem)] max-w-7xl overflow-hidden rounded-[36px] border border-white/60 bg-white/70 shadow-[0_28px_90px_rgba(15,23,42,0.12)] backdrop-blur-xl"
+        data-motion-auth-frame
+      >
+        <section
+          className="auth-gradient-panel relative hidden w-[48%] overflow-hidden px-10 py-10 text-white lg:flex lg:flex-col"
+          data-motion-auth-panel
+        >
+          <FinanceFlowBackground />
           <div className="auth-grid-overlay absolute inset-0 opacity-60" />
           <div className="auth-line absolute left-[-10%] top-[18%] h-px w-[72%] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
           <div className="auth-line absolute left-[8%] top-[42%] h-px w-[58%] bg-gradient-to-r from-transparent via-[#a5b4ff]/70 to-transparent [animation-delay:2s]" />
@@ -42,6 +56,7 @@ export function AuthShell({
             <Link
               href="/"
               className="flex items-center gap-3 text-xl font-semibold tracking-normal"
+              data-motion-brand
             >
               <WarenLogo
                 size="hero"
@@ -50,13 +65,16 @@ export function AuthShell({
                 wordmarkClassName="text-white"
               />
             </Link>
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-medium text-white/80">
+            <div
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-medium text-white/80"
+              data-motion-brand
+            >
               Workspace premium
               <Sparkles className="size-3.5" aria-hidden="true" />
             </div>
           </div>
 
-          <div className="relative z-10 my-auto max-w-xl">
+          <div className="relative z-10 my-auto max-w-xl" data-motion-copy>
             <p className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/8 px-3 py-1 text-xs font-medium text-white/75">
               Suivi de candidatures
               <ArrowUpRight className="size-3.5" aria-hidden="true" />
@@ -90,6 +108,7 @@ export function AuthShell({
                 <div
                   key={cardTitle}
                   className="rounded-[24px] border border-white/10 bg-white/[0.06] p-4 shadow-[0_1px_0_rgba(255,255,255,0.06)_inset]"
+                  data-motion-feature-card
                 >
                   <div className="inline-flex size-9 items-center justify-center rounded-2xl bg-white/10 text-white">
                     <Icon className="size-4" aria-hidden="true" />
@@ -110,6 +129,7 @@ export function AuthShell({
               <div
                 key={label}
                 className="rounded-[22px] border border-white/10 bg-white/[0.05] px-4 py-4 text-sm text-white/72"
+                data-motion-feature-card
               >
                 <p className="font-semibold text-white">{label}</p>
                 <p className="mt-1 leading-6">{body}</p>
@@ -126,6 +146,7 @@ export function AuthShell({
                 <div
                   key={company}
                   className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.08] px-3.5 py-2"
+                  data-motion-chip
                 >
                   <CompanyAvatar
                     companyName={company}
@@ -145,18 +166,31 @@ export function AuthShell({
               <WarenLogo size="md" surface="light" />
             </Link>
 
-            <div className="mt-4 rounded-[30px] border border-white/70 bg-white/96 p-8 shadow-[0_24px_60px_rgba(15,23,42,0.08)] sm:p-9">
-              <p className="text-sm font-medium text-[#4f46e5]">Espace candidatures</p>
-              <h1 className="mt-4 text-4xl font-semibold tracking-normal text-foreground">
+            <div
+              className="mt-4 rounded-[30px] border border-white/70 bg-white/96 p-8 shadow-[0_24px_60px_rgba(15,23,42,0.08)] sm:p-9"
+              data-motion-form-card
+            >
+              <p className="text-sm font-medium text-[#4f46e5]" data-motion-field>
+                Espace candidatures
+              </p>
+              <h1
+                className="mt-4 text-4xl font-semibold tracking-normal text-foreground"
+                data-motion-field
+              >
                 {title}
               </h1>
-              <p className="mt-3 text-sm leading-6 text-muted-foreground">{subtitle}</p>
+              <p
+                className="mt-3 text-sm leading-6 text-muted-foreground"
+                data-motion-field
+              >
+                {subtitle}
+              </p>
 
               <div className="mt-8">{children}</div>
             </div>
           </div>
         </section>
       </div>
-    </main>
+    </MotionScope>
   );
 }

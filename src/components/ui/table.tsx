@@ -37,6 +37,7 @@ export function TableRow({
 }: React.HTMLAttributes<HTMLTableRowElement>) {
   return (
     <tr
+      data-motion-row
       className={cn(
         "border-b border-border/80 transition-all duration-300 hover:bg-[#f8faff] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]",
         className

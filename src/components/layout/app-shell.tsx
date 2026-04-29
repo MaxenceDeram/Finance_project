@@ -2,6 +2,7 @@ import { Bell, LogOut, Plus, Search } from "lucide-react";
 import Link from "next/link";
 import type { UserRole } from "@prisma/client";
 import { WarenLogo } from "@/components/brand/waren-logo";
+import { MotionScope } from "@/components/motion/motion-scope";
 import { UserAvatar } from "@/components/users/user-avatar";
 import { appNavigation } from "@/config/navigation";
 import { logoutAction } from "@/features/auth/actions";
@@ -25,7 +26,11 @@ export function AppShell({
   const navigation = appNavigation;
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <MotionScope
+      as="div"
+      variant="app"
+      className="min-h-screen bg-background text-foreground"
+    >
       <aside className="fixed inset-y-0 left-0 z-20 hidden w-[284px] flex-col border-r border-white/10 bg-[linear-gradient(180deg,#101626_0%,#131a2d_100%)] px-5 py-6 text-white shadow-[0_24px_60px_rgba(2,6,23,0.28)] lg:flex">
         <Link href="/dashboard" className="block rounded-2xl">
           <WarenLogo
@@ -98,7 +103,10 @@ export function AppShell({
       </aside>
 
       <div className="lg:pl-[284px]">
-        <header className="sticky top-0 z-10 border-b border-border/70 bg-[#f7f9fd]/88 backdrop-blur-xl">
+        <header
+          className="sticky top-0 z-10 border-b border-border/70 bg-[#f7f9fd]/88 backdrop-blur-xl"
+          data-motion-app-header
+        >
           <div className="flex min-h-20 flex-wrap items-center gap-3 px-4 py-4 sm:px-6 lg:px-8">
             <Link
               href="/dashboard"
@@ -170,6 +178,6 @@ export function AppShell({
 
         <main className="px-4 py-7 sm:px-6 lg:px-8 lg:py-8">{children}</main>
       </div>
-    </div>
+    </MotionScope>
   );
 }

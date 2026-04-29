@@ -94,9 +94,9 @@ export default async function ApplicationsPage({
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8" data-motion-page>
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div>
+        <div data-motion-intro>
           <p className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">
             Pipeline
           </p>
@@ -108,7 +108,7 @@ export default async function ApplicationsPage({
             sa relance et son contexte.
           </p>
         </div>
-        <Button asChild size="lg">
+        <Button asChild size="lg" data-motion-action>
           <Link href="/applications/new">
             <Plus aria-hidden="true" />
             Ajouter une candidature
@@ -126,8 +126,11 @@ export default async function ApplicationsPage({
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-5">
-              <form className="grid gap-3 md:grid-cols-2 2xl:grid-cols-[minmax(260px,1.4fr)_190px_190px_190px_auto]">
-                <div className="relative">
+              <form
+                className="grid gap-3 md:grid-cols-2 2xl:grid-cols-[minmax(260px,1.4fr)_190px_190px_190px_auto]"
+                data-motion-form
+              >
+                <div className="relative" data-motion-field>
                   <Search
                     className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
                     aria-hidden="true"
@@ -152,6 +155,7 @@ export default async function ApplicationsPage({
                   defaultValue={location}
                   placeholder="Localisation"
                   className="h-11 w-full rounded-xl border border-input bg-white px-3.5 text-sm text-foreground shadow-[0_1px_2px_rgba(16,24,40,0.04)] outline-none transition-all focus:border-ring focus:ring-4 focus:ring-ring/10"
+                  data-motion-field
                 />
                 <Select name="dateRange" defaultValue={dateRange}>
                   {applicationDateRangeOptions.map((option) => (
@@ -160,7 +164,7 @@ export default async function ApplicationsPage({
                     </option>
                   ))}
                 </Select>
-                <Button type="submit" className="w-full 2xl:w-auto">
+                <Button type="submit" className="w-full 2xl:w-auto" data-motion-field>
                   Appliquer
                 </Button>
               </form>
@@ -190,6 +194,7 @@ export default async function ApplicationsPage({
                     >
                       <Link
                         href={`/applications${href.toString() ? `?${href.toString()}` : ""}`}
+                        data-motion-action
                       >
                         {filter.label}
                       </Link>
@@ -286,6 +291,7 @@ export default async function ApplicationsPage({
                     key={application.id}
                     href={`/applications/${application.id}/edit`}
                     className="surface-hover-lift flex items-center gap-3 rounded-[22px] border border-border/80 bg-[#fbfcff] px-4 py-4 transition hover:border-[#d8ddff] hover:bg-white"
+                    data-motion-row
                   >
                     <div className="relative">
                       <CompanyAvatar
@@ -337,6 +343,7 @@ export default async function ApplicationsPage({
                   <div
                     key={application.id}
                     className="surface-hover-lift rounded-[22px] border border-border/80 bg-[#fbfcff] px-4 py-4"
+                    data-motion-card
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">

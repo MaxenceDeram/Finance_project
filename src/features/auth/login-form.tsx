@@ -15,10 +15,10 @@ export function LoginForm({ next }: { next?: string }) {
 
   return (
     <form action={action} className="space-y-5">
-      {state.message ? <Alert>{state.message}</Alert> : null}
+      {state.message ? <Alert data-motion-field>{state.message}</Alert> : null}
       <input type="hidden" name="next" value={next ?? "/dashboard"} />
 
-      <div className="space-y-2">
+      <div className="space-y-2" data-motion-field>
         <Label htmlFor="email">Email</Label>
         <div className="relative">
           <Mail
@@ -37,7 +37,7 @@ export function LoginForm({ next }: { next?: string }) {
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2" data-motion-field>
         <div className="flex items-center justify-between gap-3">
           <Label htmlFor="password">Mot de passe</Label>
           <Link
@@ -64,16 +64,19 @@ export function LoginForm({ next }: { next?: string }) {
         </div>
       </div>
 
-      <SubmitButton className="mt-2 w-full">
+      <SubmitButton className="mt-2 w-full" data-motion-field>
         Se connecter
         <MoveRight aria-hidden="true" />
       </SubmitButton>
 
-      <div className="rounded-2xl border border-border bg-[#f8faff] px-4 py-3 text-sm text-muted-foreground">
+      <div
+        className="rounded-2xl border border-border bg-[#f8faff] px-4 py-3 text-sm text-muted-foreground"
+        data-motion-field
+      >
         Acces securise, email verifie et espace prive pour vos candidatures.
       </div>
 
-      <p className="text-center text-sm text-muted-foreground">
+      <p className="text-center text-sm text-muted-foreground" data-motion-field>
         Nouveau sur Waren ?{" "}
         <Link
           href="/register"

@@ -116,8 +116,10 @@ export function WarenLogo({
 
   return (
     <span
+      data-logo-tone={tone}
+      data-waren-logo
       className={cn(
-        "inline-flex shrink-0 items-center leading-none",
+        "brand-logo-lockup inline-flex shrink-0 items-center leading-none",
         sizeClasses.gap,
         className
       )}
@@ -126,23 +128,38 @@ export function WarenLogo({
         viewBox="0 0 64 64"
         aria-hidden="true"
         className={cn(
-          "brand-mark-float shrink-0 overflow-visible",
+          "brand-logo-mark brand-mark-float shrink-0 overflow-visible",
           palette.glow,
           sizeClasses.mark,
           markClassName
         )}
       >
-        <polygon points="6,28 29,18 41,26 19,37" className={palette.shardA} />
-        <polygon points="32,18 53,8 41,27 28,19" className={palette.shardB} />
-        <polygon points="41,27 56,13 48,40 33,31" className={palette.shardC} />
-        <polygon points="27,39 46,48 38,63 18,51" className={palette.shardD} />
-        <polygon points="19,52 29,60 19,63" className={palette.shardE} />
+        <polygon
+          points="6,28 29,18 41,26 19,37"
+          className={cn("brand-logo-shard brand-logo-shard-a", palette.shardA)}
+        />
+        <polygon
+          points="32,18 53,8 41,27 28,19"
+          className={cn("brand-logo-shard brand-logo-shard-b", palette.shardB)}
+        />
+        <polygon
+          points="41,27 56,13 48,40 33,31"
+          className={cn("brand-logo-shard brand-logo-shard-c", palette.shardC)}
+        />
+        <polygon
+          points="27,39 46,48 38,63 18,51"
+          className={cn("brand-logo-shard brand-logo-shard-d", palette.shardD)}
+        />
+        <polygon
+          points="19,52 29,60 19,63"
+          className={cn("brand-logo-shard brand-logo-shard-e", palette.shardE)}
+        />
       </svg>
 
       {withWordmark ? (
         <span
           className={cn(
-            "shrink-0 font-semibold leading-none tracking-normal",
+            "brand-logo-wordmark shrink-0 font-semibold leading-none tracking-normal",
             sizeClasses.wordmark,
             defaultWordmarkClass,
             wordmarkClassName

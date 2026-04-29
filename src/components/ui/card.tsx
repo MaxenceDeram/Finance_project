@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
+      data-motion-panel
       className={cn(
         "premium-card surface-hover-lift rounded-[28px] border border-border/80 text-card-foreground shadow-[var(--shadow-soft)] backdrop-blur-sm",
         className

@@ -19,14 +19,15 @@ export default function SettingsPage() {
     {
       href: "/settings",
       title: "Securite",
-      description: "Authentification, confirmation email et base prete pour aller plus loin.",
+      description:
+        "Authentification, confirmation email et base prete pour aller plus loin.",
       icon: ShieldCheck
     }
   ];
 
   return (
-    <div className="space-y-6">
-      <div>
+    <div className="space-y-6" data-motion-page>
+      <div data-motion-intro>
         <p className="text-sm font-semibold uppercase tracking-normal text-muted-foreground">
           Configuration
         </p>
@@ -34,7 +35,7 @@ export default function SettingsPage() {
       </div>
       <div className="grid gap-4 md:grid-cols-3">
         {items.map((item) => (
-          <Link key={item.title} href={item.href}>
+          <Link key={item.title} href={item.href} data-motion-card>
             <Card className="h-full transition hover:border-ring">
               <CardContent className="p-5">
                 <div className="flex size-10 items-center justify-center rounded-md border border-border/80 bg-[color:var(--surface)]">

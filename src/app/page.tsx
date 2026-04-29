@@ -10,6 +10,7 @@ import Link from "next/link";
 import type { ApplicationStatus } from "@prisma/client";
 import type { LucideIcon } from "lucide-react";
 import { WarenLogo } from "@/components/brand/waren-logo";
+import { MotionScope } from "@/components/motion/motion-scope";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ApplicationStatusBadge } from "@/features/applications/application-status-badge";
@@ -45,9 +46,16 @@ const heroCompanies = [
 
 export default function LandingPage() {
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <MotionScope
+      as="main"
+      variant="landing"
+      className="min-h-screen bg-background text-foreground"
+    >
       <section className="mx-auto max-w-7xl px-4 pb-10 pt-5 sm:px-6 lg:px-8">
-        <nav className="flex items-center justify-between rounded-[28px] border border-white/70 bg-white/80 px-4 py-3 shadow-[0_12px_32px_rgba(15,23,42,0.06)] backdrop-blur-xl sm:px-5">
+        <nav
+          className="flex items-center justify-between rounded-[28px] border border-white/70 bg-white/80 px-4 py-3 shadow-[0_12px_32px_rgba(15,23,42,0.06)] backdrop-blur-xl sm:px-5"
+          data-motion-nav
+        >
           <Link
             href="/"
             className="flex items-center gap-3 text-xl font-semibold tracking-normal"
@@ -62,7 +70,7 @@ export default function LandingPage() {
           </Link>
           <div className="flex items-center gap-2">
             <Button asChild variant="ghost" size="sm">
-              <Link href="/login">Connexion</Link>
+              <Link href="/login">Se connecter</Link>
             </Button>
             <Button asChild size="sm">
               <Link href="/register">Creer un compte</Link>
@@ -71,7 +79,7 @@ export default function LandingPage() {
         </nav>
 
         <div className="grid gap-10 py-12 lg:grid-cols-[minmax(0,1fr)_540px] lg:items-center">
-          <div className="max-w-2xl">
+          <div className="max-w-2xl" data-motion-hero>
             <Badge>Suivi de candidatures premium</Badge>
             <h1 className="mt-6 text-5xl font-semibold leading-[1.02] tracking-normal text-foreground sm:text-6xl">
               Un espace clair pour piloter offres, relances et entretiens.
@@ -83,13 +91,15 @@ export default function LandingPage() {
 
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg">
-                <Link href="/register">
+                <Link href="/register" data-motion-cta>
                   Demarrer
                   <ArrowRight aria-hidden="true" />
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg">
-                <Link href="/login">Voir mon espace</Link>
+                <Link href="/login" data-motion-cta>
+                  Se connecter
+                </Link>
               </Button>
             </div>
 
@@ -102,6 +112,7 @@ export default function LandingPage() {
                   <div
                     key={company}
                     className="surface-hover-lift inline-flex items-center gap-3 rounded-full border border-border/80 bg-white/85 px-4 py-2 shadow-[0_8px_24px_rgba(15,23,42,0.05)]"
+                    data-motion-chip
                   >
                     <CompanyAvatar companyName={company} className="size-9 rounded-xl" />
                     <span className="text-sm font-medium text-foreground">{company}</span>
@@ -114,6 +125,7 @@ export default function LandingPage() {
               {metrics.map(([label, value], index) => (
                 <div
                   key={label}
+                  data-motion-metric
                   className={
                     index === 0
                       ? "premium-dark-card rounded-[28px] border border-transparent px-5 py-5 text-white"
@@ -135,7 +147,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="relative">
+          <div className="relative" data-motion-preview>
             <div className="absolute inset-x-10 top-0 h-24 rounded-full bg-[#e0e6ff] blur-3xl" />
             <div className="premium-card relative overflow-hidden rounded-[34px] border border-white/80 p-4 shadow-[0_28px_70px_rgba(15,23,42,0.12)]">
               <div className="rounded-[28px] border border-border/80 bg-[#fbfcff] p-4">
@@ -156,6 +168,7 @@ export default function LandingPage() {
                     <div
                       key={label}
                       className="surface-hover-lift rounded-[24px] border border-border/80 bg-white px-4 py-4"
+                      data-motion-card
                     >
                       <div className="inline-flex size-9 items-center justify-center rounded-2xl bg-[#f3f5fb] text-muted-foreground">
                         <Icon className="size-4" aria-hidden="true" />
@@ -184,6 +197,7 @@ export default function LandingPage() {
                       <div
                         key={`${company}-${role}`}
                         className="surface-hover-lift flex items-center justify-between gap-3 rounded-[22px] border border-border/80 bg-[#fbfcff] px-4 py-3"
+                        data-motion-row
                       >
                         <div className="flex items-center gap-3">
                           <CompanyAvatar
@@ -223,6 +237,7 @@ export default function LandingPage() {
             <div
               key={title}
               className="premium-card rounded-[28px] border border-border/80 px-6 py-6"
+              data-motion-card
             >
               <div className="inline-flex size-10 items-center justify-center rounded-2xl bg-[#eef2ff] text-[#4f46e5]">
                 <CheckCircle2 className="size-4" aria-hidden="true" />
@@ -235,7 +250,7 @@ export default function LandingPage() {
           ))}
         </div>
       </section>
-    </main>
+    </MotionScope>
   );
 }
 

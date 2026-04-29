@@ -56,9 +56,9 @@ export default async function ActionsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-8">
+    <div className="mx-auto max-w-7xl space-y-8" data-motion-page>
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div>
+        <div data-motion-intro>
           <p className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">
             Actions du jour
           </p>
@@ -70,7 +70,7 @@ export default async function ActionsPage() {
             depuis plus de {actions.staleAfterDays} jours.
           </p>
         </div>
-        <Button asChild size="lg">
+        <Button asChild size="lg" data-motion-action>
           <Link href="/applications/new">
             <Plus aria-hidden="true" />
             Nouvelle candidature
@@ -167,6 +167,7 @@ function ActionSection({
               key={item.id}
               href={`/applications/${item.id}/edit`}
               className="surface-hover-lift flex items-center justify-between gap-4 rounded-[22px] border border-border/80 bg-[#fbfcff] px-4 py-4 transition hover:border-[#d8ddff] hover:bg-white"
+              data-motion-row
             >
               <div className="flex min-w-0 items-center gap-3">
                 <CompanyAvatar

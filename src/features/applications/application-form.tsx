@@ -57,12 +57,12 @@ export function ApplicationForm({
   );
 
   return (
-    <form action={formAction} className="space-y-6">
+    <form action={formAction} className="space-y-6" data-motion-form>
       {mode === "edit" && values?.id ? (
         <input type="hidden" name="applicationId" value={values.id} />
       ) : null}
 
-      {state.message ? <Alert>{state.message}</Alert> : null}
+      {state.message ? <Alert data-motion-field>{state.message}</Alert> : null}
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.28fr)_360px]">
         <div className="space-y-6">
@@ -154,7 +154,7 @@ export function ApplicationForm({
             description="Gardez ici vos notes utiles: version du CV envoyee, points a preparer, contexte du role."
             icon={NotebookPen}
           >
-            <div className="grid gap-2">
+            <div className="grid gap-2" data-motion-field>
               <Label htmlFor="notes">Notes personnelles</Label>
               <Textarea
                 id="notes"
@@ -309,7 +309,7 @@ function Field({
   description?: string;
 }) {
   return (
-    <div className="grid gap-2">
+    <div className="grid gap-2" data-motion-field>
       <Label htmlFor={name}>{label}</Label>
       <Input
         id={name}
@@ -341,7 +341,7 @@ function SelectField({
   error?: string;
 }) {
   return (
-    <div className="grid gap-2">
+    <div className="grid gap-2" data-motion-field>
       <Label htmlFor={name}>{label}</Label>
       <Select id={name} name={name} defaultValue={defaultValue}>
         {options.map((option) => (

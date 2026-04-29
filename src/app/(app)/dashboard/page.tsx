@@ -45,7 +45,7 @@ export default async function DashboardPage() {
         title="Aucune candidature pour le moment"
         description="Ajoutez votre premiere candidature pour transformer Waren en cockpit de suivi: pipeline, relances, entretiens et documents associes."
         action={
-          <Button asChild>
+          <Button asChild data-motion-action>
             <Link href="/applications/new">
               <Plus aria-hidden="true" />
               Ajouter une candidature
@@ -57,9 +57,9 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8" data-motion-page>
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div>
+        <div data-motion-intro>
           <p className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">
             Vue d'ensemble
           </p>
@@ -71,7 +71,7 @@ export default async function DashboardPage() {
             de votre recherche dans un espace pense pour un usage quotidien.
           </p>
         </div>
-        <Button asChild size="lg">
+        <Button asChild size="lg" data-motion-action>
           <Link href="/applications/new">
             <Plus aria-hidden="true" />
             Nouvelle candidature
@@ -81,7 +81,10 @@ export default async function DashboardPage() {
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.55fr)_360px]">
         <section className="space-y-6">
-          <div className="premium-dark-card panel-glow overflow-hidden rounded-[32px] border border-transparent px-7 py-7 text-white sm:px-8">
+          <div
+            className="premium-dark-card panel-glow overflow-hidden rounded-[32px] border border-transparent px-7 py-7 text-white sm:px-8"
+            data-motion-panel
+          >
             <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
               <div className="max-w-2xl">
                 <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-medium text-white/75">
@@ -106,6 +109,8 @@ export default async function DashboardPage() {
                   <div
                     key={label}
                     className="surface-hover-lift rounded-[24px] border border-white/10 bg-white/[0.06] px-4 py-4 shadow-[0_1px_0_rgba(255,255,255,0.05)_inset]"
+                    data-motion-card
+                    data-motion-float
                   >
                     <p className="text-xs font-medium uppercase tracking-[0.1em] text-white/55">
                       {label}
@@ -222,6 +227,7 @@ export default async function DashboardPage() {
                   key={application.id}
                   href={`/applications/${application.id}/edit`}
                   className="surface-hover-lift flex flex-col gap-4 rounded-[24px] border border-border/80 bg-[#fbfcff] px-4 py-4 transition hover:border-[#d8ddff] hover:bg-white sm:flex-row sm:items-center sm:justify-between"
+                  data-motion-row
                 >
                   <div className="flex items-center gap-4">
                     <CompanyAvatar
@@ -267,6 +273,7 @@ export default async function DashboardPage() {
                     key={application.id}
                     href={`/applications/${application.id}/edit`}
                     className="surface-hover-lift block rounded-[24px] border border-border/80 bg-[#fbfcff] px-4 py-4 transition hover:border-[#d8ddff] hover:bg-white"
+                    data-motion-row
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0">
@@ -304,7 +311,7 @@ export default async function DashboardPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               {dashboard.recentActivity.map((application) => (
-                <div key={application.id} className="flex gap-3">
+                <div key={application.id} className="flex gap-3" data-motion-row>
                   <div className="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-[#f6f8ff]">
                     <WarenLogo
                       tone={getBrandToneForApplicationStatus(application.status)}
@@ -338,7 +345,7 @@ export default async function DashboardPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               {statusBreakdown.map((item) => (
-                <div key={item.status} className="space-y-2">
+                <div key={item.status} className="space-y-2" data-motion-row>
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2.5">
                       <WarenLogo
@@ -356,6 +363,7 @@ export default async function DashboardPage() {
                     <div
                       className="progress-fill-animated h-full rounded-full bg-[linear-gradient(90deg,#6366f1_0%,#8b5cf6_100%)]"
                       style={{ width: `${(item.count / maxBreakdown) * 100}%` }}
+                      data-motion-progress
                     />
                   </div>
                 </div>

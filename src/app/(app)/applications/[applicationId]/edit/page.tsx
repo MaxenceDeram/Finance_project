@@ -36,9 +36,9 @@ export default async function EditApplicationPage({
   const templates = await listEmailTemplatesForUser(user.id);
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6">
+    <div className="mx-auto max-w-7xl space-y-6" data-motion-page>
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-        <div className="flex items-start gap-4">
+        <div className="flex items-start gap-4" data-motion-intro>
           <div className="relative">
             <CompanyAvatar
               companyName={application.companyName}
@@ -68,7 +68,7 @@ export default async function EditApplicationPage({
             </div>
           </div>
         </div>
-        <Button asChild variant="outline">
+        <Button asChild variant="outline" data-motion-action>
           <Link href="/applications">
             <ArrowLeft aria-hidden="true" />
             Retour a la liste
@@ -77,7 +77,7 @@ export default async function EditApplicationPage({
       </div>
 
       {query.created ? (
-        <Alert>
+        <Alert data-motion-row>
           La candidature a bien ete creee. Vous pouvez maintenant la completer.
         </Alert>
       ) : null}
@@ -101,7 +101,7 @@ export default async function EditApplicationPage({
         }}
       />
 
-      <div id="documents" className="scroll-mt-24">
+      <div id="documents" className="scroll-mt-24" data-motion-panel>
         <ApplicationDocumentsManager
           applicationId={application.id}
           documents={application.documents.map((document) => ({
@@ -114,7 +114,7 @@ export default async function EditApplicationPage({
         />
       </div>
 
-      <div id="follow-up" className="scroll-mt-24">
+      <div id="follow-up" className="scroll-mt-24" data-motion-panel>
         <ApplicationFollowUpComposer
           applicationId={application.id}
           defaultToEmail={application.contactEmail}
