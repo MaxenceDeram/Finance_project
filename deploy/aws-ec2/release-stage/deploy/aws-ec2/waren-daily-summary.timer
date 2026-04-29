@@ -1,0 +1,10 @@
+[Unit]
+Description=Run Waren daily summary job every evening
+
+[Timer]
+OnCalendar=*-*-* 22:30:00
+Persistent=true
+Unit=waren-daily-summary.service
+
+[Install]
+WantedBy=timers.target
