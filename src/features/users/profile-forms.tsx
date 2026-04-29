@@ -81,10 +81,31 @@ export function ProfileAvatarCard({
       });
 
       if (!uploadUrlResponse.ok) {
-        throw new Error("Impossible de preparer l'upload.");
+        const payload = await uploadUrlResponse.json().catch(() => null);
+        throw new Error(payload?.message ?? "Impossible de preparer l'upload.");
       }
 
       const upload = await uploadUrlResponse.json();
+
+      if (upload.provider === "LOCAL") {
+        const localFormData = new FormData();
+        localFormData.set("file", selectedFile);
+
+        const localUploadResponse = await fetch(upload.uploadUrl, {
+          method: "POST",
+          body: localFormData
+        });
+
+        if (!localUploadResponse.ok) {
+          const payload = await localUploadResponse.json().catch(() => null);
+          throw new Error(payload?.message ?? "Impossible d'enregistrer l'avatar.");
+        }
+
+        setSelectedFile(null);
+        setMessage("Photo de profil mise a jour.");
+        router.refresh();
+        return;
+      }
 
       const putResponse = await fetch(upload.uploadUrl, {
         method: "PUT",
@@ -110,7 +131,8 @@ export function ProfileAvatarCard({
       });
 
       if (!completeResponse.ok) {
-        throw new Error("Impossible de finaliser la photo de profil.");
+        const payload = await completeResponse.json().catch(() => null);
+        throw new Error(payload?.message ?? "Impossible de finaliser la photo de profil.");
       }
 
       setSelectedFile(null);
@@ -178,8 +200,8 @@ export function ProfileAvatarCard({
               Ajoutez une photo nette et legere
             </p>
             <p className="text-sm leading-6 text-muted-foreground">
-              Upload direct vers S3 via URL pre-signee. Formats: JPG, PNG, WebP. Taille
-              max 3 Mo.
+              Formats: JPG, PNG, WebP. Taille max 3 Mo. S3 est utilise si configure,
+              sinon l'avatar est stocke localement.
             </p>
           </div>
         </div>

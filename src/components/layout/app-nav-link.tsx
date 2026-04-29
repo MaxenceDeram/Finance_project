@@ -2,6 +2,7 @@
 
 import {
   Briefcase,
+  ListChecks,
   LayoutDashboard,
   Settings,
   UserRound,
@@ -12,6 +13,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 const iconMap = {
+  actions: ListChecks,
   dashboard: LayoutDashboard,
   briefcase: Briefcase,
   settings: Settings,

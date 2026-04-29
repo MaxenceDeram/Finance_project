@@ -47,6 +47,24 @@ const optionalUrl = z.preprocess((value) => {
   return trimmed;
 }, z.string().url("Lien invalide.").max(500).optional());
 
+const requiredUrl = z.preprocess((value) => {
+  if (typeof value !== "string") {
+    return value;
+  }
+
+  const trimmed = value.trim();
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+
+  if (/^[a-z0-9.-]+\.[a-z]{2,}(?:[/:?#].*)?$/i.test(trimmed)) {
+    return `https://${trimmed}`;
+  }
+
+  return trimmed;
+}, z.string().url("Lien invalide.").max(500));
+
 const optionalDate = z.preprocess((value) => {
   if (value === "" || value == null) {
     return undefined;
@@ -83,6 +101,15 @@ export const updateApplicationSchema = applicationInputSchema.extend({
   applicationId: idSchema
 });
 
+export const updateApplicationStatusSchema = z.object({
+  applicationId: idSchema,
+  status: applicationStatusSchema
+});
+
 export const deleteApplicationSchema = z.object({
   applicationId: idSchema
+});
+
+export const importJobOfferSchema = z.object({
+  listingUrl: requiredUrl
 });

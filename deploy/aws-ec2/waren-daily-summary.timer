@@ -1,8 +1,8 @@
 [Unit]
-Description=Run Waren daily summary job every evening
+Description=Run Waren daily summary dispatcher hourly
 
 [Timer]
-OnCalendar=*-*-* 22:30:00
+OnCalendar=*-*-* *:05:00
 Persistent=true
 Unit=waren-daily-summary.service
 

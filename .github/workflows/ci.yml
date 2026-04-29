@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://waren:waren@localhost:5432/waren_ci?schema=public
+      APP_URL: http://localhost:3000
+      APP_NAME: Waren
+      NODE_ENV: production
+      SESSION_COOKIE_SECURE: "true"
+      SESSION_SECRET: ci-session-secret-with-at-least-32-characters
+      EMAIL_TOKEN_PEPPER: ci-email-token-pepper-at-least-32-characters
+      CRON_SECRET: ci-cron-secret-with-at-least-32-characters
+      EMAIL_PROVIDER: console
+      SMTP_FROM: Waren <no-reply@example.com>
+      DAILY_SUMMARY_DEFAULT_TIMEZONE: Europe/Paris
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build

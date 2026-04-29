@@ -3,10 +3,15 @@ import {
   AuditAction,
   DailyEmailStatus,
   EmailCategory,
-  EmailLogStatus
+  EmailLogStatus,
+  type UserPreferences
 } from "@prisma/client";
 import { getEnv } from "@/config/env";
-import { startOfUtcDay } from "@/lib/dates";
+import {
+  getZonedDateParts,
+  isValidTimeZone,
+  startOfZonedDayAsUtcDate
+} from "@/lib/dates";
 import { getSafeErrorMessage } from "@/lib/errors";
 import { prisma } from "@/server/db/prisma";
 import { sendEmail, getConfiguredEmailProvider } from "@/server/email/mailer";
@@ -17,7 +22,6 @@ import { responseStatuses } from "@/features/applications/constants";
 
 export async function runDailySummaryJob(date = new Date()) {
   const env = getEnv();
-  const periodDate = startOfUtcDay(date);
   const users = await prisma.user.findMany({
     where: {
       emailVerified: true,
@@ -34,9 +38,23 @@ export async function runDailySummaryJob(date = new Date()) {
     userId: string;
     summaryScope: string;
     status: DailyEmailStatus;
+    reason?: string;
   }> = [];
 
   for (const user of users) {
+    const preferences = resolveDailySummaryPreferences(user.preferences, env);
+
+    if (!isDailySummaryDueAt(date, preferences)) {
+      results.push({
+        userId: user.id,
+        summaryScope: "applications",
+        status: DailyEmailStatus.SKIPPED,
+        reason: "NOT_DUE"
+      });
+      continue;
+    }
+
+    const periodDate = startOfZonedDayAsUtcDate(date, preferences.timezone);
     const existingLog = await prisma.dailyEmailLog.findFirst({
       where: {
         userId: user.id,
@@ -122,7 +140,6 @@ export async function runDailySummaryJob(date = new Date()) {
     });
 
     try {
-
       const delivery = await sendEmail({
         to: user.email,
         ...emailContent
@@ -205,6 +222,32 @@ export async function runDailySummaryJob(date = new Date()) {
     processedUsers: users.length,
     processedSummaries: results.length,
     results
+  };
+}
+
+export function isDailySummaryDueAt(
+  date: Date,
+  preferences: Pick<UserPreferences, "timezone" | "dailyEmailHour">
+) {
+  const parts = getZonedDateParts(date, preferences.timezone);
+  return parts.hour === preferences.dailyEmailHour;
+}
+
+function resolveDailySummaryPreferences(
+  preferences: UserPreferences | null,
+  env: ReturnType<typeof getEnv>
+) {
+  const fallbackTimezone = isValidTimeZone(env.DAILY_SUMMARY_DEFAULT_TIMEZONE)
+    ? env.DAILY_SUMMARY_DEFAULT_TIMEZONE
+    : "Europe/Paris";
+  const timezone =
+    preferences?.timezone && isValidTimeZone(preferences.timezone)
+      ? preferences.timezone
+      : fallbackTimezone;
+
+  return {
+    timezone,
+    dailyEmailHour: preferences?.dailyEmailHour ?? 22
   };
 }
 

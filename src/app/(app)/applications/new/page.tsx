@@ -1,6 +1,27 @@
+import type { ContractType } from "@prisma/client";
 import { ApplicationForm } from "@/features/applications/application-form";
+import { contractTypeOptions } from "@/features/applications/constants";
+import { JobOfferImportForm } from "@/features/applications/job-offer-import-form";
 
-export default function NewApplicationPage() {
+export default async function NewApplicationPage({
+  searchParams
+}: {
+  searchParams: Promise<{
+    imported?: string;
+    companyName?: string;
+    roleTitle?: string;
+    location?: string;
+    contractType?: string;
+    listingUrl?: string;
+  }>;
+}) {
+  const params = await searchParams;
+  const contractType = contractTypeOptions.some(
+    (option) => option.value === params.contractType
+  )
+    ? (params.contractType as ContractType)
+    : "INTERNSHIP";
+
   return (
     <div className="mx-auto max-w-7xl space-y-6">
       <div>
@@ -15,7 +36,18 @@ export default function NewApplicationPage() {
           prochaine etape.
         </p>
       </div>
-      <ApplicationForm mode="create" />
+      <JobOfferImportForm />
+      <ApplicationForm
+        mode="create"
+        values={{
+          companyName: params.companyName ?? "",
+          roleTitle: params.roleTitle ?? "",
+          location: params.location ?? "",
+          contractType,
+          listingUrl: params.listingUrl ?? "",
+          status: "TO_APPLY"
+        }}
+      />
     </div>
   );
 }

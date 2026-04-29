@@ -130,10 +130,15 @@ export function AppShell({
                   Nouvelle candidature
                 </Link>
               </Button>
-              <Button variant="outline" size="icon" aria-label="Notifications">
-                <Bell aria-hidden="true" />
+              <Button asChild variant="outline" size="icon" aria-label="Actions du jour">
+                <Link href="/actions">
+                  <Bell aria-hidden="true" />
+                </Link>
               </Button>
-              <div className="hidden items-center gap-3 rounded-2xl border border-border bg-white px-3 py-2 shadow-[0_1px_2px_rgba(16,24,40,0.04)] sm:flex">
+              <Link
+                href="/profile"
+                className="hidden items-center gap-3 rounded-2xl border border-border bg-white px-3 py-2 shadow-[0_1px_2px_rgba(16,24,40,0.04)] transition hover:border-[#d8ddff] hover:bg-[#fbfcff] sm:flex"
+              >
                 <UserAvatar
                   avatarUrl={userAvatarUrl}
                   name={userDisplayName}
@@ -146,7 +151,7 @@ export function AppShell({
                   </p>
                   <p className="text-xs text-muted-foreground">Suivi candidatures</p>
                 </div>
-              </div>
+              </Link>
             </div>
           </div>
 

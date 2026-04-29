@@ -37,6 +37,10 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "coverage",
+    "dist",
+    "deploy/aws-ec2/release-stage",
+    ".next/**/* 2.ts"
   ]
 }

@@ -9,13 +9,17 @@ import { requireUser } from "@/server/security/sessions";
 import {
   createApplicationSchema,
   deleteApplicationSchema,
+  importJobOfferSchema,
+  updateApplicationStatusSchema,
   updateApplicationSchema
 } from "@/validation/applications";
 import {
   createJobApplication,
   deleteJobApplication,
-  updateJobApplication
+  updateJobApplication,
+  updateJobApplicationStatus
 } from "./service";
+import { fetchJobOfferPreview } from "./job-offer-import";
 
 export async function createJobApplicationAction(
   _state: ActionState,
@@ -73,6 +77,60 @@ export async function createJobApplicationAction(
   redirect(redirectTo ?? "/applications");
 }
 
+export async function importJobOfferFromUrlAction(
+  _state: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  const user = await requireUser();
+  let redirectTo: string | null = null;
+
+  try {
+    await assertSameOrigin();
+    assertRateLimit({
+      key: `application:offer-import:${user.id}`,
+      limit: 30,
+      windowMs: 60 * 60 * 1000
+    });
+
+    const parsed = importJobOfferSchema.safeParse({
+      listingUrl: formData.get("listingUrl")
+    });
+
+    if (!parsed.success) {
+      return {
+        ok: false,
+        message: "Collez une URL d'offre valide.",
+        fieldErrors: parsed.error.flatten().fieldErrors
+      };
+    }
+
+    const preview = await fetchJobOfferPreview(parsed.data.listingUrl);
+    const params = new URLSearchParams({
+      imported: "1",
+      listingUrl: parsed.data.listingUrl
+    });
+
+    if (preview.companyName) {
+      params.set("companyName", preview.companyName);
+    }
+    if (preview.roleTitle) {
+      params.set("roleTitle", preview.roleTitle);
+    }
+    if (preview.location) {
+      params.set("location", preview.location);
+    }
+    if (preview.contractType) {
+      params.set("contractType", preview.contractType);
+    }
+
+    redirectTo = `/applications/new?${params.toString()}`;
+  } catch (error) {
+    return { ok: false, message: getSafeErrorMessage(error) };
+  }
+
+  redirect(redirectTo ?? "/applications/new");
+}
+
 export async function updateJobApplicationAction(
   _state: ActionState,
   formData: FormData
@@ -124,6 +182,52 @@ export async function updateJobApplicationAction(
     revalidatePath(`/applications/${application.id}/edit`);
 
     return { ok: true, message: "Candidature mise a jour." };
+  } catch (error) {
+    return { ok: false, message: getSafeErrorMessage(error) };
+  }
+}
+
+export async function updateJobApplicationStatusAction(
+  _state: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  const user = await requireUser();
+
+  try {
+    await assertSameOrigin();
+    const request = await getRequestMetadata();
+    assertRateLimit({
+      key: `application:status:update:${user.id}`,
+      limit: 160,
+      windowMs: 60 * 60 * 1000
+    });
+
+    const raw = {
+      applicationId: formData.get("applicationId"),
+      status: formData.get("status")
+    };
+    const parsed = updateApplicationStatusSchema.safeParse(raw);
+
+    if (!parsed.success) {
+      return {
+        ok: false,
+        message: "Changement de statut invalide.",
+        fieldErrors: parsed.error.flatten().fieldErrors
+      };
+    }
+
+    const application = await updateJobApplicationStatus({
+      userId: user.id,
+      values: parsed.data,
+      ipHash: request.ipHash
+    });
+
+    revalidatePath("/dashboard");
+    revalidatePath("/actions");
+    revalidatePath("/applications");
+    revalidatePath(`/applications/${application.id}/edit`);
+
+    return { ok: true, message: "Statut mis a jour." };
   } catch (error) {
     return { ok: false, message: getSafeErrorMessage(error) };
   }

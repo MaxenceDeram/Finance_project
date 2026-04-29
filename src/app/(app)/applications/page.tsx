@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Select } from "@/components/ui/select";
 import { ApplicationStatusBadge } from "@/features/applications/application-status-badge";
+import { ApplicationsKanban } from "@/features/applications/applications-kanban";
 import { ApplicationsTable } from "@/features/applications/applications-table";
 import { CompanyAvatar } from "@/features/applications/company-avatar";
 import {
@@ -125,7 +126,7 @@ export default async function ApplicationsPage({
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-5">
-              <form className="grid gap-3 lg:grid-cols-[minmax(0,1.6fr)_220px_220px_220px_auto]">
+              <form className="grid gap-3 md:grid-cols-2 2xl:grid-cols-[minmax(260px,1.4fr)_190px_190px_190px_auto]">
                 <div className="relative">
                   <Search
                     className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
@@ -159,7 +160,9 @@ export default async function ApplicationsPage({
                     </option>
                   ))}
                 </Select>
-                <Button type="submit">Appliquer</Button>
+                <Button type="submit" className="w-full 2xl:w-auto">
+                  Appliquer
+                </Button>
               </form>
 
               <div className="flex flex-wrap gap-2">
@@ -203,6 +206,42 @@ export default async function ApplicationsPage({
                 {location ? <span>• {location}</span> : null}
                 {query ? <span>• “{query}”</span> : null}
               </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <CardTitle>Kanban du pipeline</CardTitle>
+                <CardDescription>
+                  Deplacez une carte pour changer son statut, ou ouvrez rapidement la
+                  fiche, les documents et les relances.
+                </CardDescription>
+              </div>
+              <Button asChild variant="outline" size="sm">
+                <Link href="/actions">Voir les actions du jour</Link>
+              </Button>
+            </CardHeader>
+            <CardContent>
+              {applications.length > 0 ? (
+                <ApplicationsKanban
+                  applications={applications.map((application) => ({
+                    id: application.id,
+                    companyName: application.companyName,
+                    roleTitle: application.roleTitle,
+                    status: application.status,
+                    location: application.location,
+                    listingUrl: application.listingUrl,
+                    followUpDate: application.followUpDate?.toISOString() ?? null
+                  }))}
+                />
+              ) : (
+                <EmptyState
+                  icon={Search}
+                  title="Aucune carte"
+                  description="Aucune candidature ne correspond a vos filtres actuels."
+                />
+              )}
             </CardContent>
           </Card>
 

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 const protectedPrefixes = [
   "/dashboard",
+  "/actions",
   "/applications",
   "/settings",
   "/profile",
@@ -31,6 +32,7 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/dashboard/:path*",
+    "/actions/:path*",
     "/applications/:path*",
     "/settings/:path*",
     "/profile/:path*",

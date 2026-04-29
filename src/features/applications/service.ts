@@ -1,10 +1,12 @@
 import { ApplicationStatus, AuditAction } from "@prisma/client";
+import { addDaysUtc, getZonedDayRange } from "@/lib/dates";
 import { AppError } from "@/lib/errors";
 import { prisma } from "@/server/db/prisma";
 import { writeAuditLog } from "@/server/security/audit";
 import {
   createApplicationSchema,
   deleteApplicationSchema,
+  updateApplicationStatusSchema,
   updateApplicationSchema
 } from "@/validation/applications";
 import {
@@ -72,6 +74,31 @@ export async function updateJobApplication(input: {
       compensation: emptyToNull(parsed.compensation),
       notes: emptyToNull(parsed.notes),
       followUpDate: parsed.followUpDate ?? null
+    }
+  });
+
+  await writeAuditLog({
+    userId: input.userId,
+    action: AuditAction.APPLICATION_UPDATED,
+    metadata: { applicationId: application.id, status: application.status },
+    ipHash: input.ipHash
+  });
+
+  return application;
+}
+
+export async function updateJobApplicationStatus(input: {
+  userId: string;
+  values: unknown;
+  ipHash?: string | null;
+}) {
+  const parsed = updateApplicationStatusSchema.parse(input.values);
+  await assertApplicationOwner(parsed.applicationId, input.userId);
+
+  const application = await prisma.jobApplication.update({
+    where: { id: parsed.applicationId },
+    data: {
+      status: parsed.status
     }
   });
 
@@ -223,6 +250,88 @@ export async function getApplicationDashboard(userId: string) {
     recentApplications,
     recentActivity,
     statusBreakdown
+  };
+}
+
+export async function getTodayApplicationActions(input: {
+  userId: string;
+  now?: Date;
+  timeZone?: string;
+  staleAfterDays?: number;
+}) {
+  const now = input.now ?? new Date();
+  const staleAfterDays = input.staleAfterDays ?? 14;
+  const { start: todayStart, end: tomorrowStart } = getZonedDayRange(
+    now,
+    input.timeZone ?? "Europe/Paris"
+  );
+  const staleBefore = addDaysUtc(todayStart, -staleAfterDays);
+  const terminalStatuses = [ApplicationStatus.REJECTED, ApplicationStatus.ACCEPTED];
+
+  const [followUpsDue, withoutFollowUp, toApply, staleApplications] =
+    await Promise.all([
+      prisma.jobApplication.findMany({
+        where: {
+          userId: input.userId,
+          followUpDate: { lt: tomorrowStart },
+          status: { notIn: terminalStatuses }
+        },
+        orderBy: [{ followUpDate: "asc" }, { updatedAt: "desc" }],
+        take: 10
+      }),
+      prisma.jobApplication.findMany({
+        where: {
+          userId: input.userId,
+          followUpDate: null,
+          status: {
+            notIn: [
+              ApplicationStatus.TO_APPLY,
+              ApplicationStatus.REJECTED,
+              ApplicationStatus.ACCEPTED
+            ]
+          }
+        },
+        orderBy: { updatedAt: "asc" },
+        take: 10
+      }),
+      prisma.jobApplication.findMany({
+        where: {
+          userId: input.userId,
+          status: ApplicationStatus.TO_APPLY
+        },
+        orderBy: { createdAt: "desc" },
+        take: 10
+      }),
+      prisma.jobApplication.findMany({
+        where: {
+          userId: input.userId,
+          updatedAt: { lt: staleBefore },
+          status: {
+            notIn: [
+              ApplicationStatus.TO_APPLY,
+              ApplicationStatus.REJECTED,
+              ApplicationStatus.ACCEPTED
+            ]
+          }
+        },
+        orderBy: { updatedAt: "asc" },
+        take: 10
+      })
+    ]);
+
+  return {
+    todayStart,
+    tomorrowStart,
+    staleAfterDays,
+    followUpsDue,
+    withoutFollowUp,
+    toApply,
+    staleApplications,
+    totalActions:
+      followUpsDue.length +
+      withoutFollowUp.length +
+      toApply.length +
+      staleApplications.length
   };
 }
 

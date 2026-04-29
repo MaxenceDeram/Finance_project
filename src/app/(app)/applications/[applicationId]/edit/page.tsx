@@ -101,49 +101,53 @@ export default async function EditApplicationPage({
         }}
       />
 
-      <ApplicationDocumentsManager
-        applicationId={application.id}
-        documents={application.documents.map((document) => ({
-          id: document.id,
-          documentType: document.documentType,
-          originalFilename: document.originalFilename,
-          sizeBytes: document.sizeBytes,
-          createdAt: document.createdAt.toISOString()
-        }))}
-      />
+      <div id="documents" className="scroll-mt-24">
+        <ApplicationDocumentsManager
+          applicationId={application.id}
+          documents={application.documents.map((document) => ({
+            id: document.id,
+            documentType: document.documentType,
+            originalFilename: document.originalFilename,
+            sizeBytes: document.sizeBytes,
+            createdAt: document.createdAt.toISOString()
+          }))}
+        />
+      </div>
 
-      <ApplicationFollowUpComposer
-        applicationId={application.id}
-        defaultToEmail={application.contactEmail}
-        templates={templates.map((template) => ({
-          id: template.id,
-          name: template.name,
-          subjectTemplate: template.subjectTemplate,
-          bodyTemplate: template.bodyTemplate,
-          isDefault: template.isDefault
-        }))}
-        templateTokens={getFollowUpTokens()}
-        templateContext={{
-          companyName: application.companyName,
-          roleTitle: application.roleTitle,
-          contactName: application.hrContact,
-          contactEmail: application.contactEmail,
-          applicationDate: application.applicationDate?.toISOString() ?? null,
-          userName: getPreferredUserName(user.displayName, user.email),
-          userEmail: user.email
-        }}
-        history={application.emailLogs.map((log) => ({
-          id: log.id,
-          status: log.status,
-          provider: log.provider,
-          toEmail: log.toEmail,
-          subject: log.subject,
-          templateName: log.template?.name ?? null,
-          sentAt: log.sentAt?.toISOString() ?? null,
-          createdAt: log.createdAt.toISOString(),
-          errorMessage: log.errorMessage ?? null
-        }))}
-      />
+      <div id="follow-up" className="scroll-mt-24">
+        <ApplicationFollowUpComposer
+          applicationId={application.id}
+          defaultToEmail={application.contactEmail}
+          templates={templates.map((template) => ({
+            id: template.id,
+            name: template.name,
+            subjectTemplate: template.subjectTemplate,
+            bodyTemplate: template.bodyTemplate,
+            isDefault: template.isDefault
+          }))}
+          templateTokens={getFollowUpTokens()}
+          templateContext={{
+            companyName: application.companyName,
+            roleTitle: application.roleTitle,
+            contactName: application.hrContact,
+            contactEmail: application.contactEmail,
+            applicationDate: application.applicationDate?.toISOString() ?? null,
+            userName: getPreferredUserName(user.displayName, user.email),
+            userEmail: user.email
+          }}
+          history={application.emailLogs.map((log) => ({
+            id: log.id,
+            status: log.status,
+            provider: log.provider,
+            toEmail: log.toEmail,
+            subject: log.subject,
+            templateName: log.template?.name ?? null,
+            sentAt: log.sentAt?.toISOString() ?? null,
+            createdAt: log.createdAt.toISOString(),
+            errorMessage: log.errorMessage ?? null
+          }))}
+        />
+      </div>
     </div>
   );
 }
