@@ -14,8 +14,13 @@ jobs:
           DAILY_SUMMARY_URL: ${{ secrets.DAILY_SUMMARY_URL }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
-          test -n "$DAILY_SUMMARY_URL"
-          test -n "$CRON_SECRET"
+          set -euo pipefail
+
+          if [ -z "${DAILY_SUMMARY_URL:-}" ] || [ -z "${CRON_SECRET:-}" ]; then
+            echo "::notice::Daily Summary skipped: DAILY_SUMMARY_URL or CRON_SECRET is not configured."
+            exit 0
+          fi
+
           curl --fail --show-error --silent \
             --request POST "$DAILY_SUMMARY_URL/api/jobs/daily-summary" \
             --header "Authorization: Bearer $CRON_SECRET"
