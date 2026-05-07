@@ -127,6 +127,7 @@ Sur l'EC2:
 
 ```bash
 cd /var/www/waren
+sudo -u waren bash scripts/reset-next-cache.sh
 sudo -u waren npm ci
 sudo -u waren npm run prisma:deploy
 sudo -u waren npm run build
@@ -190,7 +191,9 @@ Depuis ton Mac, relancer le `rsync`, puis sur l'EC2:
 
 ```bash
 cd /var/www/waren
+sudo -u waren bash scripts/reset-next-cache.sh
 sudo -u waren npm ci
+sudo -u waren npm run prisma:deploy
 sudo -u waren npm run build
 sudo systemctl restart waren
 ```

@@ -16,6 +16,8 @@ fi
 
 cd "$APP_DIR"
 
+chown -R "$APP_USER:$APP_USER" "$APP_DIR"
+sudo -H -u "$APP_USER" bash scripts/reset-next-cache.sh
 sudo -H -u "$APP_USER" npm ci
 sudo -H -u "$APP_USER" npm run prisma:deploy
 sudo -H -u "$APP_USER" npm run build
